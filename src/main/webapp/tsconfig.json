@@ -1,0 +1,17 @@
+{
+	"compileOnSave": true,
+    "compilerOptions": {
+		"compileOnSave": true,
+        "module": "system",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outFile": "js/app.js",
+        "sourceMap": false
+    },
+    "include": [
+        "app/**.ts"
+    ],
+    "exclude": [
+    ]
+}

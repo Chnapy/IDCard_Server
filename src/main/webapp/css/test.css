@@ -1,0 +1,29 @@
+@charset "UTF-8";
+/* Test SASS (ce commentaire ne sera pas inclu dans le css minifi├®) */
+/*! Test SASS (ce commentaire sera inclu dans le css minifi├®) */
+@keyframes opa {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+body {
+  width: 100%;
+  height: 100%;
+  color: #333; }
+
+.lighter {
+  color: #4d4d4d; }
+
+.opa-anim {
+  -webkit-animation-name: opa;
+  -moz-animation-name: opa;
+  -o-animation-name: opa;
+  -ms-animation-name: opa;
+  animation-name: opa;
+  -webkit-animation-duration: 2s;
+  -moz-animation-duration: 2s;
+  -o-animation-duration: 2s;
+  -ms-animation-duration: 2s;
+  animation-duration: 2s; }
+
+/*# sourceMappingURL=test.css.map */
