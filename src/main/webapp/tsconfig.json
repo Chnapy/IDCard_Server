@@ -10,6 +10,7 @@
         "sourceMap": false
     },
     "include": [
+		"typings/index.d.ts",
         "app/**.ts"
     ],
     "exclude": [

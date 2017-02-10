@@ -1,17 +1,9 @@
 
+
 class Main {
 
-	public Main() {
-
-	}
-
 	public static main() {
-		console.log("test");
-		
+		console.log("Main go !");
 	}
 
-}
-
-function main() {
-	Main.main();
 }
