@@ -1,9 +1,14 @@
 
+import {MainManager} from 'modules/main/MainManager';
 
-class Main {
+export class Main {
 
-	public static main() {
-		console.log("Main go !");
+	public static main(): void {
+		console.debug("Main go !");
+		
+		var manager: MainManager = new MainManager();
 	}
+
+	private constructor() {}
 
 }

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+	<!-- L'ordre d'exécution des filtres doit être défini dans le web.xml -->
 	
-	<welcome-file-list>
-		<welcome-file>/index</welcome-file>
-	</welcome-file-list>
-
-<!--	<error-page>
+	<filter-mapping>
+		<filter-name>RessourceFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>AjaxFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>ConnectionFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!--	<error-page>
 		<error-code>404</error-code>
 		<location>/index</location>
 	</error-page>-->
@@ -15,5 +25,4 @@
 			30
 		</session-timeout>
 	</session-config>
-	
 </web-app>

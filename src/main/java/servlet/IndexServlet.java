@@ -3,7 +3,7 @@
  * 
  * 
  */
-package main;
+package servlet;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -13,11 +13,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Servlet appelé lors du premier accès à la page
  *
  * @author Richard
  */
-@WebServlet(name = "ExempleServlet", urlPatterns = {"/index"})
-public class ExempleServlet extends HttpServlet {
+@WebServlet(name = "IndexServlet", urlPatterns = {IndexServlet.URL})
+public class IndexServlet extends HttpServlet {
+
+	public static final String URL = "/index.html";
+	
+	private static final String WEB_FILE = "/start.jsp";
 
 	/**
 	 * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -30,7 +35,9 @@ public class ExempleServlet extends HttpServlet {
 	 */
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		request.getRequestDispatcher("/index.html").forward(request, response);
+		System.out.print("Acces index : ");
+		System.out.println(request.getRequestURI());
+		getServletContext().getRequestDispatcher(WEB_FILE).forward(request, response);
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -61,15 +68,6 @@ public class ExempleServlet extends HttpServlet {
 			throws ServletException, IOException {
 		processRequest(request, response);
 	}
-
-	/**
-	 * Returns a short description of the servlet.
-	 *
-	 * @return a String containing servlet description
-	 */
-	@Override
-	public String getServletInfo() {
-		return "Short description";
-	}// </editor-fold>
+	// </editor-fold>
 
 }

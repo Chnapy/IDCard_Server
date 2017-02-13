@@ -1,18 +1,21 @@
 {
 	"compileOnSave": true,
     "compilerOptions": {
-		"compileOnSave": true,
-        "module": "system",
+		"target": "ES5",
+        "module": "amd",
         "noImplicitAny": true,
+		"strictNullChecks": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "outFile": "js/app.js",
-        "sourceMap": false
+		"declaration": false,
+        "sourceMap": false,
+		"outFile": "./js/app.js"
     },
     "include": [
-		"typings/index.d.ts",
-        "app/**.ts"
+        "app/",
+		"typings/index.d.ts"
     ],
     "exclude": [
+		"js/"
     ]
 }

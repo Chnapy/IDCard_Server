@@ -1,4 +1,5 @@
 
+import {Main} from 'Main';
 
 class RequireAll {
 
