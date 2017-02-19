@@ -9,6 +9,7 @@
         "preserveConstEnums": true,
 		"declaration": false,
         "sourceMap": false,
+		"jsx": "react",
 		"outFile": "./js/app.js"
     },
     "include": [

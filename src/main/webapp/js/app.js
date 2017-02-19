@@ -18,13 +18,17 @@ define("struct/Modele", ["require", "exports"], function (require, exports) {
     }());
     exports.Modele = Modele;
 });
-define("struct/Vue", ["require", "exports"], function (require, exports) {
+define("struct/Vue", ["require", "exports", "react"], function (require, exports, React) {
     "use strict";
-    var Vue = (function () {
-        function Vue() {
+    var Vue = (function (_super) {
+        __extends(Vue, _super);
+        function Vue(props, context) {
+            return _super.call(this, props, context) || this;
         }
+        Vue.prototype.applyVue = function () {
+        };
         return Vue;
-    }());
+    }(React.Component));
     exports.Vue = Vue;
 });
 define("struct/Controleur", ["require", "exports"], function (require, exports) {
@@ -69,13 +73,16 @@ define("modules/main/MainModele", ["require", "exports", "struct/Modele"], funct
     }(Modele_1.Modele));
     exports.MainModele = MainModele;
 });
-define("modules/main/MainVue", ["require", "exports", "struct/Vue"], function (require, exports, Vue_1) {
+define("modules/main/MainVue", ["require", "exports", "react", "struct/Vue"], function (require, exports, React, Vue_1) {
     "use strict";
     var MainVue = (function (_super) {
         __extends(MainVue, _super);
         function MainVue() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
+        MainVue.prototype.render = function () {
+            return React.createElement("div", null, "toto");
+        };
         return MainVue;
     }(Vue_1.Vue));
     exports.MainVue = MainVue;
@@ -87,6 +94,9 @@ define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "
         function MainManager() {
             return _super.call(this, new MainModele_1.MainModele(), new MainVue_1.MainVue()) || this;
         }
+        MainManager.prototype.applyVue = function () {
+            this.vue.applyVue();
+        };
         return MainManager;
     }(Controleur_1.Controleur));
     exports.MainManager = MainManager;
@@ -99,45 +109,45 @@ define("Main", ["require", "exports", "modules/main/MainManager"], function (req
         Main.main = function () {
             console.debug("Main go !");
             var manager = new MainManager_1.MainManager();
+            manager.applyVue();
         };
         return Main;
     }());
     exports.Main = Main;
 });
-define("RequireAll", ["require", "exports", "Main"], function (require, exports, Main_1) {
-    "use strict";
-    var RequireAll = (function () {
-        function RequireAll() {
+var RequireAll = (function () {
+    function RequireAll() {
+    }
+    RequireAll.loadAll = function () {
+        if (RequireAll.LOADED) {
+            throw new Error();
         }
-        RequireAll.loadAll = function () {
-            if (RequireAll.LOADED) {
-                throw new Error();
-            }
-            requirejs.config({
-                baseUrl: 'libs',
-                paths: {
-                    jquery: 'jquerylib/jquery-3.1.1.min',
-                    bootstrap: 'bootstraplib/js/bootstrap.min',
-                    react: 'react/' + (Const.DEBUG ? 'react' : 'react.min'),
-                    react_dom: 'react/' + (Const.DEBUG ? 'react-dom' : 'react-dom.min'),
-                    classnames: 'react/classnames'
-                },
-                shim: {
-                    bootstrap: {
-                        deps: ['jquery']
-                    }
+        requirejs.config({
+            baseUrl: 'libs',
+            paths: {
+                jquery: 'jquerylib/jquery-3.1.1.min',
+                bootstrap: 'bootstraplib/js/bootstrap.min',
+                react: 'react/' + (Const.DEBUG ? 'react' : 'react.min'),
+                react_dom: 'react/' + (Const.DEBUG ? 'react-dom' : 'react-dom.min'),
+                classnames: 'react/classnames'
+            },
+            shim: {
+                bootstrap: {
+                    deps: ['jquery']
                 }
-            });
-            requirejs(['jquery', 'bootstrap', 'react', 'react_dom', 'classnames'], function () {
+            }
+        });
+        requirejs(['jquery', 'bootstrap', 'react', 'react_dom', 'classnames'], function () {
+            require(['Main'], function (mod) {
                 RequireAll.LOADED = true;
                 console.log('Chargement des fichiers terminé');
-                Main_1.Main.main();
+                mod.Main.main();
             });
-        };
-        return RequireAll;
-    }());
-    RequireAll.LOADED = false;
-    window.onload = function () {
-        RequireAll.loadAll();
+        });
     };
-});
+    return RequireAll;
+}());
+RequireAll.LOADED = false;
+window.onload = function () {
+    RequireAll.loadAll();
+};

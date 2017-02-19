@@ -9,4 +9,9 @@ export class MainManager extends Controleur {
 		super(new MainModele(), new MainVue());
 	}
 	
+	public applyVue(): void {
+		this.vue.applyVue();
+		
+	}
+	
 }

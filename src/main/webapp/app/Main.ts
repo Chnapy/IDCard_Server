@@ -7,6 +7,7 @@ export class Main {
 		console.debug("Main go !");
 		
 		var manager: MainManager = new MainManager();
+		manager.applyVue();
 	}
 
 	private constructor() {}

@@ -1,6 +1,4 @@
 
-import {Main} from 'Main';
-
 class RequireAll {
 
 	private static LOADED: boolean = false;
@@ -28,10 +26,12 @@ class RequireAll {
 
 		requirejs(['jquery', 'bootstrap', 'react', 'react_dom', 'classnames'], function () {
 
-			RequireAll.LOADED = true;
-			console.log('Chargement des fichiers terminé');
+			require(['Main'], function (mod: any) {
+				RequireAll.LOADED = true;
+				console.log('Chargement des fichiers terminé');
+				mod.Main.main();
+			});
 
-			Main.main();
 		});
 	}
 
