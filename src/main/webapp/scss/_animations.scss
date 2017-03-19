@@ -1,0 +1,15 @@
+
+
+@keyframes opa {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.opa-anim {
+	@include wout-prefix(animation-name, opa);
+	@include wout-prefix(animation-duration, 2s);
+}

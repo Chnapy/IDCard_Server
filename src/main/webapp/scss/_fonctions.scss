@@ -1,0 +1,9 @@
+
+
+@mixin wout-prefix($key, $value) {
+	-webkit-#{$key}: $value;
+	-moz-#{$key}: $value;
+	-o-#{$key}: $value;
+	-ms-#{$key}: $value;
+	#{$key}: $value;
+}

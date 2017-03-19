@@ -19,12 +19,19 @@
 
     </head>
     <body>
-        <h1>Hello World! (jsp)</h1>
+
+		<div id="react_container">
+		</div>
 
 		<script>
 			var GLOBALS = {
-				titre_main: "${titre_main}"
+				titre_main: "${titre_main}",
+				user: {
+					connected: false
+				},
+				page: "start"
 			};
+			console.debug(typeof GLOBALS);
 		</script>
 		<script data-main="js/app" src="libs/require/require.js"></script>
     </body>

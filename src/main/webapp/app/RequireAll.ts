@@ -14,17 +14,23 @@ class RequireAll {
 				jquery: 'jquerylib/jquery-3.1.1.min',
 				bootstrap: 'bootstraplib/js/bootstrap.min',
 				react: 'react/' + (Const.DEBUG ? 'react' : 'react.min'),
-				react_dom: 'react/' + (Const.DEBUG ? 'react-dom' : 'react-dom.min'),
+				"react-dom": 'react/' + (Const.DEBUG ? 'react-dom' : 'react-dom.min'),
 				classnames: 'react/classnames'
 			},
 			shim: {
 				bootstrap: {
 					deps: ['jquery']
+				},
+				"react-dom": {
+					deps: ['react']
+				},
+				classnames: {
+					deps: ['react', 'react-dom']
 				}
 			}
 		});
 
-		requirejs(['jquery', 'bootstrap', 'react', 'react_dom', 'classnames'], function () {
+		requirejs(['jquery', 'bootstrap', 'react', 'react-dom', 'classnames'], function () {
 
 			require(['Main'], function (mod: any) {
 				RequireAll.LOADED = true;
@@ -38,6 +44,8 @@ class RequireAll {
 	private constructor() {}
 
 }
+
+declare var GLOBALS: any;
 
 window.onload = function () {
 	RequireAll.loadAll();

@@ -2,25 +2,25 @@
 import {Modele} from 'Modele';
 import {Vue} from 'Vue';
 
-export abstract class Controleur {
+export abstract class Controleur<M extends Modele, V extends Vue<any, any>> {
 
-	private _modele: Modele;
-	get modele(): Modele {
+	private _modele: M;
+	get modele(): M {
 		return this._modele;
 	}
-	set modele(modele: Modele) {
+	set modele(modele: M) {
 		this._modele = modele;
 	}
 
-	private _vue: Vue;
-	get vue(): Vue {
+	private _vue: V;
+	get vue(): V {
 		return this._vue;
 	}
-	set vue(vue: Vue) {
+	set vue(vue: V) {
 		this._vue = vue;
 	}
 
-	public constructor(modele: Modele, vue: Vue) {
+	public constructor(modele: M, vue: V) {
 		this.modele = modele;
 		this.vue = vue;
 	}

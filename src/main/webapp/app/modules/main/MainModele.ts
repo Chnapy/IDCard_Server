@@ -11,5 +11,9 @@
  * 
  */
 export class MainModele extends Modele {
+	
+	public isConnected(): boolean {
+		return GLOBALS.user.connected;
+	}
 
 }
