@@ -120,26 +120,38 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue"], functio
         function StartForm(props) {
             var _this = _super.call(this, props) || this;
             _this.state = { type: Bouton.Connexion, ip_pseudoOrMail: '', isMail: false };
-            _this.handleInputChange = _this.handleInputChange.bind(_this);
             return _this;
         }
-        StartForm.prototype.onClick = function (but) {
-            this.setState({ bouton: but });
+        StartForm.prototype.onClick = function (e, but) {
+            var valid;
+            if (but !== this.state.type) {
+                this.setState({ type: but });
+                valid = undefined;
+                e.preventDefault();
+            }
+            else {
+                valid = this.send;
+            }
+            this.setState({ bouton: but }, valid);
         };
         StartForm.prototype.onSubmit = function (e) {
             e.preventDefault();
-            if (this.state.bouton !== this.state.type) {
-                this.setState({ type: this.state.bouton });
+        };
+        StartForm.prototype.send = function () {
+            if (this.form.checkValidity()) {
+                alert('Type: ' + this.state.type + '\n\
+						PseudoOuMail: ' + this.state.ip_pseudoOrMail + '\n\
+						Pseudo: ' + this.state.ip_pseudo + '\n\
+						MDP: ' + this.state.ip_mdp + '\n\
+						Mail: ' + this.state.ip_mail);
             }
         };
-        StartForm.prototype.handleInputChange = function (e) {
+        StartForm.prototype.handleMdp = function (e) {
             var target = e.target;
-            var value = target.type === 'checkbox' ? target.checked : target.value;
-            var name = target.name;
-            this.setState((_a = {},
-                _a[name] = value,
-                _a));
-            var _a;
+            var value = target.value;
+            this.setState({
+                ip_mdp: value
+            });
         };
         StartForm.prototype.handlePseudoOrMail = function (e) {
             var target = e.target;
@@ -148,18 +160,37 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue"], functio
                 ip_pseudoOrMail: value
             });
             if (this.state.type === Bouton.Connexion) {
+                var ismail = this.isMail(value);
+                var ippseudo = ismail ? '' : value;
+                var ipmail = ismail ? value : '';
                 this.setState({
-                    isMail: this.isMail(this.state.ip_pseudoOrMail)
+                    isMail: ismail,
+                    ip_pseudo: ippseudo,
+                    ip_mail: ipmail
                 });
             }
             else {
                 if (this.state.isMail) {
-                    this.setState({ ip_mail: this.state.ip_pseudoOrMail });
+                    this.setState({ ip_mail: value });
                 }
                 else {
-                    this.setState({ ip_pseudo: this.state.ip_pseudoOrMail });
+                    this.setState({ ip_pseudo: value });
                 }
             }
+        };
+        StartForm.prototype.handlePseudo = function (e) {
+            var target = e.target;
+            var value = target.value;
+            this.setState({
+                ip_pseudo: value
+            });
+        };
+        StartForm.prototype.handleMail = function (e) {
+            var target = e.target;
+            var value = target.value;
+            this.setState({
+                ip_mail: value
+            });
         };
         StartForm.prototype.isMail = function (text) {
             return StartForm.MAIL_REGEX.test(text);
@@ -170,7 +201,12 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue"], functio
             if (this.state.isMail) {
                 ret = React.createElement("div", { className: "form-group" },
                     React.createElement("label", { htmlFor: "ip_insc" }, "Pseudonyme"),
-                    React.createElement("input", { type: "text", className: "field", id: "ip_insc", name: "ip_insc", onChange: function (e) { return _this.handleInputChange(e); }, minLength: Const.LENGTH.PSEUDO.min, maxLength: Const.LENGTH.PSEUDO.max, required: true }));
+                    React.createElement("input", { type: "text", className: "field", id: "ip_insc", name: "ip_insc", onChange: function (e) { return _this.handlePseudo(e); }, minLength: Const.LENGTH.PSEUDO.min, maxLength: Const.LENGTH.PSEUDO.max, required: true }));
+            }
+            else {
+                ret = React.createElement("div", { className: "form-group" },
+                    React.createElement("label", { htmlFor: "ip_insc" }, "Email"),
+                    React.createElement("input", { type: "email", className: "field", id: "ip_insc", name: "ip_insc", onChange: function (e) { return _this.handleMail(e); }, minLength: Const.LENGTH.MAIL.min, maxLength: Const.LENGTH.MAIL.max, required: true }));
             }
             return ret;
         };
@@ -178,7 +214,7 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue"], functio
             var _this = this;
             var inscription = this.state.type === Bouton.Inscription ? this.renderInscription() : null;
             return React.createElement("div", { id: "form_conn_insc", className: "col-md-6 col-xs-12 bloc" },
-                React.createElement("form", { action: "./", method: "POST", onSubmit: function (e) { return _this.onSubmit(e); }, className: this.state.type === Bouton.Connexion ? 'formConnexion' : 'formInscription' },
+                React.createElement("form", { action: "./", method: "POST", ref: function (ref) { return _this.form = ref; }, onSubmit: function (e) { return _this.onSubmit(e); }, className: this.state.type === Bouton.Connexion ? 'formConnexion' : 'formInscription' },
                     React.createElement("div", { className: "form-group " +
                             (this.state.ip_pseudoOrMail === '' ? '' :
                                 (this.state.isMail ? 'ipMail' : 'ipPseudo')) },
@@ -186,15 +222,17 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue"], functio
                             React.createElement("span", { className: 'lbPseudo' }, "Pseudonyme"),
                             React.createElement("span", null, " ou "),
                             React.createElement("span", { className: 'lbMail' }, "email")),
-                        React.createElement("input", { type: this.state.isMail ? 'email' : 'text', className: "field", id: "ip_pseudo", name: "ip_pseudo", onChange: function (e) { return _this.handlePseudoOrMail(e); }, minLength: Const.LENGTH.PSEUDO.min, maxLength: Const.LENGTH.PSEUDO.max, required: true })),
+                        React.createElement("input", { type: this.state.isMail ? 'email' : 'text', className: "field", id: "ip_pseudo", name: "ip_pseudo", onChange: function (e) { return _this.handlePseudoOrMail(e); }, minLength: this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min, maxLength: this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max, required: true })),
                     React.createElement("div", { className: "form-group" },
                         React.createElement("label", { htmlFor: "ip_mdp" }, "Mot de passe"),
-                        React.createElement("input", { type: "password", className: "field", id: "ip_mdp", name: "ip_mdp", onChange: function (e) { return _this.handleInputChange(e); }, minLength: Const.LENGTH.MDP.min, maxLength: Const.LENGTH.MDP.max, required: true })),
+                        React.createElement("input", { type: "password", className: "field", id: "ip_mdp", name: "ip_mdp", onChange: function (e) { return _this.handleMdp(e); }, minLength: Const.LENGTH.MDP.min, maxLength: Const.LENGTH.MDP.max, required: true })),
                     inscription,
                     React.createElement("div", { className: "form-group" },
-                        React.createElement("button", { className: "but but-primary d-block", type: "submit", onClick: function (e) { return _this.onClick(Bouton.Inscription); } }, "Inscrivez-vous")),
+                        React.createElement("button", { className: "but but-primary d-block", type: "submit", onClick: function (e) { return _this.onClick(e, Bouton.Inscription); } }, "Inscrivez-vous")),
                     React.createElement("div", { className: "form-group" },
-                        React.createElement("button", { className: "but d-block", type: "submit", onClick: function (e) { return _this.onClick(Bouton.Connexion); } }, "Connectez-vous"))));
+                        React.createElement("button", { className: "but d-block", type: "submit", onClick: function (e) { return _this.onClick(e, Bouton.Connexion); } }, "Connectez-vous"),
+                        React.createElement("div", { className: "text-center" },
+                            React.createElement("a", { href: "" }, "Vous avez oubli\u00E9 vos identifiants ?")))));
         };
         return StartForm;
     }(Vue_3.Vue));

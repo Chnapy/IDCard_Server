@@ -26,6 +26,10 @@ h1, h2, h3 {
 	font-family: "Helvetica Neue", Helvetica, Open Sans, "Open Sans", sans-serif;
 }
 
+a, .a, a:hover, .a:hover, a:visited, .a:visited {
+	color: $color_primary;
+}
+
 .erreur {
 	color: red;
 }

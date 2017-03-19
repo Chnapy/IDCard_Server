@@ -41,6 +41,9 @@ body {
 h1, h2, h3 {
   font-family: "Helvetica Neue", Helvetica, Open Sans, "Open Sans", sans-serif; }
 
+a, .a, a:hover, .a:hover, a:visited, .a:visited {
+  color: #BB79D6; }
+
 .erreur {
   color: red; }
 
@@ -228,7 +231,7 @@ body {
       .box > .box-content .box-body .box-line .but-delete {
         float: right; }
 
-.ipPseudo .lbPseudo, .ipMail .lbMail {
+.formConnexion .ipPseudo .lbPseudo, .formConnexion .ipMail .lbMail {
   box-shadow: 0 1px 0 #BB79D6; }
 
 .formInscription .ipMail > label :not(.lbMail), .formInscription .ipPseudo > label :not(.lbPseudo) {
