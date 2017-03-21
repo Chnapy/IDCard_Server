@@ -18,37 +18,11 @@ export class MainManager extends Controleur<MainModele, MainVue> {
 	}
 
 	public connexion(pseudo: string, mail: string, mdp: string, isMail: boolean, callbacks: any): void {
-		this.modele.connexion(pseudo, mail, mdp, isMail, new ConnexionAjax(callbacks));
+		this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback(callbacks));
 	}
 
-	public inscription(pseudo: string, mail: string, mdp: string): void {
-		this.modele.inscription(pseudo, mail, mdp, new InscriptionAjax());
+	public inscription(pseudo: string, mail: string, mdp: string, callbacks: any): void {
+		this.modele.inscription(pseudo, mail, mdp, new AjaxCallback(callbacks));
 	}
 
-}
-
-class ConnexionAjax extends AjaxCallback {
-
-	public onSuccess(data: any): void {
-		super.onSuccess(data);
-		console.debug(data);
-	}
-
-	public onFail(): void {
-		super.onFail();
-		console.debug("connexion fail");
-	}
-}
-
-class InscriptionAjax extends AjaxCallback {
-
-	public onSuccess(data: any): void {
-		super.onSuccess(data);
-		console.debug(data);
-	}
-
-	public onFail(): void {
-		super.onFail();
-		console.debug("inscription fail");
-	}
 }

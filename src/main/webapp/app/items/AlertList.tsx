@@ -29,6 +29,7 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 		super(props, context);
 		this.alerts = [];
 		this.state = {open: false, length: 0};
+		this.onOver = this.onOver.bind(this, this.state);
 	}
 
 	public componentWillReceiveProps?(nextProps: AlertListProps, nextContext: any): void {
@@ -44,10 +45,10 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 		document.removeEventListener('click', this.handleClickOutside.bind(this), true);
 	}
 
-	public handleClickOutside(event: any) {
+	public handleClickOutside(e: any) {
 		const domNode = ReactDOM.findDOMNode(this);
 
-		if ((!domNode || !domNode.contains(event.target))) {
+		if ((!domNode || !domNode.contains(e.target))) {
 			this.setState({
 				open: false
 			});
@@ -63,6 +64,12 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 		this.open(this.alerts.length);
 		this.forceUpdate();
 	}
+	
+	public onOver() {
+		if (!this.state.open && this.state.length > 0) {
+			this.setState({open: true});
+		}
+	}
 
 	public render(): any {
 
@@ -72,7 +79,7 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 		return <div id='alertList' className={classNames({
 			'open': this.state.open,
 			'possede': this.state.length > 0
-		})}>
+		})} onMouseOver={this.onOver}>
 			<span className='tiroir' onClick={e => this.setState({open: false})}></span>
 			{alerts}
 		</div>

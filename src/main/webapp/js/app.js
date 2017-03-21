@@ -63,6 +63,7 @@ define("items/AlertList", ["require", "exports", "react", "react-dom", "classnam
             var _this = _super.call(this, props, context) || this;
             _this.alerts = [];
             _this.state = { open: false, length: 0 };
+            _this.onOver = _this.onOver.bind(_this, _this.state);
             return _this;
         }
         AlertList.prototype.componentWillReceiveProps = function (nextProps, nextContext) {
@@ -75,9 +76,9 @@ define("items/AlertList", ["require", "exports", "react", "react-dom", "classnam
         AlertList.prototype.componentWillUnmount = function () {
             document.removeEventListener('click', this.handleClickOutside.bind(this), true);
         };
-        AlertList.prototype.handleClickOutside = function (event) {
+        AlertList.prototype.handleClickOutside = function (e) {
             var domNode = ReactDOM.findDOMNode(this);
-            if ((!domNode || !domNode.contains(event.target))) {
+            if ((!domNode || !domNode.contains(e.target))) {
                 this.setState({
                     open: false
                 });
@@ -91,6 +92,11 @@ define("items/AlertList", ["require", "exports", "react", "react-dom", "classnam
             this.open(this.alerts.length);
             this.forceUpdate();
         };
+        AlertList.prototype.onOver = function () {
+            if (!this.state.open && this.state.length > 0) {
+                this.setState({ open: true });
+            }
+        };
         AlertList.prototype.render = function () {
             var _this = this;
             var alerts = this.alerts.map(function (a) {
@@ -99,7 +105,7 @@ define("items/AlertList", ["require", "exports", "react", "react-dom", "classnam
             return React.createElement("div", { id: 'alertList', className: classNames({
                     'open': this.state.open,
                     'possede': this.state.length > 0
-                }) },
+                }), onMouseOver: this.onOver },
                 React.createElement("span", { className: 'tiroir', onClick: function (e) { return _this.setState({ open: false }); } }),
                 alerts);
         };
@@ -243,13 +249,13 @@ define("modules/main/MainModele", ["require", "exports", "struct/Modele"], funct
         };
         MainModele.prototype.connexion = function (pseudo, mail, mdp, isMail, ajaxc) {
             $.post('connexion', { pseudo: pseudo, mail: mail, mdp: mdp, isMail: isMail }, function (data) { return ajaxc.onSuccess(data); })
-                .fail(function () { return ajaxc.onFail; })
+                .fail(function () { return ajaxc.onFail(); })
                 .done(function (data) { return ajaxc.onDone(data); })
                 .always(function (data) { return ajaxc.onAlways(data); });
         };
         MainModele.prototype.inscription = function (pseudo, mail, mdp, ajaxc) {
             $.post('inscription', { pseudo: pseudo, mail: mail, mdp: mdp }, function (data) { return ajaxc.onSuccess(data); })
-                .fail(function () { return ajaxc.onFail; })
+                .fail(function () { return ajaxc.onFail(); })
                 .done(function (data) { return ajaxc.onDone(data); })
                 .always(function (data) { return ajaxc.onAlways(data); });
         };
@@ -257,7 +263,7 @@ define("modules/main/MainModele", ["require", "exports", "struct/Modele"], funct
     }(Modele_1.Modele));
     exports.MainModele = MainModele;
 });
-define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/Bouton"], function (require, exports, React, Vue_1, Bouton_1) {
+define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/Bouton", "items/Alert"], function (require, exports, React, Vue_1, Bouton_1, Alert_2) {
     "use strict";
     var BoutonType;
     (function (BoutonType) {
@@ -295,10 +301,16 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
             }
             this.setState({ load: true });
             if (this.state.type === BoutonType.Connexion) {
-                this.props.controleur.connexion(this.state.ip_pseudo, this.state.ip_mail, this.state.ip_mdp, this.state.isMail, { success: function () { return _this.setState({ load: false }); } });
+                this.props.controleur.connexion(this.state.ip_pseudo, this.state.ip_mail, this.state.ip_mdp, this.state.isMail, {
+                    fail: function () { return _this.addAlert(Alert_2.AlertLevel.Error, "Connexion impossible", "Serveur inaccessible"); },
+                    always: function () { return _this.setState({ load: false }); }
+                });
             }
             else {
-                this.props.controleur.inscription(this.state.ip_pseudo, this.state.ip_mail, this.state.ip_mdp);
+                this.props.controleur.inscription(this.state.ip_pseudo, this.state.ip_mail, this.state.ip_mdp, {
+                    fail: function () { return _this.addAlert(Alert_2.AlertLevel.Error, "Inscription impossible", "Serveur inaccessible"); },
+                    always: function () { return _this.setState({ load: false }); }
+                });
             }
         };
         StartForm.prototype.handleMdp = function (e) {
@@ -457,44 +469,14 @@ define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "
             MainVue_1.MainVue.applyVue(this);
         };
         MainManager.prototype.connexion = function (pseudo, mail, mdp, isMail, callbacks) {
-            this.modele.connexion(pseudo, mail, mdp, isMail, new ConnexionAjax(callbacks));
+            this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback_1.AjaxCallback(callbacks));
         };
-        MainManager.prototype.inscription = function (pseudo, mail, mdp) {
-            this.modele.inscription(pseudo, mail, mdp, new InscriptionAjax());
+        MainManager.prototype.inscription = function (pseudo, mail, mdp, callbacks) {
+            this.modele.inscription(pseudo, mail, mdp, new AjaxCallback_1.AjaxCallback(callbacks));
         };
         return MainManager;
     }(Controleur_1.Controleur));
     exports.MainManager = MainManager;
-    var ConnexionAjax = (function (_super) {
-        __extends(ConnexionAjax, _super);
-        function ConnexionAjax() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        ConnexionAjax.prototype.onSuccess = function (data) {
-            _super.prototype.onSuccess.call(this, data);
-            console.debug(data);
-        };
-        ConnexionAjax.prototype.onFail = function () {
-            _super.prototype.onFail.call(this);
-            console.debug("connexion fail");
-        };
-        return ConnexionAjax;
-    }(AjaxCallback_1.AjaxCallback));
-    var InscriptionAjax = (function (_super) {
-        __extends(InscriptionAjax, _super);
-        function InscriptionAjax() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        InscriptionAjax.prototype.onSuccess = function (data) {
-            _super.prototype.onSuccess.call(this, data);
-            console.debug(data);
-        };
-        InscriptionAjax.prototype.onFail = function () {
-            _super.prototype.onFail.call(this);
-            console.debug("inscription fail");
-        };
-        return InscriptionAjax;
-    }(AjaxCallback_1.AjaxCallback));
 });
 define("items/Header", ["require", "exports", "react", "struct/Vue"], function (require, exports, React, Vue_3) {
     "use strict";

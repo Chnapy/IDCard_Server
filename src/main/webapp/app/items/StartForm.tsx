@@ -46,9 +46,9 @@ export class StartForm extends Vue<VueProps<MainManager>, StartFormState> {
 		this.setState({bouton: but}, valid);
 
 		//		console.debug(this.state);
-//		this.addAlert(AlertLevel.Error, "TESTTITLEaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TESTCONTENTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-//		this.addAlert(AlertLevel.Primary, "TESTTITLEaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TESTCONTENTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-//		this.addAlert(AlertLevel.Normal, "TESTTITLEaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TESTCONTENTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		//		this.addAlert(AlertLevel.Error, "TESTTITLEaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TESTCONTENTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		//		this.addAlert(AlertLevel.Primary, "TESTTITLEaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TESTCONTENTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		//		this.addAlert(AlertLevel.Normal, "TESTTITLEaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TESTCONTENTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 	}
 
 	private onSubmit(e: React.FormEvent) {
@@ -63,10 +63,15 @@ export class StartForm extends Vue<VueProps<MainManager>, StartFormState> {
 
 		this.setState({load: true});
 		if (this.state.type === BoutonType.Connexion) {
-			this.props.controleur.connexion(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string, this.state.isMail as boolean,
-				{success: () => this.setState({load: false})});
+			this.props.controleur.connexion(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string, this.state.isMail as boolean, {
+				fail: () => this.addAlert(AlertLevel.Error, "Connexion impossible", "Serveur inaccessible"),
+				always: () => this.setState({load: false})
+			});
 		} else {
-			this.props.controleur.inscription(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string);
+			this.props.controleur.inscription(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string, {
+				fail: () => this.addAlert(AlertLevel.Error, "Inscription impossible", "Serveur inaccessible"),
+				always: () => this.setState({load: false})
+			});
 		}
 	}
 

@@ -365,10 +365,10 @@ a.but {
 	text-align: right;
 	padding-top: 30px !important;
 	transition: 0.8s;
-	
+
 	padding-right: $scrollBarWidth;
     right: -$scrollBarWidth;
-	
+
 
 	&.open {
 		overflow-y: auto;
@@ -392,6 +392,10 @@ a.but {
 			content: 'Fermer';
 		}
 	}
+	
+	&.possede:not(.open) {
+		width: $scrollBarWidth + $alertMargin;
+	}
 
 	.myalert {
 		display: inline-block;
@@ -399,6 +403,7 @@ a.but {
 		margin-bottom: 0;
 		word-break: break-word;
 		width: $alertListWidth - $alertMargin * 2;
+		text-align: left;
 		/*max-width: 100%;*/
 
 		@include wout-prefix(animation-name, vertiPopOpa);
@@ -407,10 +412,10 @@ a.but {
 		.myalert-title {
 			margin-bottom: 4px;
 			font-weight: bold;
+			font-size: 1.2em;
 		}
 
 		.myalert-content {
-			font-size: 0.8em;
 		}
 
 		.myalert-close {

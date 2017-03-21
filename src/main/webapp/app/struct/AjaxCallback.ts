@@ -7,7 +7,7 @@ interface Callbacks {
 	always?: any
 }
 
-export abstract class AjaxCallback {
+export class AjaxCallback {
 
 	private readonly success: any;
 	private readonly fail: any;

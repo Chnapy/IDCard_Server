@@ -18,17 +18,17 @@ export class MainModele extends Modele {
 	}
 
 	public connexion(pseudo: string, mail: string, mdp: string, isMail: boolean, ajaxc: AjaxCallback): void {
-		$.post('connexion', {pseudo: pseudo, mail: mail, mdp: mdp, isMail: isMail}, (data: any) => ajaxc.onSuccess(data))
-			.fail(() => ajaxc.onFail)
-			.done((data: any) => ajaxc.onDone(data))
-			.always((data: any) => ajaxc.onAlways(data));
+		$.post('connexion', {pseudo: pseudo, mail: mail, mdp: mdp, isMail: isMail}, (data) => ajaxc.onSuccess(data))
+			.fail(() => ajaxc.onFail())
+			.done((data) => ajaxc.onDone(data))
+			.always((data) => ajaxc.onAlways(data));
 	}
 
 	public inscription(pseudo: string, mail: string, mdp: string, ajaxc: AjaxCallback): void {
-		$.post('inscription', {pseudo: pseudo, mail: mail, mdp: mdp}, (data: any) => ajaxc.onSuccess(data))
-			.fail(() => ajaxc.onFail)
-			.done((data: any) => ajaxc.onDone(data))
-			.always((data: any) => ajaxc.onAlways(data));
+		$.post('inscription', {pseudo: pseudo, mail: mail, mdp: mdp}, (data) => ajaxc.onSuccess(data))
+			.fail(() => ajaxc.onFail())
+			.done((data) => ajaxc.onDone(data))
+			.always((data) => ajaxc.onAlways(data));
 	}
 
 }
