@@ -87,12 +87,12 @@ $header_height: 50px;
 		min-height: 4px;
 		height: 4px;
 		overflow: hidden;
-		
+
 		&>* {
 			display: none;
 		}
 	}
-	
+
 	.body-content {
 		margin-top: 4px;
 	}
@@ -166,21 +166,45 @@ $header_height: 50px;
 	}
 }
 
-.but {
+.spinner {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    visibility: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 16px;
+    width: 0.1em;
+    height: 0.1em;
+    border-radius: 50%;
+    background: 50% 50% no-repeat;
+	@include wout-prefix(transform, translate3d(0));
+	@include wout-prefix(animation, spin 0.5s linear infinite);
+}
+
+.spinner {
+	box-shadow: .475em 0 0 $color_main,.4725em -.0495em 0 rgba($color_main,.966667),.4645em -.099em 0 rgba($color_main,.933333),.452em -.147em 0 rgba($color_main,.9),.434em -.193em 0 rgba($color_main,.866667),.4115em -.2375em 0 rgba($color_main,.833333),.3845em -.279em 0 rgba($color_main,.8),.353em -.318em 0 rgba($color_main,.766667),.318em -.353em 0 rgba($color_main,.733333),.279em -.3845em 0 rgba($color_main,.7),.2375em -.4115em 0 rgba($color_main,.666667),.193em -.434em 0 rgba($color_main,.633333),.147em -.452em 0 rgba($color_main,.6),.099em -.4645em 0 rgba($color_main,.566667),.0495em -.4725em 0 rgba($color_main,.533333),0 -.475em 0 rgba($color_main,.5),-.0495em -.4725em 0 rgba($color_main,.466667),-.099em -.4645em 0 rgba($color_main,.433333),-.147em -.452em 0 rgba($color_main,.4),-.193em -.434em 0 rgba($color_main,.366667),-.2375em -.4115em 0 rgba($color_main,.333333),-.279em -.3845em 0 rgba($color_main,.3),-.318em -.353em 0 rgba($color_main,.266667),-.353em -.318em 0 rgba($color_main,.233333),-.3845em -.279em 0 rgba($color_main,.2),-.4115em -.2375em 0 rgba($color_main,.166667),-.434em -.193em 0 rgba($color_main,.133333),-.452em -.147em 0 rgba($color_main,.1),-.4645em -.099em 0 rgba($color_main,.0666667),-.4725em -.0495em 0 rgba($color_main,.0333333),-.475em 0 0 transparent;
+}
+
+.spinner.l-white {
+    box-shadow: 0.475em 0em 0 #fff,0.4725em -0.0495em 0 rgba(255,255,255,0.96667),0.4645em -0.099em 0 rgba(255,255,255,0.93333),0.452em -0.147em 0 rgba(255,255,255,0.9),0.434em -0.193em 0 rgba(255,255,255,0.86667),0.4115em -0.2375em 0 rgba(255,255,255,0.83333),0.3845em -0.279em 0 rgba(255,255,255,0.8),0.353em -0.318em 0 rgba(255,255,255,0.76667),0.318em -0.353em 0 rgba(255,255,255,0.73333),0.279em -0.3845em 0 rgba(255,255,255,0.7),0.2375em -0.4115em 0 rgba(255,255,255,0.66667),0.193em -0.434em 0 rgba(255,255,255,0.63333),0.147em -0.452em 0 rgba(255,255,255,0.6),0.099em -0.4645em 0 rgba(255,255,255,0.56667),0.0495em -0.4725em 0 rgba(255,255,255,0.53333),0em -0.475em 0 rgba(255,255,255,0.5),-0.0495em -0.4725em 0 rgba(255,255,255,0.46667),-0.099em -0.4645em 0 rgba(255,255,255,0.43333),-0.147em -0.452em 0 rgba(255,255,255,0.4),-0.193em -0.434em 0 rgba(255,255,255,0.36667),-0.2375em -0.4115em 0 rgba(255,255,255,0.33333),-0.279em -0.3845em 0 rgba(255,255,255,0.3),-0.318em -0.353em 0 rgba(255,255,255,0.26667),-0.353em -0.318em 0 rgba(255,255,255,0.23333),-0.3845em -0.279em 0 rgba(255,255,255,0.2),-0.4115em -0.2375em 0 rgba(255,255,255,0.16667),-0.434em -0.193em 0 rgba(255,255,255,0.13333),-0.452em -0.147em 0 rgba(255,255,255,0.1),-0.4645em -0.099em 0 rgba(255,255,255,0.06667),-0.4725em -0.0495em 0 rgba(255,255,255,0.03333);
+}
+
+/*.buttonable {
 	color: $color_main;
-	display: inline-block;
 	padding: 4px;
 	margin-bottom: 2px;
 	border: 1px solid #9F9F9F;
 	box-shadow: 0 2px 0 #999;
 	background: linear-gradient(to right, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%);
-	cursor: pointer;
 
 	&.but-fh {
 		height: calc(100% - 2px) !important;
 	}
 
-	&:hover {
+	&:not(.disabled):hover {
 		background: #F8F8F8;
 		text-shadow: 0px 0px 1px rgba($color_main,0.1);
 	}
@@ -190,14 +214,94 @@ $header_height: 50px;
 		transform: translateY(2px);
 	}
 
+	&.but-primary {
+		border-color: darken($color_primary, 25%);
+		box-shadow: 0 2px 0 darken($color_primary, 30%);
+		background: linear-gradient(to right, $color_primary 0%, lighten($color_primary, 5%) 50%, $color_primary 100%);
+
+		&:not(.disabled):hover {
+			background: lighten($color_primary, 5%);
+		}
+	}
+
 	&.but-error {
 		background: $color_delete;
 		border-color: darken($color_delete, 15%);
 		box-shadow: 0 2px 0 darken($color_delete, 20%);
 		color: white;
+
+		&:not(.disabled):hover {
+			background: lighten($color_delete, 5%);
+			text-shadow: 0px 0px 1px rgba(white,0.1);
+		}
 	}
 
-	&.but-delete {
+	&.disabled {
+		@extend .but:active;
+	}
+
+	&.load {
+		color: transparent !important;
+
+		&::after {
+			@extend .spinner;
+			visibility: visible;
+		}
+	}
+
+}*/
+
+.but, .myalert {
+	color: $color_main;
+	display: inline-block;
+	position: relative;
+	padding: 4px;
+	margin-bottom: 2px;
+	border: 1px solid #9F9F9F;
+	box-shadow: 0 2px 0 #999;
+	background: linear-gradient(to right, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%);
+
+	&.but {
+		cursor: pointer;
+	}
+
+	&.but-fh {
+		height: calc(100% - 2px) !important;
+	}
+
+	&:not(.disabled):hover {
+		background: #F8F8F8;
+		text-shadow: 0px 0px 1px rgba($color_main,0.1);
+	}
+
+	&.but:active {
+		box-shadow: none !important;
+		transform: translateY(2px);
+	}
+
+	&.but-primary, &.primary {
+		border-color: darken($color_primary, 25%);
+		box-shadow: 0 2px 0 darken($color_primary, 30%);
+		background: linear-gradient(to right, $color_primary 0%, lighten($color_primary, 5%) 50%, $color_primary 100%);
+
+		&:not(.disabled):hover {
+			background: lighten($color_primary, 5%);
+		}
+	}
+
+	&.but-error, &.error {
+		background: $color_delete;
+		border-color: darken($color_delete, 15%);
+		box-shadow: 0 2px 0 darken($color_delete, 20%);
+		color: white;
+
+		&:not(.disabled):hover {
+			background: lighten($color_delete, 5%);
+			text-shadow: 0px 0px 1px rgba(white,0.1);
+		}
+	}
+
+	&.but-delete, &.delete {
 		width: 20px;
 		height: 20px;
 		line-height: 100%;
@@ -209,12 +313,25 @@ $header_height: 50px;
 		}
 	}
 
-	&.but-add {
+	&.but-add, &.add {
 		line-height: 100%;
 
 
 		&:after {
 			content: '+';
+		}
+	}
+
+	&.disabled {
+		@extend .but:active;
+	}
+
+	&.load {
+		color: transparent !important;
+
+		&::after {
+			@extend .spinner;
+			visibility: visible;
 		}
 	}
 }
@@ -224,16 +341,101 @@ a.but {
 	color: #333;
 }
 
-.but.but-primary, input[type="submit"].but {
-	border-color: darken($color_primary, 25%);
-	box-shadow: 0 2px 0 darken($color_primary, 30%);
-	background: linear-gradient(to right, $color_primary 0%, lighten($color_primary, 5%) 50%, $color_primary 100%);
-
-	&:hover {
-		background: lighten($color_primary, 5%);
-	}
-}
-
 .table tr td:first-child label, .table tr td:last-child .field {
 	display: block;
+}
+
+#alertList {
+
+	$alertListWidth: 200px;
+	$alertMargin: 5px;
+	$scrollBarWidth: 17px;
+
+	position: fixed;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 0;
+	max-width: 100%;
+	max-height: 100%;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	background: darken($bg_dark_color, 5%);
+	vertical-align: top;
+	text-align: right;
+	padding-top: 30px !important;
+	transition: 0.8s;
+	
+	padding-right: $scrollBarWidth;
+    right: -$scrollBarWidth;
+	
+
+	&.open {
+		overflow-y: auto;
+		width: $alertListWidth + $scrollBarWidth;
+	}
+
+	.tiroir {
+		display: inline-block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: $alertListWidth;
+		color: white;
+		/*padding-left: $alertListWidth/2;*/
+		/*transform: translateX(-50%);*/
+		line-height: 30px;
+		text-align: center;
+		cursor: pointer;
+
+		&::after {
+			content: 'Fermer';
+		}
+	}
+
+	.myalert {
+		display: inline-block;
+		margin: $alertMargin;
+		margin-bottom: 0;
+		word-break: break-word;
+		width: $alertListWidth - $alertMargin * 2;
+		/*max-width: 100%;*/
+
+		@include wout-prefix(animation-name, vertiPopOpa);
+		@include wout-prefix(animation-duration, 1.5s);
+
+		.myalert-title {
+			margin-bottom: 4px;
+			font-weight: bold;
+		}
+
+		.myalert-content {
+			font-size: 0.8em;
+		}
+
+		.myalert-close {
+			display: none;
+
+			&::after {
+				content: 'x';
+				position: absolute;
+				right: 0;
+				top: 0;
+				width: 10px;
+				height: 10px;
+				line-height: 10px;
+				text-align: center;
+				padding: 0;
+				cursor: pointer;
+			}
+		}
+
+		&:hover .myalert-close {
+			display: block;
+		}
+	}
+
+	&:not(.open) .myalert {
+		max-width: $alertListWidth;
+	}
 }

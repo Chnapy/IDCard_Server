@@ -31,7 +31,6 @@
 				},
 				page: "start"
 			};
-			console.debug(typeof GLOBALS);
 		</script>
 		<script data-main="js/app" src="libs/require/require.js"></script>
     </body>

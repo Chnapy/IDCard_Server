@@ -43,11 +43,11 @@ public class ConnectionFilter implements Filter {
 		
 		System.out.println("User connecté : " + isConnected);
 
-		if (isConnected) {
+//		if (isConnected) {
 			chain.doFilter(request, response);
-		} else {
-			request.getRequestDispatcher(IndexServlet.URL).forward(request, response);
-		}
+//		} else {
+//			request.getRequestDispatcher(IndexServlet.URL).forward(request, response);
+//		}
 	}
 	
 	private boolean isConnected(HttpSession session) {

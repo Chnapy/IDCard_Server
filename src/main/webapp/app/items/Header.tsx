@@ -1,9 +1,10 @@
 
 import * as React from 'react';
-import {Vue} from 'struct/Vue';
+import {Vue, VueProps} from 'struct/Vue';
 import {Controleur} from 'struct/Controleur';
+import {MainManager} from 'modules/main/MainManager';
 
-export interface HeaderProps {
+export interface HeaderProps extends VueProps<MainManager> {
 	user: any,
 	page: string
 }

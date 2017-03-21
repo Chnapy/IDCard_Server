@@ -2,11 +2,32 @@
 /* Test SASS (ce commentaire ne sera pas inclu dans le css minifi├®) */
 /*! Test SASS (ce commentaire sera inclu dans le css minifi├®) */
 /*$color_primary: #f5da55;*/
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
 @keyframes opa {
   0% {
     opacity: 0; }
   100% {
     opacity: 1; } }
+@keyframes vertiPop {
+  0% {
+    transform: translateY(100vh); }
+  100% {
+    transform: translateY(0); } }
+@keyframes vertiPopOpa {
+  0% {
+    opacity: 0;
+    transform: translateY(50%); }
+  100% {
+    opacity: 1;
+    transform: translateY(0); } }
+@keyframes horizPop {
+  0% {
+    transform: translateX(100%); }
+  100% {
+    transform: translateY(0); } }
 .opa-anim {
   -webkit-animation-name: opa;
   -moz-animation-name: opa;
@@ -134,53 +155,224 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
     .dark .field:focus {
       background: #252624; }
 
-.but {
+.spinner, .but.load::after, .myalert.load::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  visibility: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 16px;
+  width: 0.1em;
+  height: 0.1em;
+  border-radius: 50%;
+  background: 50% 50% no-repeat;
+  -webkit-transform: translate3d(0);
+  -moz-transform: translate3d(0);
+  -o-transform: translate3d(0);
+  -ms-transform: translate3d(0);
+  transform: translate3d(0);
+  -webkit-animation: spin 0.5s linear infinite;
+  -moz-animation: spin 0.5s linear infinite;
+  -o-animation: spin 0.5s linear infinite;
+  -ms-animation: spin 0.5s linear infinite;
+  animation: spin 0.5s linear infinite; }
+
+.spinner, .but.load::after, .myalert.load::after {
+  box-shadow: 0.475em 0 0 #333333, 0.4725em -0.0495em 0 rgba(51, 51, 51, 0.96667), 0.4645em -0.099em 0 rgba(51, 51, 51, 0.93333), 0.452em -0.147em 0 rgba(51, 51, 51, 0.9), 0.434em -0.193em 0 rgba(51, 51, 51, 0.86667), 0.4115em -0.2375em 0 rgba(51, 51, 51, 0.83333), 0.3845em -0.279em 0 rgba(51, 51, 51, 0.8), 0.353em -0.318em 0 rgba(51, 51, 51, 0.76667), 0.318em -0.353em 0 rgba(51, 51, 51, 0.73333), 0.279em -0.3845em 0 rgba(51, 51, 51, 0.7), 0.2375em -0.4115em 0 rgba(51, 51, 51, 0.66667), 0.193em -0.434em 0 rgba(51, 51, 51, 0.63333), 0.147em -0.452em 0 rgba(51, 51, 51, 0.6), 0.099em -0.4645em 0 rgba(51, 51, 51, 0.56667), 0.0495em -0.4725em 0 rgba(51, 51, 51, 0.53333), 0 -0.475em 0 rgba(51, 51, 51, 0.5), -0.0495em -0.4725em 0 rgba(51, 51, 51, 0.46667), -0.099em -0.4645em 0 rgba(51, 51, 51, 0.43333), -0.147em -0.452em 0 rgba(51, 51, 51, 0.4), -0.193em -0.434em 0 rgba(51, 51, 51, 0.36667), -0.2375em -0.4115em 0 rgba(51, 51, 51, 0.33333), -0.279em -0.3845em 0 rgba(51, 51, 51, 0.3), -0.318em -0.353em 0 rgba(51, 51, 51, 0.26667), -0.353em -0.318em 0 rgba(51, 51, 51, 0.23333), -0.3845em -0.279em 0 rgba(51, 51, 51, 0.2), -0.4115em -0.2375em 0 rgba(51, 51, 51, 0.16667), -0.434em -0.193em 0 rgba(51, 51, 51, 0.13333), -0.452em -0.147em 0 rgba(51, 51, 51, 0.1), -0.4645em -0.099em 0 rgba(51, 51, 51, 0.06667), -0.4725em -0.0495em 0 rgba(51, 51, 51, 0.03333), -0.475em 0 0 transparent; }
+
+.spinner.l-white, .l-white.but.load::after, .l-white.myalert.load::after {
+  box-shadow: 0.475em 0em 0 #fff, 0.4725em -0.0495em 0 rgba(255, 255, 255, 0.96667), 0.4645em -0.099em 0 rgba(255, 255, 255, 0.93333), 0.452em -0.147em 0 rgba(255, 255, 255, 0.9), 0.434em -0.193em 0 rgba(255, 255, 255, 0.86667), 0.4115em -0.2375em 0 rgba(255, 255, 255, 0.83333), 0.3845em -0.279em 0 rgba(255, 255, 255, 0.8), 0.353em -0.318em 0 rgba(255, 255, 255, 0.76667), 0.318em -0.353em 0 rgba(255, 255, 255, 0.73333), 0.279em -0.3845em 0 rgba(255, 255, 255, 0.7), 0.2375em -0.4115em 0 rgba(255, 255, 255, 0.66667), 0.193em -0.434em 0 rgba(255, 255, 255, 0.63333), 0.147em -0.452em 0 rgba(255, 255, 255, 0.6), 0.099em -0.4645em 0 rgba(255, 255, 255, 0.56667), 0.0495em -0.4725em 0 rgba(255, 255, 255, 0.53333), 0em -0.475em 0 rgba(255, 255, 255, 0.5), -0.0495em -0.4725em 0 rgba(255, 255, 255, 0.46667), -0.099em -0.4645em 0 rgba(255, 255, 255, 0.43333), -0.147em -0.452em 0 rgba(255, 255, 255, 0.4), -0.193em -0.434em 0 rgba(255, 255, 255, 0.36667), -0.2375em -0.4115em 0 rgba(255, 255, 255, 0.33333), -0.279em -0.3845em 0 rgba(255, 255, 255, 0.3), -0.318em -0.353em 0 rgba(255, 255, 255, 0.26667), -0.353em -0.318em 0 rgba(255, 255, 255, 0.23333), -0.3845em -0.279em 0 rgba(255, 255, 255, 0.2), -0.4115em -0.2375em 0 rgba(255, 255, 255, 0.16667), -0.434em -0.193em 0 rgba(255, 255, 255, 0.13333), -0.452em -0.147em 0 rgba(255, 255, 255, 0.1), -0.4645em -0.099em 0 rgba(255, 255, 255, 0.06667), -0.4725em -0.0495em 0 rgba(255, 255, 255, 0.03333); }
+
+/*.buttonable {
+	color: $color_main;
+	padding: 4px;
+	margin-bottom: 2px;
+	border: 1px solid #9F9F9F;
+	box-shadow: 0 2px 0 #999;
+	background: linear-gradient(to right, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%);
+
+	&.but-fh {
+		height: calc(100% - 2px) !important;
+	}
+
+	&:not(.disabled):hover {
+		background: #F8F8F8;
+		text-shadow: 0px 0px 1px rgba($color_main,0.1);
+	}
+
+	&:active {
+		box-shadow: none !important;
+		transform: translateY(2px);
+	}
+
+	&.but-primary {
+		border-color: darken($color_primary, 25%);
+		box-shadow: 0 2px 0 darken($color_primary, 30%);
+		background: linear-gradient(to right, $color_primary 0%, lighten($color_primary, 5%) 50%, $color_primary 100%);
+
+		&:not(.disabled):hover {
+			background: lighten($color_primary, 5%);
+		}
+	}
+
+	&.but-error {
+		background: $color_delete;
+		border-color: darken($color_delete, 15%);
+		box-shadow: 0 2px 0 darken($color_delete, 20%);
+		color: white;
+
+		&:not(.disabled):hover {
+			background: lighten($color_delete, 5%);
+			text-shadow: 0px 0px 1px rgba(white,0.1);
+		}
+	}
+
+	&.disabled {
+		@extend .but:active;
+	}
+
+	&.load {
+		color: transparent !important;
+
+		&::after {
+			@extend .spinner;
+			visibility: visible;
+		}
+	}
+
+}*/
+.but, .myalert {
   color: #333333;
   display: inline-block;
+  position: relative;
   padding: 4px;
   margin-bottom: 2px;
   border: 1px solid #9F9F9F;
   box-shadow: 0 2px 0 #999;
-  background: linear-gradient(to right, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%);
-  cursor: pointer; }
-  .but.but-fh {
+  background: linear-gradient(to right, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%); }
+  .but.but, .myalert.but {
+    cursor: pointer; }
+  .but.but-fh, .myalert.but-fh {
     height: calc(100% - 2px) !important; }
-  .but:hover {
+  .but:not(.disabled):hover, .myalert:not(.disabled):hover {
     background: #F8F8F8;
     text-shadow: 0px 0px 1px rgba(51, 51, 51, 0.1); }
-  .but:active {
+  .but.but:active, .but.disabled, .myalert.disabled, .myalert.but:active, .myalert.disabled {
     box-shadow: none !important;
     transform: translateY(2px); }
-  .but.but-error {
+  .but.but-primary, .but.primary, .myalert.but-primary, .myalert.primary {
+    border-color: #7f319f;
+    box-shadow: 0 2px 0 #6f2b8b;
+    background: linear-gradient(to right, #BB79D6 0%, #c58ddc 50%, #BB79D6 100%); }
+    .but.but-primary:not(.disabled):hover, .but.primary:not(.disabled):hover, .myalert.but-primary:not(.disabled):hover, .myalert.primary:not(.disabled):hover {
+      background: #c58ddc; }
+  .but.but-error, .but.error, .myalert.but-error, .myalert.error {
     background: #E74C3C;
     border-color: #bf2718;
     box-shadow: 0 2px 0 #a82315;
     color: white; }
-  .but.but-delete {
+    .but.but-error:not(.disabled):hover, .but.error:not(.disabled):hover, .myalert.but-error:not(.disabled):hover, .myalert.error:not(.disabled):hover {
+      background: #ea6153;
+      text-shadow: 0px 0px 1px rgba(255, 255, 255, 0.1); }
+  .but.but-delete, .but.delete, .myalert.but-delete, .myalert.delete {
     width: 20px;
     height: 20px;
     line-height: 100%;
     padding: 0; }
-    .but.but-delete:after {
+    .but.but-delete:after, .but.delete:after, .myalert.but-delete:after, .myalert.delete:after {
       content: 'x'; }
-  .but.but-add {
+  .but.but-add, .but.add, .myalert.but-add, .myalert.add {
     line-height: 100%; }
-    .but.but-add:after {
+    .but.but-add:after, .but.add:after, .myalert.but-add:after, .myalert.add:after {
       content: '+'; }
+  .but.load, .myalert.load {
+    color: transparent !important; }
+    .but.load::after, .myalert.load::after {
+      visibility: visible; }
 
 a.but {
   text-decoration: none;
   color: #333; }
 
-.but.but-primary, input[type="submit"].but {
-  border-color: #7f319f;
-  box-shadow: 0 2px 0 #6f2b8b;
-  background: linear-gradient(to right, #BB79D6 0%, #c58ddc 50%, #BB79D6 100%); }
-  .but.but-primary:hover, input[type="submit"].but:hover {
-    background: #c58ddc; }
-
 .table tr td:first-child label, .table tr td:last-child .field {
   display: block; }
+
+#alertList {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  max-width: 100%;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  background: #252624;
+  vertical-align: top;
+  text-align: right;
+  padding-top: 30px !important;
+  transition: 0.8s;
+  padding-right: 17px;
+  right: -17px; }
+  #alertList.open {
+    overflow-y: auto;
+    width: 217px; }
+  #alertList .tiroir {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    color: white;
+    /*padding-left: $alertListWidth/2;*/
+    /*transform: translateX(-50%);*/
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer; }
+    #alertList .tiroir::after {
+      content: 'Fermer'; }
+  #alertList .myalert {
+    display: inline-block;
+    margin: 5px;
+    margin-bottom: 0;
+    word-break: break-word;
+    width: 190px;
+    /*max-width: 100%;*/
+    -webkit-animation-name: vertiPopOpa;
+    -moz-animation-name: vertiPopOpa;
+    -o-animation-name: vertiPopOpa;
+    -ms-animation-name: vertiPopOpa;
+    animation-name: vertiPopOpa;
+    -webkit-animation-duration: 1.5s;
+    -moz-animation-duration: 1.5s;
+    -o-animation-duration: 1.5s;
+    -ms-animation-duration: 1.5s;
+    animation-duration: 1.5s; }
+    #alertList .myalert .myalert-title {
+      margin-bottom: 4px;
+      font-weight: bold; }
+    #alertList .myalert .myalert-content {
+      font-size: 0.8em; }
+    #alertList .myalert .myalert-close {
+      display: none; }
+      #alertList .myalert .myalert-close::after {
+        content: 'x';
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        line-height: 10px;
+        text-align: center;
+        padding: 0;
+        cursor: pointer; }
+    #alertList .myalert:hover .myalert-close {
+      display: block; }
+  #alertList:not(.open) .myalert {
+    max-width: 200px; }
 
 body {
   /*color: $color_main;*/
