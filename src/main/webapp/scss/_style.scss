@@ -49,6 +49,7 @@ $header_height: 50px;
 	background: $color_primary;
 	border-bottom: 2px solid $bg_dark_color;
 	min-height: $header_height;
+	transition: $transition_dur;
 
 	.header-content {
 		min-height: $header_height;
@@ -59,6 +60,7 @@ $header_height: 50px;
 			height: $header_height;
 			padding: 15px 10px;
 			line-height: 20px;
+			transition: $transition_dur;
 
 			&:first-child {
 				margin-left: -15px;
@@ -68,11 +70,38 @@ $header_height: 50px;
 				color: $color_primary;
 				background: $bg_dark_color;
 			}
-		}
 
-		.logo {
-			color: black;
-			font-size: 18px;
+			&.logo {
+				color: black;
+				font-size: 18px;
+			}
+
+			&.compte {
+				float: right;
+				padding-top: 0;
+				padding-bottom: 0;
+				line-height: 50px;
+
+				.deco {
+					display: inline-block;
+					width: 26px;
+					height: 28px;
+					line-height: 100%;
+					margin-left: 10px;
+					text-align: center;
+					vertical-align: middle;
+					cursor: pointer;
+					
+					&:hover {
+						background: darken($color_primary, 2%);
+					}
+					
+					.glyphicon {
+						top: 50%;
+						transform: translateY(-50%);
+					}
+				}
+			}
 		}
 
 	}
@@ -80,16 +109,31 @@ $header_height: 50px;
 
 .body-content {
 	margin-top: $header_height;
+	transition: $transition_dur;
 }
 
-.no-header {
+.bandeau>*, .page-content>* {
+	transition: opacity $transition_dur;
+}
+
+.main-content.no-display {
+	.bandeau>*, .page-content>* {
+		opacity: 0;
+	}
+}
+
+.main-content.no-header {
 	.header {
-		min-height: 4px;
-		height: 4px;
+		/*		min-height: 4px;
+				height: 4px;*/
+		transform: translateY(calc(-100% + 4px));
 		overflow: hidden;
 
 		&>* {
-			display: none;
+			& .nav-item {
+				background: transparent !important;
+			}
+			/*			display: none;*/
 		}
 	}
 
@@ -192,76 +236,19 @@ $header_height: 50px;
     box-shadow: 0.475em 0em 0 #fff,0.4725em -0.0495em 0 rgba(255,255,255,0.96667),0.4645em -0.099em 0 rgba(255,255,255,0.93333),0.452em -0.147em 0 rgba(255,255,255,0.9),0.434em -0.193em 0 rgba(255,255,255,0.86667),0.4115em -0.2375em 0 rgba(255,255,255,0.83333),0.3845em -0.279em 0 rgba(255,255,255,0.8),0.353em -0.318em 0 rgba(255,255,255,0.76667),0.318em -0.353em 0 rgba(255,255,255,0.73333),0.279em -0.3845em 0 rgba(255,255,255,0.7),0.2375em -0.4115em 0 rgba(255,255,255,0.66667),0.193em -0.434em 0 rgba(255,255,255,0.63333),0.147em -0.452em 0 rgba(255,255,255,0.6),0.099em -0.4645em 0 rgba(255,255,255,0.56667),0.0495em -0.4725em 0 rgba(255,255,255,0.53333),0em -0.475em 0 rgba(255,255,255,0.5),-0.0495em -0.4725em 0 rgba(255,255,255,0.46667),-0.099em -0.4645em 0 rgba(255,255,255,0.43333),-0.147em -0.452em 0 rgba(255,255,255,0.4),-0.193em -0.434em 0 rgba(255,255,255,0.36667),-0.2375em -0.4115em 0 rgba(255,255,255,0.33333),-0.279em -0.3845em 0 rgba(255,255,255,0.3),-0.318em -0.353em 0 rgba(255,255,255,0.26667),-0.353em -0.318em 0 rgba(255,255,255,0.23333),-0.3845em -0.279em 0 rgba(255,255,255,0.2),-0.4115em -0.2375em 0 rgba(255,255,255,0.16667),-0.434em -0.193em 0 rgba(255,255,255,0.13333),-0.452em -0.147em 0 rgba(255,255,255,0.1),-0.4645em -0.099em 0 rgba(255,255,255,0.06667),-0.4725em -0.0495em 0 rgba(255,255,255,0.03333);
 }
 
-/*.buttonable {
-	color: $color_main;
-	padding: 4px;
-	margin-bottom: 2px;
-	border: 1px solid #9F9F9F;
-	box-shadow: 0 2px 0 #999;
-	background: linear-gradient(to right, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%);
-
-	&.but-fh {
-		height: calc(100% - 2px) !important;
-	}
-
-	&:not(.disabled):hover {
-		background: #F8F8F8;
-		text-shadow: 0px 0px 1px rgba($color_main,0.1);
-	}
-
-	&:active {
-		box-shadow: none !important;
-		transform: translateY(2px);
-	}
-
-	&.but-primary {
-		border-color: darken($color_primary, 25%);
-		box-shadow: 0 2px 0 darken($color_primary, 30%);
-		background: linear-gradient(to right, $color_primary 0%, lighten($color_primary, 5%) 50%, $color_primary 100%);
-
-		&:not(.disabled):hover {
-			background: lighten($color_primary, 5%);
-		}
-	}
-
-	&.but-error {
-		background: $color_delete;
-		border-color: darken($color_delete, 15%);
-		box-shadow: 0 2px 0 darken($color_delete, 20%);
-		color: white;
-
-		&:not(.disabled):hover {
-			background: lighten($color_delete, 5%);
-			text-shadow: 0px 0px 1px rgba(white,0.1);
-		}
-	}
-
-	&.disabled {
-		@extend .but:active;
-	}
-
-	&.load {
-		color: transparent !important;
-
-		&::after {
-			@extend .spinner;
-			visibility: visible;
-		}
-	}
-
-}*/
-
 .but, .myalert {
 	color: $color_main;
 	display: inline-block;
 	position: relative;
 	padding: 4px;
-	margin-bottom: 2px;
-	border: 1px solid #9F9F9F;
-	box-shadow: 0 2px 0 #999;
-	background: linear-gradient(to right, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%);
+	/*border: 1px solid #9F9F9F;*/
+	border: 1px solid darken($bg_color, 38%);
+	/*background: linear-gradient(to right, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%);*/
+	background: linear-gradient(to right, darken($bg_color, 6%) 0%, darken($bg_color, 3%) 50%, darken($bg_color, 6%) 100%);
 
 	&.but {
+		margin-bottom: 2px;
+		box-shadow: 0 2px 0 darken($bg_color, 40%);
 		cursor: pointer;
 	}
 
@@ -269,8 +256,8 @@ $header_height: 50px;
 		height: calc(100% - 2px) !important;
 	}
 
-	&:not(.disabled):hover {
-		background: #F8F8F8;
+	&.but:not(.disabled):hover {
+		background: darken($bg_color, 3%);
 		text-shadow: 0px 0px 1px rgba($color_main,0.1);
 	}
 
@@ -279,25 +266,70 @@ $header_height: 50px;
 		transform: translateY(2px);
 	}
 
+	&.myalert::after, &.myalert::before {
+		color: darken($bg_color, 38%);
+		position: absolute;
+		top: 0;
+		vertical-align: top;
+		font-size: 0.8em;
+		line-height: 100%;
+	}
+
+	&.myalert::after {
+		content: 'Info';
+		left: 4px;
+	}
+
+	&.myalert::before {
+		content: attr(data-time);
+		right: 10px;
+	}
+
 	&.but-primary, &.primary {
 		border-color: darken($color_primary, 25%);
-		box-shadow: 0 2px 0 darken($color_primary, 30%);
 		background: linear-gradient(to right, $color_primary 0%, lighten($color_primary, 5%) 50%, $color_primary 100%);
 
-		&:not(.disabled):hover {
+		&.but {
+			box-shadow: 0 2px 0 darken($color_primary, 27%);
+		}
+
+		&.but:not(.disabled):hover {
 			background: lighten($color_primary, 5%);
+		}
+
+		&.myalert {
+			&::after {
+				content: 'Important';
+			}
+
+			&::after, &::before {
+				color: darken($color_primary, 25%);
+			}
 		}
 	}
 
 	&.but-error, &.error {
 		background: $color_delete;
 		border-color: darken($color_delete, 15%);
-		box-shadow: 0 2px 0 darken($color_delete, 20%);
 		color: white;
 
-		&:not(.disabled):hover {
+		&.but {
+			box-shadow: 0 2px 0 darken($color_delete, 20%);
+		}
+
+		&.but:not(.disabled):hover {
 			background: lighten($color_delete, 5%);
 			text-shadow: 0px 0px 1px rgba(white,0.1);
+		}
+
+		&.myalert {
+			&::after {
+				content: 'Erreur';
+			}
+
+			&::after, &::before {
+				color: darken($color_delete, 25%);
+			}
 		}
 	}
 
@@ -353,7 +385,7 @@ a.but {
 
 	position: fixed;
 	right: 0;
-	top: 0;
+	top: $header_height;
 	bottom: 0;
 	width: 0;
 	max-width: 100%;
@@ -364,7 +396,7 @@ a.but {
 	vertical-align: top;
 	text-align: right;
 	padding-top: 30px !important;
-	transition: 0.8s;
+	transition: $transition_dur;
 
 	padding-right: $scrollBarWidth;
     right: -$scrollBarWidth;
@@ -381,18 +413,20 @@ a.but {
 		top: 0;
 		left: 0;
 		width: $alertListWidth;
-		color: white;
-		/*padding-left: $alertListWidth/2;*/
-		/*transform: translateX(-50%);*/
+		color: darken($color_dark_main, 10%);
 		line-height: 30px;
 		text-align: center;
 		cursor: pointer;
+
+		&:hover {
+			color: $color_dark_main;
+		}
 
 		&::after {
 			content: 'Fermer';
 		}
 	}
-	
+
 	&.possede:not(.open) {
 		width: $scrollBarWidth + $alertMargin;
 	}
@@ -403,11 +437,16 @@ a.but {
 		margin-bottom: 0;
 		word-break: break-word;
 		width: $alertListWidth - $alertMargin * 2;
+		padding-top: 6px;
 		text-align: left;
-		/*max-width: 100%;*/
+		transition: opacity $transition_dur;
 
 		@include wout-prefix(animation-name, vertiPopOpa);
 		@include wout-prefix(animation-duration, 1.5s);
+
+		&.no-display {
+			opacity: 0;
+		}
 
 		.myalert-title {
 			margin-bottom: 4px;
@@ -443,4 +482,8 @@ a.but {
 	&:not(.open) .myalert {
 		max-width: $alertListWidth;
 	}
+}
+
+.main-content.no-header #alertList {
+	top: 0;
 }

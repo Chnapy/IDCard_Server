@@ -26,10 +26,8 @@
 		<script>
 			var GLOBALS = {
 				titre_main: "${titre_main}",
-				user: {
-					connected: false
-				},
-				page: "start"
+				user: ${user},
+				page: "${page}"	//Défini la première page
 			};
 		</script>
 		<script data-main="js/app" src="libs/require/require.js"></script>

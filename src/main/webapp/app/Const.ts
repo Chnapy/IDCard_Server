@@ -20,6 +20,8 @@ class Const {
 		}
 	};
 	
+	public static readonly TRANSITION_DURATION: number = 500;
+	
 	private constructor() {}
 
 }

@@ -1,6 +1,5 @@
 
 import * as ReactDOM from 'react-dom';
-import {Vue} from 'struct/Vue';
 import {Controleur} from 'struct/Controleur';
 import {MainModele} from 'MainModele';
 import {MainVue} from 'MainVue';
@@ -10,7 +9,7 @@ import {AlertLevel} from 'items/Alert';
 export class MainManager extends Controleur<MainModele, MainVue> {
 
 	public constructor() {
-		super(new MainModele(), new MainVue());
+		super(new MainModele(), undefined);
 	}
 
 	public start(): void {
@@ -19,6 +18,10 @@ export class MainManager extends Controleur<MainModele, MainVue> {
 
 	public connexion(pseudo: string, mail: string, mdp: string, isMail: boolean, callbacks: any): void {
 		this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback(callbacks));
+	}
+
+	public deconnexion(callbacks: any): void {
+		this.modele.deconnexion(new AjaxCallback(callbacks));
 	}
 
 	public inscription(pseudo: string, mail: string, mdp: string, callbacks: any): void {

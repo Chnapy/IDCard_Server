@@ -24,6 +24,7 @@ Const.LENGTH = {
         max: 32
     }
 };
+Const.TRANSITION_DURATION = 500;
 define("items/Alert", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
     "use strict";
     var AlertLevel;
@@ -36,17 +37,21 @@ define("items/Alert", ["require", "exports", "react", "classnames"], function (r
         __extends(Alert, _super);
         function Alert(props, context) {
             var _this = _super.call(this, props, context) || this;
+            _this.state = { display: true };
             _this.hide = _this.hide.bind(_this, _this.props.onHide);
             return _this;
         }
         Alert.prototype.hide = function () {
-            this.props.onHide();
+            var _this = this;
+            this.setState({ display: false });
+            setTimeout(function () { return _this.props.onHide(); }, Const.TRANSITION_DURATION);
         };
         Alert.prototype.render = function () {
             return React.createElement("div", { className: classNames('myalert', {
                     'primary': this.props.level === AlertLevel.Primary,
-                    'error': this.props.level === AlertLevel.Error
-                }) },
+                    'error': this.props.level === AlertLevel.Error,
+                    'no-display': !this.state.display
+                }), "data-time": this.props.time },
                 React.createElement("span", { className: 'myalert-close', onClick: this.hide }),
                 React.createElement("div", { className: 'myalert-title' }, this.props.title),
                 React.createElement("div", { className: 'myalert-content' }, this.props.content));
@@ -100,7 +105,7 @@ define("items/AlertList", ["require", "exports", "react", "react-dom", "classnam
         AlertList.prototype.render = function () {
             var _this = this;
             var alerts = this.alerts.map(function (a) {
-                return React.createElement(Alert_1.Alert, { key: a.key, level: a.level, title: a.title, content: a.content, onHide: function () { a.hide = true; _this.check(); } });
+                return React.createElement(Alert_1.Alert, { key: a.key, level: a.level, title: a.title, content: a.content, time: a.time, onHide: function () { a.hide = true; _this.check(); } });
             });
             return React.createElement("div", { id: 'alertList', className: classNames({
                     'open': this.state.open,
@@ -192,8 +197,12 @@ define("struct/Vue", ["require", "exports", "react"], function (require, exports
         function Vue(props, context) {
             return _super.call(this, props, context) || this;
         }
+        Vue.prototype.switchPage = function (page) {
+            if (this.props.onSwitch) {
+                this.props.onSwitch(page);
+            }
+        };
         Vue.prototype.addAlert = function (level, title, content) {
-            console.log(level);
             if (this.props.onAlert) {
                 this.props.onAlert(level, title, content);
             }
@@ -253,6 +262,12 @@ define("modules/main/MainModele", ["require", "exports", "struct/Modele"], funct
                 .done(function (data) { return ajaxc.onDone(data); })
                 .always(function (data) { return ajaxc.onAlways(data); });
         };
+        MainModele.prototype.deconnexion = function (ajaxc) {
+            $.post('deconnexion', {}, function (data) { return ajaxc.onSuccess(data); })
+                .fail(function () { return ajaxc.onFail(); })
+                .done(function (data) { return ajaxc.onDone(data); })
+                .always(function (data) { return ajaxc.onAlways(data); });
+        };
         MainModele.prototype.inscription = function (pseudo, mail, mdp, ajaxc) {
             $.post('inscription', { pseudo: pseudo, mail: mail, mdp: mdp }, function (data) { return ajaxc.onSuccess(data); })
                 .fail(function () { return ajaxc.onFail(); })
@@ -263,7 +278,27 @@ define("modules/main/MainModele", ["require", "exports", "struct/Modele"], funct
     }(Modele_1.Modele));
     exports.MainModele = MainModele;
 });
-define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/Bouton", "items/Alert"], function (require, exports, React, Vue_1, Bouton_1, Alert_2) {
+define("pages/Page", ["require", "exports", "struct/Vue"], function (require, exports, Vue_1) {
+    "use strict";
+    var Page = (function (_super) {
+        __extends(Page, _super);
+        function Page(props, nom) {
+            var _this = _super.call(this, props) || this;
+            _this._nom = nom;
+            return _this;
+        }
+        Object.defineProperty(Page.prototype, "nom", {
+            get: function () {
+                return this._nom;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return Page;
+    }(Vue_1.Vue));
+    exports.Page = Page;
+});
+define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/Bouton", "items/Alert", "pages/Pages"], function (require, exports, React, Vue_2, Bouton_1, Alert_2, Pages_1) {
     "use strict";
     var BoutonType;
     (function (BoutonType) {
@@ -303,7 +338,10 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
             if (this.state.type === BoutonType.Connexion) {
                 this.props.controleur.connexion(this.state.ip_pseudo, this.state.ip_mail, this.state.ip_mdp, this.state.isMail, {
                     fail: function () { return _this.addAlert(Alert_2.AlertLevel.Error, "Connexion impossible", "Serveur inaccessible"); },
-                    always: function () { return _this.setState({ load: false }); }
+                    always: function () {
+                        _this.setState({ load: false });
+                        _this.switchPage(Pages_1.Pages.Configuration);
+                    }
                 });
             }
             else {
@@ -402,11 +440,84 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
                             React.createElement("a", { href: "" }, "Vous avez oubli\u00E9 vos identifiants ?")))));
         };
         return StartForm;
-    }(Vue_1.Vue));
+    }(Vue_2.Vue));
     StartForm.MAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     exports.StartForm = StartForm;
 });
-define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "struct/Vue", "items/Header", "items/StartForm", "items/AlertList"], function (require, exports, React, ReactDOM, Vue_2, Header_1, StartForm_1, AlertList_1) {
+define("pages/Accueil", ["require", "exports", "react", "pages/Page", "items/Header", "items/StartForm"], function (require, exports, React, Page_1, Header_1, StartForm_1) {
+    "use strict";
+    var Accueil = (function (_super) {
+        __extends(Accueil, _super);
+        function Accueil(props) {
+            return _super.call(this, props, Accueil.NOM) || this;
+        }
+        Accueil.prototype.hasHeader = function () {
+            return false;
+        };
+        Accueil.prototype.renderHeader = function () {
+            return React.createElement(Header_1.Header, { controleur: this.props.controleur, user: this.props.user, page: this.nom, show: this.hasHeader(), onSwitch: this.switchPage, onAlert: this.addAlert });
+        };
+        Accueil.prototype.renderBandeau = function () {
+            return React.createElement("div", { className: "bandeau dark" },
+                React.createElement("div", { className: "container" },
+                    React.createElement("div", { className: "row", id: "main_title" },
+                        React.createElement("h1", null, Const.TITRE_MAIN),
+                        React.createElement("div", { className: "lead" }, "Inscrivez-vous une fois, connectez-vous partout."))));
+        };
+        Accueil.prototype.render = function () {
+            return React.createElement("div", { className: "container page-content" },
+                React.createElement("div", { className: "row" },
+                    React.createElement("div", { id: "description", className: "col-md-6 col-xs-12" },
+                        React.createElement("div", { className: "lead" },
+                            "Inscrivez-vous une fois,",
+                            React.createElement("br", null),
+                            "Connectez-vous partout."),
+                        React.createElement("div", null, "Description du service, blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla")),
+                    React.createElement(StartForm_1.StartForm, { controleur: this.props.controleur, onSwitch: this.props.onSwitch, onAlert: this.props.onAlert })));
+        };
+        return Accueil;
+    }(Page_1.Page));
+    Accueil.NOM = 'Accueil';
+    exports.Accueil = Accueil;
+});
+define("pages/Configuration", ["require", "exports", "react", "pages/Page", "items/Header"], function (require, exports, React, Page_2, Header_2) {
+    "use strict";
+    var Configuration = (function (_super) {
+        __extends(Configuration, _super);
+        function Configuration(props) {
+            return _super.call(this, props, Configuration.NOM) || this;
+        }
+        Configuration.prototype.hasHeader = function () {
+            return true;
+        };
+        Configuration.prototype.renderHeader = function () {
+            return React.createElement(Header_2.Header, { controleur: this.props.controleur, user: this.props.user, page: this.nom, show: this.hasHeader(), onSwitch: this.switchPage, onAlert: this.addAlert });
+        };
+        Configuration.prototype.renderBandeau = function () {
+            return React.createElement("div", { className: "bandeau dark" },
+                React.createElement("div", { className: "container" },
+                    React.createElement("div", { className: "row" },
+                        React.createElement("h1", null, this.nom),
+                        React.createElement("div", { className: "lead" }, "Configurer vos propri\u00E9t\u00E9s, leurs valeurs et visibilit\u00E9s."))));
+        };
+        Configuration.prototype.render = function () {
+            return React.createElement("div", { id: "list-box", className: "page-content container" },
+                React.createElement("div", { className: "row" }));
+        };
+        return Configuration;
+    }(Page_2.Page));
+    Configuration.NOM = 'Configuration';
+    exports.Configuration = Configuration;
+});
+define("pages/Pages", ["require", "exports", "pages/Accueil", "pages/Configuration"], function (require, exports, A, B) {
+    "use strict";
+    var Pages;
+    (function (Pages) {
+        Pages.Accueil = A.Accueil;
+        Pages.Configuration = B.Configuration;
+    })(Pages = exports.Pages || (exports.Pages = {}));
+});
+define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "classnames", "struct/Vue", "items/Header", "pages/Pages", "items/AlertList"], function (require, exports, React, ReactDOM, classNames, Vue_3, Header_3, Pages_2, AlertList_1) {
     "use strict";
     var MainVue = (function (_super) {
         __extends(MainVue, _super);
@@ -414,16 +525,25 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "str
             var _this = _super.call(this, props, context) || this;
             _this.alertList = [];
             _this.alertKey = 1;
-            _this.state = { alertList: [] };
+            _this.state = { alertList: [], page: Pages_2.Pages[props.page], display: true };
             _this.mainAlert = _this.mainAlert.bind(_this, _this.state.alertList);
+            _this.mainSwitchPage = _this.mainSwitchPage.bind(_this, _this.state.page);
             return _this;
         }
         MainVue.applyVue = function (controleur) {
-            ReactDOM.render(React.createElement(MainVue, { controleur: controleur, user: GLOBALS.user, page: GLOBALS.page, onAlert: undefined }), document.getElementById("react_container"));
+            ReactDOM.render(React.createElement(MainVue, { controleur: controleur, user: GLOBALS.user, page: GLOBALS.page, onSwitch: undefined, onAlert: undefined }), document.getElementById("react_container"));
+        };
+        MainVue.prototype.mainSwitchPage = function (arr, page) {
+            var _this = this;
+            console.log("SWITCH " + page);
+            console.log(arguments.length);
+            this.setState({ display: false });
+            setTimeout(function () { return _this.setState({ page: page, display: true }); }, Const.TRANSITION_DURATION);
         };
         MainVue.prototype.mainAlert = function (arr, level, title, content) {
+            var curDate = new Date();
             var alert = {
-                key: this.alertKey, level: level, title: title, content: content, hide: false
+                key: this.alertKey, level: level, title: title, content: content, time: curDate.toLocaleTimeString(), hide: false
             };
             this.alertList.push(alert);
             this.alertKey++;
@@ -433,29 +553,26 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "str
         };
         MainVue.prototype.render = function () {
             this.props.controleur.vue = this;
-            var connected = this.props.user.connected;
-            return (React.createElement("div", { id: "react_content", className: connected ? '' : 'no-header' },
-                React.createElement(Header_1.Header, { controleur: this.props.controleur, user: this.props.user, page: this.props.page, onAlert: this.mainAlert }),
+            var p = new this.state.page({
+                controleur: this.props.controleur,
+                onSwitch: this.mainSwitchPage,
+                onAlert: this.mainAlert,
+                user: this.props.user
+            });
+            console.log('Page: ' + p.nom);
+            return (React.createElement("div", { id: "react_content", className: classNames('main-content', {
+                    'no-header': !p.hasHeader(),
+                    'no-display': !this.state.display
+                }) },
+                React.createElement(Header_3.Header, { controleur: this.props.controleur, user: this.props.user, page: p.nom, show: p.hasHeader(), onSwitch: this.mainSwitchPage, onAlert: this.mainAlert }),
                 React.createElement("div", { id: "content", className: "body-content" },
-                    React.createElement("div", { className: "bandeau dark" },
-                        React.createElement("div", { className: "container" },
-                            React.createElement("div", { className: "row", id: "main_title" },
-                                React.createElement("h1", null, Const.TITRE_MAIN),
-                                React.createElement("div", { className: "lead" }, "Inscrivez-vous une fois, connectez-vous partout.")))),
-                    React.createElement("div", { className: "container" },
-                        React.createElement("div", { className: "row" },
-                            React.createElement("div", { id: "description", className: "col-md-6 col-xs-12" },
-                                React.createElement("div", { className: "lead" },
-                                    "Inscrivez-vous une fois,",
-                                    React.createElement("br", null),
-                                    "Connectez-vous partout."),
-                                React.createElement("div", null, "Description du service, blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla" + " " + "blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla")),
-                            React.createElement(StartForm_1.StartForm, { controleur: this.props.controleur, onAlert: this.mainAlert })))),
+                    p.renderBandeau(),
+                    p.render()),
                 React.createElement(AlertList_1.AlertList, { alerts: this.state.alertList }),
                 React.createElement("footer", { className: "footer" })));
         };
         return MainVue;
-    }(Vue_2.Vue));
+    }(Vue_3.Vue));
     exports.MainVue = MainVue;
 });
 define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "modules/main/MainModele", "modules/main/MainVue", "struct/AjaxCallback"], function (require, exports, Controleur_1, MainModele_1, MainVue_1, AjaxCallback_1) {
@@ -463,13 +580,16 @@ define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "
     var MainManager = (function (_super) {
         __extends(MainManager, _super);
         function MainManager() {
-            return _super.call(this, new MainModele_1.MainModele(), new MainVue_1.MainVue()) || this;
+            return _super.call(this, new MainModele_1.MainModele(), undefined) || this;
         }
         MainManager.prototype.start = function () {
             MainVue_1.MainVue.applyVue(this);
         };
         MainManager.prototype.connexion = function (pseudo, mail, mdp, isMail, callbacks) {
             this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback_1.AjaxCallback(callbacks));
+        };
+        MainManager.prototype.deconnexion = function (callbacks) {
+            this.modele.deconnexion(new AjaxCallback_1.AjaxCallback(callbacks));
         };
         MainManager.prototype.inscription = function (pseudo, mail, mdp, callbacks) {
             this.modele.inscription(pseudo, mail, mdp, new AjaxCallback_1.AjaxCallback(callbacks));
@@ -478,26 +598,47 @@ define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "
     }(Controleur_1.Controleur));
     exports.MainManager = MainManager;
 });
-define("items/Header", ["require", "exports", "react", "struct/Vue"], function (require, exports, React, Vue_3) {
+define("items/Header", ["require", "exports", "react", "classnames", "struct/Vue", "pages/Pages", "items/Alert"], function (require, exports, React, classNames, Vue_4, Pages_3, Alert_3) {
     "use strict";
     var Header = (function (_super) {
         __extends(Header, _super);
         function Header() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
+        Header.prototype.renderCompte = function () {
+            var _this = this;
+            return React.createElement("span", { className: "compte nav-item" },
+                React.createElement("span", { className: "nompte-pseudo" }, this.props.user.pseudo),
+                React.createElement("span", { className: "deco", onClick: function (e) {
+                        return _this.props.controleur.deconnexion({
+                            fail: function () { return _this.addAlert(Alert_3.AlertLevel.Error, "Deconnexion impossible", "Serveur inaccessible"); },
+                            always: function () {
+                                _this.switchPage(Pages_3.Pages.Accueil);
+                            }
+                        });
+                    } },
+                    React.createElement("span", { className: 'glyphicon glyphicon-off' })));
+        };
+        Header.prototype.renderNav = function () {
+            return React.createElement("nav", { className: "header-content container" },
+                React.createElement("span", { className: "logo nav-item" }, Const.TITRE_MAIN),
+                React.createElement("span", { className: classNames("nav-item", {
+                        'active': this.props.page === Pages_3.Pages.Configuration.NOM
+                    }) }, Pages_3.Pages.Configuration.NOM),
+                React.createElement("span", { className: classNames("nav-item", {
+                        'active': this.props.page === 'sessions'
+                    }) }, "Sessions"),
+                this.renderCompte());
+        };
         Header.prototype.render = function () {
-            var nav = !this.props.user.connected ? null :
-                React.createElement("nav", { className: "header-content container" },
-                    React.createElement("span", { className: "logo nav-item" }, Const.TITRE_MAIN),
-                    React.createElement("span", { className: "nav-item" + this.props.page === 'configuration' ? 'active' : '' }, "Configuration"),
-                    React.createElement("span", { className: "nav-item" + this.props.page === 'sessions' ? 'active' : '' }, "Sessions"));
-            return React.createElement("header", { className: "header" }, nav);
+            console.log('HEADER');
+            return React.createElement("header", { className: "header" }, !this.props.show ? null : this.renderNav());
         };
         return Header;
-    }(Vue_3.Vue));
+    }(Vue_4.Vue));
     exports.Header = Header;
 });
-define("items/Input", ["require", "exports", "react", "struct/Vue"], function (require, exports, React, Vue_4) {
+define("items/Input", ["require", "exports", "react", "struct/Vue"], function (require, exports, React, Vue_5) {
     "use strict";
     var Input = (function (_super) {
         __extends(Input, _super);
@@ -508,7 +649,7 @@ define("items/Input", ["require", "exports", "react", "struct/Vue"], function (r
             return React.createElement("input", { type: this.props.type, required: this.props.required });
         };
         return Input;
-    }(Vue_4.Vue));
+    }(Vue_5.Vue));
     exports.Input = Input;
 });
 define("Main", ["require", "exports", "modules/main/MainManager"], function (require, exports, MainManager_1) {

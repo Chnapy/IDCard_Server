@@ -1,27 +1,54 @@
 
 import * as React from 'react';
+import * as classNames from 'classnames';
 import {Vue, VueProps} from 'struct/Vue';
-import {Controleur} from 'struct/Controleur';
 import {MainManager} from 'modules/main/MainManager';
+import {Pages} from 'pages/Pages';
+import {AlertLevel} from 'items/Alert';
 
 export interface HeaderProps extends VueProps<MainManager> {
-	user: any,
-	page: string
+	user: {
+		connected: boolean,
+		pseudo: string
+	},
+	page: string,
+	show: boolean
 }
 
 export class Header extends Vue<HeaderProps, undefined> {
 
+	private renderCompte() {
+		return <span className="compte nav-item">
+			<span className="nompte-pseudo">{this.props.user.pseudo}</span>
+			<span className="deco" onClick={e =>
+				this.props.controleur.deconnexion({
+					fail: () => this.addAlert(AlertLevel.Error, "Deconnexion impossible", "Serveur inaccessible"),
+					always: () => {
+						this.switchPage(Pages.Accueil);
+					}
+				})}><span className='glyphicon glyphicon-off'></span></span>
+		</span>;
+	}
+
+	private renderNav() {
+		return <nav className="header-content container">
+			<span className="logo nav-item">{Const.TITRE_MAIN}</span>
+			<span className={classNames("nav-item", {
+				'active': this.props.page === Pages.Configuration.NOM
+			})}>{Pages.Configuration.NOM}</span>
+			<span className={classNames("nav-item", {
+				'active': this.props.page === 'sessions'
+			})}>Sessions</span>
+			{this.renderCompte()}
+		</nav>;
+	}
+
 	public render() {
-		
-		var nav = !this.props.user.connected ? null :
-			<nav className="header-content container">
-				<span className="logo nav-item">{Const.TITRE_MAIN}</span>
-				<span className={"nav-item" + this.props.page === 'configuration' ? 'active' : ''}>Configuration</span>
-				<span className={"nav-item" + this.props.page === 'sessions' ? 'active' : ''}>Sessions</span>
-			</nav>;
+
+		console.log('HEADER');
 
 		return <header className="header">
-			{nav}
+			{!this.props.show ? null : this.renderNav()}
 		</header>;
 	}
 

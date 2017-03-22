@@ -5,7 +5,7 @@ import * as classNames from 'classnames';
 import {Alert, AlertLevel} from 'items/Alert';
 
 interface AlertListProps {
-	alerts: Array<AlertData>
+	alerts: AlertData[]
 }
 
 interface AlertListState {
@@ -18,12 +18,13 @@ export interface AlertData {
 	level: AlertLevel,
 	title: string,
 	content: string,
+	time: string,
 	hide: boolean
 }
 
 export class AlertList extends React.Component<AlertListProps, AlertListState> {
 
-	private alerts: Array<AlertData>;
+	private alerts: AlertData[];
 
 	public constructor(props?: AlertListProps, context?: AlertListState) {
 		super(props, context);
@@ -74,7 +75,7 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 	public render(): any {
 
 		let alerts = this.alerts.map(a =>
-			<Alert key={a.key} level={a.level} title={a.title} content={a.content} onHide={() => {a.hide = true; this.check()}} />);
+			<Alert key={a.key} level={a.level} title={a.title} content={a.content} time={a.time} onHide={() => {a.hide = true; this.check()}} />);
 
 		return <div id='alertList' className={classNames({
 			'open': this.state.open,

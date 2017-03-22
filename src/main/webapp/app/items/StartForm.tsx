@@ -4,6 +4,7 @@ import {Vue, VueProps} from 'struct/Vue';
 import {MainManager} from 'modules/main/MainManager';
 import {Bouton} from 'items/Bouton';
 import {AlertLevel} from 'items/Alert';
+import {Pages} from 'pages/Pages';
 
 enum BoutonType {
 	Inscription,
@@ -44,11 +45,6 @@ export class StartForm extends Vue<VueProps<MainManager>, StartFormState> {
 			valid = function () {t.send(bouton)};
 		}
 		this.setState({bouton: but}, valid);
-
-		//		console.debug(this.state);
-		//		this.addAlert(AlertLevel.Error, "TESTTITLEaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TESTCONTENTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		//		this.addAlert(AlertLevel.Primary, "TESTTITLEaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TESTCONTENTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		//		this.addAlert(AlertLevel.Normal, "TESTTITLEaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TESTCONTENTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 	}
 
 	private onSubmit(e: React.FormEvent) {
@@ -65,7 +61,10 @@ export class StartForm extends Vue<VueProps<MainManager>, StartFormState> {
 		if (this.state.type === BoutonType.Connexion) {
 			this.props.controleur.connexion(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string, this.state.isMail as boolean, {
 				fail: () => this.addAlert(AlertLevel.Error, "Connexion impossible", "Serveur inaccessible"),
-				always: () => this.setState({load: false})
+				always: () => {
+					this.setState({load: false});
+					this.switchPage(Pages.Configuration);
+				}
 			});
 		} else {
 			this.props.controleur.inscription(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string, {
