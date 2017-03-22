@@ -8,6 +8,7 @@ import bdd.generated.tables.Domaine;
 import bdd.generated.tables.Propriete;
 import bdd.generated.tables.Session;
 import bdd.generated.tables.Sessionprop;
+import bdd.generated.tables.Typechiffrage;
 import bdd.generated.tables.Typefermeture;
 import bdd.generated.tables.Typeprop;
 import bdd.generated.tables.User_1;
@@ -24,6 +25,7 @@ import bdd.generated.tables.records.DomaineRecord;
 import bdd.generated.tables.records.ProprieteRecord;
 import bdd.generated.tables.records.SessionRecord;
 import bdd.generated.tables.records.SessionpropRecord;
+import bdd.generated.tables.records.TypechiffrageRecord;
 import bdd.generated.tables.records.TypefermetureRecord;
 import bdd.generated.tables.records.TypepropRecord;
 import bdd.generated.tables.records.User_1Record;
@@ -84,6 +86,7 @@ public class Keys {
     public static final UniqueKey<ProprieteRecord> PROPRIETE_PK = UniqueKeys0.PROPRIETE_PK;
     public static final UniqueKey<SessionRecord> SESSION_PK = UniqueKeys0.SESSION_PK;
     public static final UniqueKey<SessionpropRecord> SESSIONPROP_PK = UniqueKeys0.SESSIONPROP_PK;
+    public static final UniqueKey<TypechiffrageRecord> TYPECHIFFRAGE_PK = UniqueKeys0.TYPECHIFFRAGE_PK;
     public static final UniqueKey<TypefermetureRecord> TYPEFERMETURE_PK = UniqueKeys0.TYPEFERMETURE_PK;
     public static final UniqueKey<TypepropRecord> TYPEPROP_PK = UniqueKeys0.TYPEPROP_PK;
     public static final UniqueKey<User_1Record> USER_1_PK = UniqueKeys0.USER_1_PK;
@@ -109,6 +112,7 @@ public class Keys {
     public static final ForeignKey<SessionpropRecord, ProprieteRecord> SESSIONPROP__PROPRIETE_SESSIONPROP_FK = ForeignKeys0.SESSIONPROP__PROPRIETE_SESSIONPROP_FK;
     public static final ForeignKey<ValeurRecord, ProprieteRecord> VALEUR__PROPRIETE_VALEUR_FK = ForeignKeys0.VALEUR__PROPRIETE_VALEUR_FK;
     public static final ForeignKey<ValeurRecord, User_1Record> VALEUR__USER_1_VALEUR_FK = ForeignKeys0.VALEUR__USER_1_VALEUR_FK;
+    public static final ForeignKey<ValeurmdpRecord, TypechiffrageRecord> VALEURMDP__TYPECHIFFRAGE_VALEURMDP_FK = ForeignKeys0.VALEURMDP__TYPECHIFFRAGE_VALEURMDP_FK;
     public static final ForeignKey<VisibiliteRecord, ValeurRecord> VISIBILITE__VALEUR_VISIBILITE_FK = ForeignKeys0.VISIBILITE__VALEUR_VISIBILITE_FK;
     public static final ForeignKey<VisibiliteRecord, DomaineRecord> VISIBILITE__DOMAINE_VISIBILITE_FK = ForeignKeys0.VISIBILITE__DOMAINE_VISIBILITE_FK;
 
@@ -136,6 +140,7 @@ public class Keys {
         public static final UniqueKey<ProprieteRecord> PROPRIETE_PK = createUniqueKey(Propriete.PROPRIETE, "propriete_pk", Propriete.PROPRIETE.ID_PROPRIETE);
         public static final UniqueKey<SessionRecord> SESSION_PK = createUniqueKey(Session.SESSION, "session_pk", Session.SESSION.ID_SESSION);
         public static final UniqueKey<SessionpropRecord> SESSIONPROP_PK = createUniqueKey(Sessionprop.SESSIONPROP, "sessionprop_pk", Sessionprop.SESSIONPROP.ID_SESSION, Sessionprop.SESSIONPROP.ID_PROPRIETE);
+        public static final UniqueKey<TypechiffrageRecord> TYPECHIFFRAGE_PK = createUniqueKey(Typechiffrage.TYPECHIFFRAGE, "typechiffrage_pk", Typechiffrage.TYPECHIFFRAGE.ID_TYPECHIFFRAGE);
         public static final UniqueKey<TypefermetureRecord> TYPEFERMETURE_PK = createUniqueKey(Typefermeture.TYPEFERMETURE, "typefermeture_pk", Typefermeture.TYPEFERMETURE.ID_TYPEFERMETURE);
         public static final UniqueKey<TypepropRecord> TYPEPROP_PK = createUniqueKey(Typeprop.TYPEPROP, "typeprop_pk", Typeprop.TYPEPROP.ID_TYPEPROP);
         public static final UniqueKey<User_1Record> USER_1_PK = createUniqueKey(User_1.USER_1, "user_1_pk", User_1.USER_1.ID_USER);
@@ -159,6 +164,7 @@ public class Keys {
         public static final ForeignKey<SessionpropRecord, ProprieteRecord> SESSIONPROP__PROPRIETE_SESSIONPROP_FK = createForeignKey(bdd.generated.Keys.PROPRIETE_PK, Sessionprop.SESSIONPROP, "sessionprop__propriete_sessionprop_fk", Sessionprop.SESSIONPROP.ID_PROPRIETE);
         public static final ForeignKey<ValeurRecord, ProprieteRecord> VALEUR__PROPRIETE_VALEUR_FK = createForeignKey(bdd.generated.Keys.PROPRIETE_PK, Valeur.VALEUR, "valeur__propriete_valeur_fk", Valeur.VALEUR.ID_PROPRIETE);
         public static final ForeignKey<ValeurRecord, User_1Record> VALEUR__USER_1_VALEUR_FK = createForeignKey(bdd.generated.Keys.USER_1_PK, Valeur.VALEUR, "valeur__user_1_valeur_fk", Valeur.VALEUR.ID_USER);
+        public static final ForeignKey<ValeurmdpRecord, TypechiffrageRecord> VALEURMDP__TYPECHIFFRAGE_VALEURMDP_FK = createForeignKey(bdd.generated.Keys.TYPECHIFFRAGE_PK, Valeurmdp.VALEURMDP, "valeurmdp__typechiffrage_valeurmdp_fk", Valeurmdp.VALEURMDP.ID_TYPECHIFFRAGE);
         public static final ForeignKey<VisibiliteRecord, ValeurRecord> VISIBILITE__VALEUR_VISIBILITE_FK = createForeignKey(bdd.generated.Keys.VALEUR_PK, Visibilite.VISIBILITE, "visibilite__valeur_visibilite_fk", Visibilite.VISIBILITE.ID_VALEUR);
         public static final ForeignKey<VisibiliteRecord, DomaineRecord> VISIBILITE__DOMAINE_VISIBILITE_FK = createForeignKey(bdd.generated.Keys.DOMAINE_PK, Visibilite.VISIBILITE, "visibilite__domaine_visibilite_fk", Visibilite.VISIBILITE.ID_DOMAINE);
     }

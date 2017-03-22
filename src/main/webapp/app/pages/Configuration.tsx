@@ -1,7 +1,6 @@
 
 import * as React from 'react';
 import {Page, PageProps} from 'Page';
-import {Header} from 'items/Header';
 
 export interface ConfigurationProps extends PageProps {
 
@@ -17,10 +16,6 @@ export class Configuration extends Page<ConfigurationProps> {
 
 	public hasHeader(): boolean {
 		return true;
-	}
-
-	public renderHeader() {
-		return <Header controleur={this.props.controleur} user={this.props.user} page={this.nom} show={this.hasHeader()} onSwitch={this.switchPage} onAlert={this.addAlert} />
 	}
 
 	public renderBandeau() {

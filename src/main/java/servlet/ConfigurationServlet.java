@@ -5,10 +5,8 @@
  */
 package servlet;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
+import entity.MainEntity;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,18 +15,11 @@ import javax.servlet.http.HttpServletResponse;
  * @author Richard
  */
 @WebServlet(name = "ConfigurationServlet", urlPatterns = {"/configuration"})
-public class ConfigurationServlet extends HttpServlet {
+public class ConfigurationServlet extends Controleur {
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-	}
-
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
+	protected MainEntity onPost(HttpServletRequest request, HttpServletResponse response) {
+		return null;
 	}
 
 }

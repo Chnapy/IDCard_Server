@@ -1,49 +1,70 @@
 
-
 interface Callbacks {
 	success?: any,
+	error?: any,
 	fail?: any,
 	done?: any,
 	always?: any
 }
 
+export interface User {
+
+	connected: boolean,
+	id_user: number;
+	pseudo: string;
+	mail: string;
+	dateinscription: Date;
+	datederniereconnexion: Date;
+	nbrconnexion: number;
+
+}
+
+export interface Data {
+	success: boolean,
+	code: number,
+	message: string,
+	content: {
+		user: User
+	}
+}
+
 export class AjaxCallback {
 
-	private readonly success: any;
-	private readonly fail: any;
-	private readonly done: any;
-	private readonly always: any;
+	private readonly cb: Callbacks;
 
-	public constructor(array?: Callbacks) {
-		if (array) {
-			this.success = array.success;
-			this.fail = array.fail;
-			this.done = array.done;
-			this.always = array.always;
+	public constructor(cb?: Callbacks) {
+		if (cb) {
+			this.cb = cb;
 		}
 	}
 
-	public onSuccess(data: any): void {
-		if (this.success) {
-			this.success(data);
+	public onSuccess(data: Data): void {
+		if (data.success) {
+			if (this.cb.success) {
+				this.cb.success(data);
+			}
+		} else {
+			if (this.cb.error) {
+				this.cb.error(data);
+			}
 		}
 	}
 
 	public onFail(): void {
-		if (this.fail) {
-			this.fail();
+		if (this.cb.fail) {
+			this.cb.fail();
 		}
 	}
 
-	public onDone(data: any): void {
-		if (this.done) {
-			this.done(data);
+	public onDone(data: Data): void {
+		if (this.cb.done) {
+			this.cb.done(data);
 		}
 	}
 
-	public onAlways(data: any): void {
-		if (this.always) {
-			this.always(data);
+	public onAlways(data: Data): void {
+		if (this.cb.always) {
+			this.cb.always(data);
 		}
 	}
 

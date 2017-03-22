@@ -91,11 +91,11 @@ $header_height: 50px;
 					text-align: center;
 					vertical-align: middle;
 					cursor: pointer;
-					
+
 					&:hover {
 						background: darken($color_primary, 2%);
 					}
-					
+
 					.glyphicon {
 						top: 50%;
 						transform: translateY(-50%);
@@ -324,7 +324,7 @@ $header_height: 50px;
 
 		&.myalert {
 			&::after {
-				content: 'Erreur';
+				content: 'Erreur ' attr(data-code);
 			}
 
 			&::after, &::before {
@@ -356,6 +356,7 @@ $header_height: 50px;
 
 	&.disabled {
 		@extend .but:active;
+		cursor: default;
 	}
 
 	&.load {
@@ -437,7 +438,7 @@ a.but {
 		margin-bottom: 0;
 		word-break: break-word;
 		width: $alertListWidth - $alertMargin * 2;
-		padding-top: 6px;
+		padding-top: 10px;
 		text-align: left;
 		transition: opacity $transition_dur;
 

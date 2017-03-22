@@ -18,19 +18,29 @@ import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
  * BDD.java
  *
  */
-public class BDD {
+class BDD {
 
 	private static boolean INITIALISED = false;
 
 	private static Jdbc3PoolingDataSource SOURCE;
 
-	public static <T> T act(BDDContent bddC) throws SQLException {
+	public BDD() {
+	}
+
+	public <T> T act(BDDContent bddC) throws SQLException, Exception {
 		if (!INITIALISED) {
 			init();
 		}
 		try (Connection conn = SOURCE.getConnection();
 				DSLContext create = DSL.using(conn, SQLDialect.POSTGRES)) {
-			return (T) bddC.act(create);
+
+//			final T ret;
+			return create.transactionResult(configuration -> {
+				DSLContext ctx = DSL.using(configuration);
+				return (T) bddC.act(ctx);
+			});
+
+//			return (T) bddC.act(create);
 		}
 	}
 
@@ -57,21 +67,16 @@ public class BDD {
 		INITIALISED = true;
 	}
 
-	public static interface BDDContent {
-
-		public Object act(DSLContext create);
-	}
-
 	public static enum TypeProp {
 
 		STRING(1),
 		INTEGER(2),
 		BOOLEAN(3),
 		DATE(4);
-		
+
 		public final int id;
 
-		TypeProp(int id) {
+		private TypeProp(int id) {
 			this.id = id;
 		}
 	}

@@ -5,12 +5,10 @@ import {Vue, VueProps} from 'struct/Vue';
 import {MainManager} from 'modules/main/MainManager';
 import {Pages} from 'pages/Pages';
 import {AlertLevel} from 'items/Alert';
+import {User} from 'struct/AjaxCallback';
 
 export interface HeaderProps extends VueProps<MainManager> {
-	user: {
-		connected: boolean,
-		pseudo: string
-	},
+	user: User,
 	page: string,
 	show: boolean
 }

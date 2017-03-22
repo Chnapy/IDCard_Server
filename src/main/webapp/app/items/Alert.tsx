@@ -12,6 +12,7 @@ interface AlertProps {
 	level: AlertLevel,
 	title: string,
 	content: string,
+	code: number,
 	time: string,
 	onHide: any
 }
@@ -39,7 +40,7 @@ export class Alert extends React.Component<AlertProps, AlertState> {
 			'primary': this.props.level === AlertLevel.Primary,
 			'error': this.props.level === AlertLevel.Error,
 			'no-display': !this.state.display
-		})} data-time={this.props.time}>
+		})} data-time={this.props.time} data-code={this.props.code}>
 			<span className='myalert-close' onClick={this.hide}></span>
 			<div className='myalert-title'>{this.props.title}</div>
 			<div className='myalert-content'>{this.props.content}</div>

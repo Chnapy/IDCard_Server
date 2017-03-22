@@ -21,8 +21,6 @@ export abstract class Page<P extends PageProps> extends Vue<P, undefined> {
 	
 	public abstract hasHeader(): boolean;
 	
-	public abstract renderHeader(): any;
-	
 	public abstract renderBandeau(): any;
 
 	public abstract render(): any;

@@ -25,6 +25,48 @@ Const.LENGTH = {
     }
 };
 Const.TRANSITION_DURATION = 500;
+Const.CODES = {
+    0: {
+        titre: 'OK',
+        message: '',
+        crit: 0
+    },
+    100: {
+        titre: 'Erreur réseau',
+        message: 'Le site n\'arrive pas à communiquer avec le serveur. Êtes-vous connecté à internet ?',
+        crit: 2
+    },
+    200: {
+        titre: 'Erreur serveur',
+        message: 'Une erreur serveur est intervenue. Merci d\'en informer l\'administrateur',
+        crit: 3
+    },
+    300: {
+        titre: 'Erreur critique',
+        message: 'Une erreur critique est intervenue. Les services risques de disfonctionner. Merci d\'en informer l\'administrateur',
+        crit: 4
+    },
+    400: {
+        titre: 'Code erreur inconnu',
+        message: 'Une requête au serveur a renvoyé un code erreur inconnu. Merci d\'en informer l\'administrateur',
+        crit: 3
+    },
+    610: {
+        titre: 'Échec de la connexion',
+        message: 'Vérifiez vos identifiants et réessayez',
+        crit: 2
+    },
+    620: {
+        titre: 'Échec de l\'inscription',
+        message: 'Vérifiez les informations rentrées et réessayez',
+        crit: 2
+    },
+    621: {
+        titre: 'Échec de l\'inscription',
+        message: 'Un utilisateur avec le même pseudo ou mail existe déjà',
+        crit: 2
+    },
+};
 define("items/Alert", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
     "use strict";
     var AlertLevel;
@@ -51,7 +93,7 @@ define("items/Alert", ["require", "exports", "react", "classnames"], function (r
                     'primary': this.props.level === AlertLevel.Primary,
                     'error': this.props.level === AlertLevel.Error,
                     'no-display': !this.state.display
-                }), "data-time": this.props.time },
+                }), "data-time": this.props.time, "data-code": this.props.code },
                 React.createElement("span", { className: 'myalert-close', onClick: this.hide }),
                 React.createElement("div", { className: 'myalert-title' }, this.props.title),
                 React.createElement("div", { className: 'myalert-content' }, this.props.content));
@@ -105,7 +147,7 @@ define("items/AlertList", ["require", "exports", "react", "react-dom", "classnam
         AlertList.prototype.render = function () {
             var _this = this;
             var alerts = this.alerts.map(function (a) {
-                return React.createElement(Alert_1.Alert, { key: a.key, level: a.level, title: a.title, content: a.content, time: a.time, onHide: function () { a.hide = true; _this.check(); } });
+                return React.createElement(Alert_1.Alert, { key: a.key, level: a.level, title: a.title, content: a.content, code: a.code, time: a.time, onHide: function () { a.hide = true; _this.check(); } });
             });
             return React.createElement("div", { id: 'alertList', className: classNames({
                     'open': this.state.open,
@@ -132,7 +174,7 @@ define("items/Bouton", ["require", "exports", "react", "classnames"], function (
             return React.createElement("button", { className: classNames({
                     'but': true,
                     'but-primary': this.props.primary,
-                    'load': this.state.load,
+                    'load': this.props.load,
                     'disabled': this.state.disabled || this.props.disabled
                 }, this.props.className), type: this.props.submit ? 'submit' : 'button', onClick: function (e) {
                     _this.props.onClick(e, _this);
@@ -148,11 +190,56 @@ define("items/Bouton", ["require", "exports", "react", "classnames"], function (
     }(React.Component));
     exports.Bouton = Bouton;
 });
+define("struct/AjaxCallback", ["require", "exports"], function (require, exports) {
+    "use strict";
+    var AjaxCallback = (function () {
+        function AjaxCallback(cb) {
+            if (cb) {
+                this.cb = cb;
+            }
+        }
+        AjaxCallback.prototype.onSuccess = function (data) {
+            if (data.success) {
+                if (this.cb.success) {
+                    this.cb.success(data);
+                }
+            }
+            else {
+                if (this.cb.error) {
+                    this.cb.error(data);
+                }
+            }
+        };
+        AjaxCallback.prototype.onFail = function () {
+            if (this.cb.fail) {
+                this.cb.fail();
+            }
+        };
+        AjaxCallback.prototype.onDone = function (data) {
+            if (this.cb.done) {
+                this.cb.done(data);
+            }
+        };
+        AjaxCallback.prototype.onAlways = function (data) {
+            if (this.cb.always) {
+                this.cb.always(data);
+            }
+        };
+        return AjaxCallback;
+    }());
+    exports.AjaxCallback = AjaxCallback;
+});
 define("struct/Modele", ["require", "exports"], function (require, exports) {
     "use strict";
     var Modele = (function () {
         function Modele() {
         }
+        Modele.prototype.ajaxPost = function (url, donnees, ajaxc) {
+            $.post(url, donnees, function (data) { return ajaxc.onSuccess(data); }, 'json')
+                .fail(function () { return ajaxc.onFail(); })
+                .done(function (data) { return ajaxc.onDone(data); })
+                .always(function (data) { return ajaxc.onAlways(data); });
+        };
         return Modele;
     }());
     exports.Modele = Modele;
@@ -160,11 +247,8 @@ define("struct/Modele", ["require", "exports"], function (require, exports) {
 define("struct/Controleur", ["require", "exports"], function (require, exports) {
     "use strict";
     var Controleur = (function () {
-        function Controleur(modele, vue) {
+        function Controleur(modele) {
             this.modele = modele;
-            if (vue) {
-                this.vue = vue;
-            }
         }
         Object.defineProperty(Controleur.prototype, "modele", {
             get: function () {
@@ -202,49 +286,14 @@ define("struct/Vue", ["require", "exports", "react"], function (require, exports
                 this.props.onSwitch(page);
             }
         };
-        Vue.prototype.addAlert = function (level, title, content) {
+        Vue.prototype.addAlert = function (level, title, content, code) {
             if (this.props.onAlert) {
-                this.props.onAlert(level, title, content);
+                this.props.onAlert(level, title, content, code);
             }
         };
         return Vue;
     }(React.Component));
     exports.Vue = Vue;
-});
-define("struct/AjaxCallback", ["require", "exports"], function (require, exports) {
-    "use strict";
-    var AjaxCallback = (function () {
-        function AjaxCallback(array) {
-            if (array) {
-                this.success = array.success;
-                this.fail = array.fail;
-                this.done = array.done;
-                this.always = array.always;
-            }
-        }
-        AjaxCallback.prototype.onSuccess = function (data) {
-            if (this.success) {
-                this.success(data);
-            }
-        };
-        AjaxCallback.prototype.onFail = function () {
-            if (this.fail) {
-                this.fail();
-            }
-        };
-        AjaxCallback.prototype.onDone = function (data) {
-            if (this.done) {
-                this.done(data);
-            }
-        };
-        AjaxCallback.prototype.onAlways = function (data) {
-            if (this.always) {
-                this.always(data);
-            }
-        };
-        return AjaxCallback;
-    }());
-    exports.AjaxCallback = AjaxCallback;
 });
 define("modules/main/MainModele", ["require", "exports", "struct/Modele"], function (require, exports, Modele_1) {
     "use strict";
@@ -253,26 +302,24 @@ define("modules/main/MainModele", ["require", "exports", "struct/Modele"], funct
         function MainModele() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        MainModele.prototype.isConnected = function () {
-            return GLOBALS.user.connected;
-        };
+        Object.defineProperty(MainModele.prototype, "user", {
+            get: function () {
+                return this._user;
+            },
+            set: function (user) {
+                this._user = user;
+            },
+            enumerable: true,
+            configurable: true
+        });
         MainModele.prototype.connexion = function (pseudo, mail, mdp, isMail, ajaxc) {
-            $.post('connexion', { pseudo: pseudo, mail: mail, mdp: mdp, isMail: isMail }, function (data) { return ajaxc.onSuccess(data); })
-                .fail(function () { return ajaxc.onFail(); })
-                .done(function (data) { return ajaxc.onDone(data); })
-                .always(function (data) { return ajaxc.onAlways(data); });
+            this.ajaxPost('connexion', { pseudo: pseudo, mail: mail, mdp: mdp, isMail: isMail }, ajaxc);
         };
         MainModele.prototype.deconnexion = function (ajaxc) {
-            $.post('deconnexion', {}, function (data) { return ajaxc.onSuccess(data); })
-                .fail(function () { return ajaxc.onFail(); })
-                .done(function (data) { return ajaxc.onDone(data); })
-                .always(function (data) { return ajaxc.onAlways(data); });
+            this.ajaxPost('deconnexion', {}, ajaxc);
         };
         MainModele.prototype.inscription = function (pseudo, mail, mdp, ajaxc) {
-            $.post('inscription', { pseudo: pseudo, mail: mail, mdp: mdp }, function (data) { return ajaxc.onSuccess(data); })
-                .fail(function () { return ajaxc.onFail(); })
-                .done(function (data) { return ajaxc.onDone(data); })
-                .always(function (data) { return ajaxc.onAlways(data); });
+            this.ajaxPost('inscription', { pseudo: pseudo, mail: mail, mdp: mdp }, ajaxc);
         };
         return MainModele;
     }(Modele_1.Modele));
@@ -298,7 +345,7 @@ define("pages/Page", ["require", "exports", "struct/Vue"], function (require, ex
     }(Vue_1.Vue));
     exports.Page = Page;
 });
-define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/Bouton", "items/Alert", "pages/Pages"], function (require, exports, React, Vue_2, Bouton_1, Alert_2, Pages_1) {
+define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/Bouton"], function (require, exports, React, Vue_2, Bouton_1) {
     "use strict";
     var BoutonType;
     (function (BoutonType) {
@@ -329,26 +376,16 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
             e.preventDefault();
         };
         StartForm.prototype.send = function (bouton) {
-            var _this = this;
             if (!this.form.checkValidity()) {
                 bouton.setState({ disabled: false, load: false });
                 return;
             }
             this.setState({ load: true });
             if (this.state.type === BoutonType.Connexion) {
-                this.props.controleur.connexion(this.state.ip_pseudo, this.state.ip_mail, this.state.ip_mdp, this.state.isMail, {
-                    fail: function () { return _this.addAlert(Alert_2.AlertLevel.Error, "Connexion impossible", "Serveur inaccessible"); },
-                    always: function () {
-                        _this.setState({ load: false });
-                        _this.switchPage(Pages_1.Pages.Configuration);
-                    }
-                });
+                this.props.controleur.connexion(this.state.ip_pseudo, this.state.ip_mail, this.state.ip_mdp, this.state.isMail, this);
             }
             else {
-                this.props.controleur.inscription(this.state.ip_pseudo, this.state.ip_mail, this.state.ip_mdp, {
-                    fail: function () { return _this.addAlert(Alert_2.AlertLevel.Error, "Inscription impossible", "Serveur inaccessible"); },
-                    always: function () { return _this.setState({ load: false }); }
-                });
+                this.props.controleur.inscription(this.state.ip_pseudo, this.state.ip_mail, this.state.ip_mdp, this);
             }
         };
         StartForm.prototype.handleMdp = function (e) {
@@ -433,9 +470,9 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
                         React.createElement("input", { type: "password", className: "field", id: "ip_mdp", name: "ip_mdp", value: this.state.ip_mdp, onChange: function (e) { return _this.handleMdp(e); }, minLength: Const.LENGTH.MDP.min, maxLength: Const.LENGTH.MDP.max, required: true })),
                     inscription,
                     React.createElement("div", { className: "form-group" },
-                        React.createElement(Bouton_1.Bouton, { value: "Inscrivez-vous", className: "d-block", primary: this.state.type === BoutonType.Inscription, submit: this.state.type === BoutonType.Inscription, onClick: function (e, bouton) { return _this.onClick(e, bouton, BoutonType.Inscription); }, disabled: this.state.load, onClickLoad: this.state.type === BoutonType.Inscription })),
+                        React.createElement(Bouton_1.Bouton, { value: "Inscrivez-vous", className: "d-block", primary: this.state.type === BoutonType.Inscription, submit: this.state.type === BoutonType.Inscription, onClick: function (e, bouton) { return _this.onClick(e, bouton, BoutonType.Inscription); }, disabled: this.state.load, load: this.state.load && this.state.type === BoutonType.Inscription })),
                     React.createElement("div", { className: "form-group" },
-                        React.createElement(Bouton_1.Bouton, { value: "Connectez-vous", className: "d-block", primary: this.state.type === BoutonType.Connexion, submit: this.state.type === BoutonType.Connexion, onClick: function (e, bouton) { return _this.onClick(e, bouton, BoutonType.Connexion); }, disabled: this.state.load, onClickLoad: this.state.load && (this.state.type === BoutonType.Connexion) }),
+                        React.createElement(Bouton_1.Bouton, { value: "Connectez-vous", className: "d-block", primary: this.state.type === BoutonType.Connexion, submit: this.state.type === BoutonType.Connexion, onClick: function (e, bouton) { return _this.onClick(e, bouton, BoutonType.Connexion); }, disabled: this.state.load, load: this.state.load && this.state.type === BoutonType.Connexion }),
                         React.createElement("div", { className: "text-center" },
                             React.createElement("a", { href: "" }, "Vous avez oubli\u00E9 vos identifiants ?")))));
         };
@@ -444,7 +481,7 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
     StartForm.MAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     exports.StartForm = StartForm;
 });
-define("pages/Accueil", ["require", "exports", "react", "pages/Page", "items/Header", "items/StartForm"], function (require, exports, React, Page_1, Header_1, StartForm_1) {
+define("pages/Accueil", ["require", "exports", "react", "pages/Page", "items/StartForm"], function (require, exports, React, Page_1, StartForm_1) {
     "use strict";
     var Accueil = (function (_super) {
         __extends(Accueil, _super);
@@ -453,9 +490,6 @@ define("pages/Accueil", ["require", "exports", "react", "pages/Page", "items/Hea
         }
         Accueil.prototype.hasHeader = function () {
             return false;
-        };
-        Accueil.prototype.renderHeader = function () {
-            return React.createElement(Header_1.Header, { controleur: this.props.controleur, user: this.props.user, page: this.nom, show: this.hasHeader(), onSwitch: this.switchPage, onAlert: this.addAlert });
         };
         Accueil.prototype.renderBandeau = function () {
             return React.createElement("div", { className: "bandeau dark" },
@@ -480,7 +514,7 @@ define("pages/Accueil", ["require", "exports", "react", "pages/Page", "items/Hea
     Accueil.NOM = 'Accueil';
     exports.Accueil = Accueil;
 });
-define("pages/Configuration", ["require", "exports", "react", "pages/Page", "items/Header"], function (require, exports, React, Page_2, Header_2) {
+define("pages/Configuration", ["require", "exports", "react", "pages/Page"], function (require, exports, React, Page_2) {
     "use strict";
     var Configuration = (function (_super) {
         __extends(Configuration, _super);
@@ -489,9 +523,6 @@ define("pages/Configuration", ["require", "exports", "react", "pages/Page", "ite
         }
         Configuration.prototype.hasHeader = function () {
             return true;
-        };
-        Configuration.prototype.renderHeader = function () {
-            return React.createElement(Header_2.Header, { controleur: this.props.controleur, user: this.props.user, page: this.nom, show: this.hasHeader(), onSwitch: this.switchPage, onAlert: this.addAlert });
         };
         Configuration.prototype.renderBandeau = function () {
             return React.createElement("div", { className: "bandeau dark" },
@@ -517,7 +548,7 @@ define("pages/Pages", ["require", "exports", "pages/Accueil", "pages/Configurati
         Pages.Configuration = B.Configuration;
     })(Pages = exports.Pages || (exports.Pages = {}));
 });
-define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "classnames", "struct/Vue", "items/Header", "pages/Pages", "items/AlertList"], function (require, exports, React, ReactDOM, classNames, Vue_3, Header_3, Pages_2, AlertList_1) {
+define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "classnames", "struct/Vue", "items/Header", "pages/Pages", "items/AlertList"], function (require, exports, React, ReactDOM, classNames, Vue_3, Header_1, Pages_1, AlertList_1) {
     "use strict";
     var MainVue = (function (_super) {
         __extends(MainVue, _super);
@@ -525,7 +556,7 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
             var _this = _super.call(this, props, context) || this;
             _this.alertList = [];
             _this.alertKey = 1;
-            _this.state = { alertList: [], page: Pages_2.Pages[props.page], display: true };
+            _this.state = { alertList: [], page: Pages_1.Pages[props.page], display: true, user: props.user };
             _this.mainAlert = _this.mainAlert.bind(_this, _this.state.alertList);
             _this.mainSwitchPage = _this.mainSwitchPage.bind(_this, _this.state.page);
             return _this;
@@ -540,10 +571,13 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
             this.setState({ display: false });
             setTimeout(function () { return _this.setState({ page: page, display: true }); }, Const.TRANSITION_DURATION);
         };
-        MainVue.prototype.mainAlert = function (arr, level, title, content) {
+        MainVue.prototype.mainAlert = function (arr, level, title, content, code) {
             var curDate = new Date();
+            if (!code) {
+                code = 0;
+            }
             var alert = {
-                key: this.alertKey, level: level, title: title, content: content, time: curDate.toLocaleTimeString(), hide: false
+                key: this.alertKey, level: level, title: title, content: content, code: code, time: curDate.toLocaleTimeString(), hide: false
             };
             this.alertList.push(alert);
             this.alertKey++;
@@ -564,7 +598,7 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
                     'no-header': !p.hasHeader(),
                     'no-display': !this.state.display
                 }) },
-                React.createElement(Header_3.Header, { controleur: this.props.controleur, user: this.props.user, page: p.nom, show: p.hasHeader(), onSwitch: this.mainSwitchPage, onAlert: this.mainAlert }),
+                React.createElement(Header_1.Header, { controleur: this.props.controleur, user: this.state.user, page: p.nom, show: p.hasHeader(), onSwitch: this.mainSwitchPage, onAlert: this.mainAlert }),
                 React.createElement("div", { id: "content", className: "body-content" },
                     p.renderBandeau(),
                     p.render()),
@@ -575,24 +609,59 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
     }(Vue_3.Vue));
     exports.MainVue = MainVue;
 });
-define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "modules/main/MainModele", "modules/main/MainVue", "struct/AjaxCallback"], function (require, exports, Controleur_1, MainModele_1, MainVue_1, AjaxCallback_1) {
+define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "modules/main/MainModele", "modules/main/MainVue", "struct/AjaxCallback", "items/Alert", "pages/Pages"], function (require, exports, Controleur_1, MainModele_1, MainVue_1, AjaxCallback_1, Alert_2, Pages_2) {
     "use strict";
     var MainManager = (function (_super) {
         __extends(MainManager, _super);
         function MainManager() {
-            return _super.call(this, new MainModele_1.MainModele(), undefined) || this;
+            return _super.call(this, new MainModele_1.MainModele()) || this;
         }
         MainManager.prototype.start = function () {
             MainVue_1.MainVue.applyVue(this);
         };
-        MainManager.prototype.connexion = function (pseudo, mail, mdp, isMail, callbacks) {
-            this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback_1.AjaxCallback(callbacks));
+        MainManager.prototype.connexion = function (pseudo, mail, mdp, isMail, vue) {
+            var _this = this;
+            this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback_1.AjaxCallback({
+                success: function (data) {
+                    vue.addAlert(Alert_2.AlertLevel.Primary, "Connexion réussie", "Félicitations");
+                    _this.modele.user = data.content.user;
+                    _this.vue.setState({ user: _this.modele.user });
+                },
+                error: function (data) { return _this.showAlertFromCode(data.code, vue); },
+                fail: function () { return _this.showAlertFromCode(100, vue); },
+                always: function () {
+                    vue.setState({ load: false });
+                    vue.switchPage(Pages_2.Pages.Configuration);
+                }
+            }));
         };
         MainManager.prototype.deconnexion = function (callbacks) {
             this.modele.deconnexion(new AjaxCallback_1.AjaxCallback(callbacks));
         };
-        MainManager.prototype.inscription = function (pseudo, mail, mdp, callbacks) {
-            this.modele.inscription(pseudo, mail, mdp, new AjaxCallback_1.AjaxCallback(callbacks));
+        MainManager.prototype.inscription = function (pseudo, mail, mdp, vue) {
+            var _this = this;
+            this.modele.inscription(pseudo, mail, mdp, new AjaxCallback_1.AjaxCallback({
+                success: function (data) { return vue.addAlert(Alert_2.AlertLevel.Primary, "Inscription réussie", "Félicitations"); },
+                error: function (data) { return _this.showAlertFromCode(data.code, vue); },
+                fail: function () { return _this.showAlertFromCode(100, vue); },
+                always: function () { return vue.setState({ load: false }); }
+            }));
+        };
+        MainManager.prototype.showAlertFromCode = function (code_num, vue) {
+            var code = Const.CODES[code_num];
+            if (!code) {
+                code = Const.CODES[400];
+            }
+            var level;
+            switch (code.crit) {
+                case 0:
+                    level = Alert_2.AlertLevel.Normal;
+                    break;
+                default:
+                    level = Alert_2.AlertLevel.Error;
+                    break;
+            }
+            vue.addAlert(level, code.titre, code.message, code_num);
         };
         return MainManager;
     }(Controleur_1.Controleur));

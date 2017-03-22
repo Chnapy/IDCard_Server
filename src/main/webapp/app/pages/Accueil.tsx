@@ -1,7 +1,6 @@
 
 import * as React from 'react';
 import {Page, PageProps} from 'Page';
-import {Header} from 'items/Header';
 import {StartForm} from 'items/StartForm';
 
 export interface AccueilProps extends PageProps {
@@ -18,10 +17,6 @@ export class Accueil extends Page<AccueilProps> {
 
 	public hasHeader(): boolean {
 		return false;
-	}
-
-	public renderHeader() {
-		return <Header controleur={this.props.controleur} user={this.props.user} page={this.nom} show={this.hasHeader()} onSwitch={this.switchPage} onAlert={this.addAlert} />
 	}
 
 	public renderBandeau() {

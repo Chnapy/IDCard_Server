@@ -3,8 +3,6 @@ import * as React from 'react';
 import {Vue, VueProps} from 'struct/Vue';
 import {MainManager} from 'modules/main/MainManager';
 import {Bouton} from 'items/Bouton';
-import {AlertLevel} from 'items/Alert';
-import {Pages} from 'pages/Pages';
 
 enum BoutonType {
 	Inscription,
@@ -59,18 +57,9 @@ export class StartForm extends Vue<VueProps<MainManager>, StartFormState> {
 
 		this.setState({load: true});
 		if (this.state.type === BoutonType.Connexion) {
-			this.props.controleur.connexion(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string, this.state.isMail as boolean, {
-				fail: () => this.addAlert(AlertLevel.Error, "Connexion impossible", "Serveur inaccessible"),
-				always: () => {
-					this.setState({load: false});
-					this.switchPage(Pages.Configuration);
-				}
-			});
+			this.props.controleur.connexion(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string, this.state.isMail as boolean, this);
 		} else {
-			this.props.controleur.inscription(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string, {
-				fail: () => this.addAlert(AlertLevel.Error, "Inscription impossible", "Serveur inaccessible"),
-				always: () => this.setState({load: false})
-			});
+			this.props.controleur.inscription(this.state.ip_pseudo as string, this.state.ip_mail as string, this.state.ip_mdp as string, this);
 		}
 	}
 
@@ -199,14 +188,13 @@ export class StartForm extends Vue<VueProps<MainManager>, StartFormState> {
 				<div className="form-group">
 					<Bouton value="Inscrivez-vous" className={"d-block"} primary={this.state.type === BoutonType.Inscription}
 						submit={this.state.type === BoutonType.Inscription} onClick={(e: any, bouton: Bouton) => this.onClick(e, bouton, BoutonType.Inscription)}
-						disabled={this.state.load}
-						onClickLoad={this.state.type === BoutonType.Inscription} />
+						disabled={this.state.load} load={this.state.load && this.state.type === BoutonType.Inscription}
+					/>
 				</div>
 				<div className="form-group">
 					<Bouton value="Connectez-vous" className={"d-block"} primary={this.state.type === BoutonType.Connexion}
 						submit={this.state.type === BoutonType.Connexion} onClick={(e: any, bouton: Bouton) => this.onClick(e, bouton, BoutonType.Connexion)}
-						disabled={this.state.load}
-						onClickLoad={this.state.load && (this.state.type === BoutonType.Connexion)} />
+						disabled={this.state.load} load={this.state.load && this.state.type === BoutonType.Connexion} />
 					<div className="text-center"><a href="">Vous avez oublié vos identifiants ?</a></div>
 				</div>
 			</form>

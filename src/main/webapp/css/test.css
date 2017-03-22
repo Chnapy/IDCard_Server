@@ -272,7 +272,7 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
       background: #ea6153;
       text-shadow: 0px 0px 1px rgba(255, 255, 255, 0.1); }
     .but.but-error.myalert::after, .but.error.myalert::after, .myalert.but-error.myalert::after, .myalert.error.myalert::after {
-      content: 'Erreur'; }
+      content: "Erreur " attr(data-code); }
     .but.but-error.myalert::after, .but.but-error.myalert::before, .but.error.myalert::after, .but.error.myalert::before, .myalert.but-error.myalert::after, .myalert.but-error.myalert::before, .myalert.error.myalert::after, .myalert.error.myalert::before {
       color: #921e12; }
   .but.but-delete, .but.delete, .myalert.but-delete, .myalert.delete {
@@ -286,6 +286,8 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
     line-height: 100%; }
     .but.but-add:after, .but.add:after, .myalert.but-add:after, .myalert.add:after {
       content: '+'; }
+  .but.disabled, .myalert.disabled {
+    cursor: default; }
   .but.load, .myalert.load {
     color: transparent !important; }
     .but.load::after, .myalert.load::after {
@@ -340,7 +342,7 @@ a.but {
     margin-bottom: 0;
     word-break: break-word;
     width: 190px;
-    padding-top: 6px;
+    padding-top: 10px;
     text-align: left;
     transition: opacity 0.5s;
     -webkit-animation-name: vertiPopOpa;

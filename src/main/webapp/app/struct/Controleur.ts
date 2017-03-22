@@ -20,11 +20,8 @@ export abstract class Controleur<M extends Modele, V extends Vue<any, any>> {
 		this._vue = vue;
 	}
 
-	public constructor(modele: M, vue?: V) {
+	public constructor(modele: M) {
 		this.modele = modele;
-		if (vue) {
-			this.vue = vue;
-		}
 	}
 
 }

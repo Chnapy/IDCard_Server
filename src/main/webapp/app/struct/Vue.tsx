@@ -21,9 +21,9 @@ export abstract class Vue<A extends VueProps<any>, B> extends React.Component<A,
 		}
 	}
 
-	public addAlert(level: AlertLevel, title: string, content: string): void {
+	public addAlert(level: AlertLevel, title: string, content: string, code?: number): void {
 		if (this.props.onAlert) {
-			this.props.onAlert(level, title, content);
+			this.props.onAlert(level, title, content, code);
 		}
 	}
 

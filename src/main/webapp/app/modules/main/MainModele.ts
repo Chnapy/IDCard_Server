@@ -5,37 +5,32 @@
  */
 
 import {Modele} from 'struct/Modele';
-import {AjaxCallback} from 'struct/AjaxCallback';
+import {AjaxCallback, User} from 'struct/AjaxCallback';
 
 /**
  * MainModele
  * 
  */
 export class MainModele extends Modele {
-
-	public isConnected(): boolean {
-		return GLOBALS.user.connected;
+	
+	private _user: User;
+	get user(): User {
+		return this._user;
+	}
+	set user(user: User) {
+		this._user = user;
 	}
 
 	public connexion(pseudo: string, mail: string, mdp: string, isMail: boolean, ajaxc: AjaxCallback): void {
-		$.post('connexion', {pseudo: pseudo, mail: mail, mdp: mdp, isMail: isMail}, (data) => ajaxc.onSuccess(data))
-			.fail(() => ajaxc.onFail())
-			.done((data) => ajaxc.onDone(data))
-			.always((data) => ajaxc.onAlways(data));
+		this.ajaxPost('connexion', {pseudo: pseudo, mail: mail, mdp: mdp, isMail: isMail}, ajaxc);
 	}
 
 	public deconnexion(ajaxc: AjaxCallback): void {
-		$.post('deconnexion', {}, (data) => ajaxc.onSuccess(data))
-			.fail(() => ajaxc.onFail())
-			.done((data) => ajaxc.onDone(data))
-			.always((data) => ajaxc.onAlways(data));
+		this.ajaxPost('deconnexion', {}, ajaxc);
 	}
 
 	public inscription(pseudo: string, mail: string, mdp: string, ajaxc: AjaxCallback): void {
-		$.post('inscription', {pseudo: pseudo, mail: mail, mdp: mdp}, (data) => ajaxc.onSuccess(data))
-			.fail(() => ajaxc.onFail())
-			.done((data) => ajaxc.onDone(data))
-			.always((data) => ajaxc.onAlways(data));
+		this.ajaxPost('inscription', {pseudo: pseudo, mail: mail, mdp: mdp}, ajaxc);
 	}
 
 }

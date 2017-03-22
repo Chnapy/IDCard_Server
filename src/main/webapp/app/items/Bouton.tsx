@@ -8,6 +8,7 @@ interface BoutonProps {
 	className?: string,
 	submit?: boolean,
 	disabled?: boolean,
+	load?: boolean,
 	onClick: any,
 	onClickDisable?: boolean,
 	onClickLoad?: boolean
@@ -30,7 +31,7 @@ export class Bouton extends React.Component<BoutonProps, BoutonState> {
 		return <button className={classNames({
 			'but': true,
 			'but-primary': this.props.primary,
-			'load': this.state.load,
+			'load': this.props.load,
 			'disabled': this.state.disabled || this.props.disabled
 		}, this.props.className)
 		} type={this.props.submit ? 'submit' : 'button'} onClick={e => {

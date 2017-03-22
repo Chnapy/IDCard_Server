@@ -8,6 +8,7 @@ import bdd.generated.tables.Domaine;
 import bdd.generated.tables.Propriete;
 import bdd.generated.tables.Session;
 import bdd.generated.tables.Sessionprop;
+import bdd.generated.tables.Typechiffrage;
 import bdd.generated.tables.Typefermeture;
 import bdd.generated.tables.Typeprop;
 import bdd.generated.tables.User_1;
@@ -46,7 +47,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 293173824;
+    private static final long serialVersionUID = -2123073132;
 
     /**
      * The reference instance of <code>public</code>
@@ -72,6 +73,11 @@ public class Public extends SchemaImpl {
      * The table <code>public.sessionprop</code>.
      */
     public final Sessionprop SESSIONPROP = bdd.generated.tables.Sessionprop.SESSIONPROP;
+
+    /**
+     * The table <code>public.typechiffrage</code>.
+     */
+    public final Typechiffrage TYPECHIFFRAGE = bdd.generated.tables.Typechiffrage.TYPECHIFFRAGE;
 
     /**
      * The table <code>public.typefermeture</code>.
@@ -185,6 +191,7 @@ public class Public extends SchemaImpl {
             Propriete.PROPRIETE,
             Session.SESSION,
             Sessionprop.SESSIONPROP,
+            Typechiffrage.TYPECHIFFRAGE,
             Typefermeture.TYPEFERMETURE,
             Typeprop.TYPEPROP,
             User_1.USER_1,

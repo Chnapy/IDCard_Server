@@ -3,10 +3,11 @@
  * 
  * 
  */
-package servlet;
+package modele;
 
-import bdd.BDD;
+import bdd.Modele;
 import static bdd.generated.tables.Propriete.PROPRIETE;
+import static bdd.generated.tables.Typechiffrage.TYPECHIFFRAGE;
 import static bdd.generated.tables.User_1.USER_1;
 import static bdd.generated.tables.Valeur.VALEUR;
 import static bdd.generated.tables.Valeurmdp.VALEURMDP;
@@ -15,8 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.sql.SQLException;
 import javafx.util.Pair;
-import main.Const;
-import main.Const.MdpCrypt;
+import bdd.Const;
 import org.jooq.Record;
 import org.jooq.Result;
 
@@ -24,25 +24,25 @@ import org.jooq.Result;
  * ConnexionModele.java
  *
  */
-public class InscriptionModele {
+public class InscriptionModele extends Modele {
 
-	public boolean issetClient(String pseudo, String mail) throws SQLException {
-		return BDD.act((create) -> {
+	public boolean issetClient(String pseudo, String mail) throws SQLException, Exception {
+		return bdd((create) -> {
 
 			Result<Record> results = create.select()
 					.from(USER_1).naturalJoin(PROPRIETE).naturalJoin(VALEUR).naturalJoin(VALEURSTRING)
-					.where(PROPRIETE.NOM.eq("login").and(VALEUR.PRINCIPALE.eq(true)).and(VALEURSTRING.VALEUR.lower().eq(pseudo.toLowerCase())))
-					.or(PROPRIETE.NOM.eq("mail").and(VALEUR.PRINCIPALE.eq(true)).and(VALEURSTRING.VALEUR.lower().eq(mail.toLowerCase())))
+					.where(PROPRIETE.NOM.eq(PROP_LOGIN_NOM).and(VALEUR.PRINCIPALE.eq(true)).and(VALEURSTRING.VALEUR.lower().eq(pseudo.toLowerCase())))
+					.or(PROPRIETE.NOM.eq(PROP_MAIL_NOM).and(VALEUR.PRINCIPALE.eq(true)).and(VALEURSTRING.VALEUR.lower().eq(mail.toLowerCase())))
 					.fetch();
 			return !results.isEmpty();
 		});
 	}
 
-	public void inscription(String pseudo, String mail, String mdp) throws SQLException, NoSuchAlgorithmException {
+	public void inscription(String pseudo, String mail, String mdp) throws SQLException, NoSuchAlgorithmException, Exception {
 
 		Pair<byte[], String> mdpCrypt = this.getCryptedPassword(mdp, Const.MDPMAIN_CRYPT);
 
-		BDD.act((create) -> {
+		bdd((create) -> {
 
 			//USER
 			long id_user = create.insertInto(USER_1, USER_1.DATEINSCRIPTION)
@@ -61,7 +61,7 @@ public class InscriptionModele {
 			create.insertInto(VALEUR)
 					.set(VALEUR.ID_USER, id_user)
 					.set(VALEUR.ID_PROPRIETE,
-							create.select(PROPRIETE.ID_PROPRIETE).from(PROPRIETE).where(PROPRIETE.NOM.eq("login")).fetchOne().getValue(PROPRIETE.ID_PROPRIETE)
+							create.select(PROPRIETE.ID_PROPRIETE).from(PROPRIETE).where(PROPRIETE.NOM.eq(PROP_LOGIN_NOM)).fetchOne().getValue(PROPRIETE.ID_PROPRIETE)
 					)
 					.set(VALEUR.PRINCIPALE, true)
 					.set(VALEUR.ID_VALEURTYPEE, id_val_typ_login)
@@ -77,22 +77,25 @@ public class InscriptionModele {
 			create.insertInto(VALEUR)
 					.set(VALEUR.ID_USER, id_user)
 					.set(VALEUR.ID_PROPRIETE,
-							create.select(PROPRIETE.ID_PROPRIETE).from(PROPRIETE).where(PROPRIETE.NOM.eq("mail")).fetchOne().getValue(PROPRIETE.ID_PROPRIETE)
+							create.select(PROPRIETE.ID_PROPRIETE).from(PROPRIETE).where(PROPRIETE.NOM.eq(PROP_MAIL_NOM)).fetchOne().getValue(PROPRIETE.ID_PROPRIETE)
 					)
 					.set(VALEUR.PRINCIPALE, true)
 					.set(VALEUR.ID_VALEURTYPEE, id_val_typ_mail)
 					.execute();
 
 			//MDP
-			
-			String salt = mdpCrypt.getKey()[0] + "";
-			for (int i = 1; i < mdpCrypt.getKey().length; i++) {
-				salt += "." + mdpCrypt.getKey()[i];
-			}
+			String salt = this.saltToString(mdpCrypt.getKey());
+			String mdpCryptStr = mdpCrypt.getValue();
 
 			long id_val_typ_mdp = create.insertInto(VALEURMDP)
-					.set(VALEURMDP.VALEUR, mdpCrypt.getValue())
+					.set(VALEURMDP.VALEUR, mdpCryptStr)
 					.set(VALEURMDP.SALT, salt)
+					.set(VALEURMDP.ID_TYPECHIFFRAGE,
+							create.select(TYPECHIFFRAGE.ID_TYPECHIFFRAGE)
+									.from(TYPECHIFFRAGE)
+									.where(TYPECHIFFRAGE.TYPECHIFFRAGE_.eq(Const.MDPMAIN_CRYPT.str))
+									.fetchOne().getValue(TYPECHIFFRAGE.ID_TYPECHIFFRAGE)
+					)
 					.returning(VALEURMDP.ID_VALEURTYPEE)
 					.fetchOne()
 					.getIdValeurtypee();
@@ -100,7 +103,7 @@ public class InscriptionModele {
 			create.insertInto(VALEUR)
 					.set(VALEUR.ID_USER, id_user)
 					.set(VALEUR.ID_PROPRIETE,
-							create.select(PROPRIETE.ID_PROPRIETE).from(PROPRIETE).where(PROPRIETE.NOM.eq("mdp")).fetchOne().getValue(PROPRIETE.ID_PROPRIETE)
+							create.select(PROPRIETE.ID_PROPRIETE).from(PROPRIETE).where(PROPRIETE.NOM.eq(PROP_MDP_NOM)).fetchOne().getValue(PROPRIETE.ID_PROPRIETE)
 					)
 					.set(VALEUR.PRINCIPALE, true)
 					.set(VALEUR.ID_VALEURTYPEE, id_val_typ_mdp)
@@ -108,14 +111,6 @@ public class InscriptionModele {
 
 			return null;
 		});
-	}
-
-	private Pair<byte[], String> getCryptedPassword(String mdp, MdpCrypt crypt) throws NoSuchAlgorithmException {
-
-		byte[] salt = MdpCrypt.getRandomSalt();
-		String mdpCrypt = crypt.getCryptedPassword(mdp, salt);
-
-		return new Pair(salt, mdpCrypt);
 	}
 
 }

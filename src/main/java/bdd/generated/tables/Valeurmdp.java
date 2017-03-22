@@ -14,6 +14,7 @@ import java.util.List;
 import javax.annotation.Generated;
 
 import org.jooq.Field;
+import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Schema;
 import org.jooq.Table;
@@ -35,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Valeurmdp extends TableImpl<ValeurmdpRecord> {
 
-    private static final long serialVersionUID = -1058498024;
+    private static final long serialVersionUID = 1851329388;
 
     /**
      * The reference instance of <code>public.valeurmdp</code>
@@ -64,6 +65,11 @@ public class Valeurmdp extends TableImpl<ValeurmdpRecord> {
      * The column <code>public.valeurmdp.salt</code>.
      */
     public final TableField<ValeurmdpRecord, String> SALT = createField("salt", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+
+    /**
+     * The column <code>public.valeurmdp.id_typechiffrage</code>.
+     */
+    public final TableField<ValeurmdpRecord, Integer> ID_TYPECHIFFRAGE = createField("id_typechiffrage", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>public.valeurmdp</code> table reference
@@ -117,6 +123,14 @@ public class Valeurmdp extends TableImpl<ValeurmdpRecord> {
     @Override
     public List<UniqueKey<ValeurmdpRecord>> getKeys() {
         return Arrays.<UniqueKey<ValeurmdpRecord>>asList(Keys.VALEURMDP_PK);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ForeignKey<ValeurmdpRecord, ?>> getReferences() {
+        return Arrays.<ForeignKey<ValeurmdpRecord, ?>>asList(Keys.VALEURMDP__TYPECHIFFRAGE_VALEURMDP_FK);
     }
 
     /**

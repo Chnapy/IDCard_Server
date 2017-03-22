@@ -8,6 +8,7 @@ import bdd.generated.tables.Domaine;
 import bdd.generated.tables.Propriete;
 import bdd.generated.tables.Session;
 import bdd.generated.tables.Sessionprop;
+import bdd.generated.tables.Typechiffrage;
 import bdd.generated.tables.Typefermeture;
 import bdd.generated.tables.Typeprop;
 import bdd.generated.tables.User_1;
@@ -56,6 +57,11 @@ public class Tables {
      * The table <code>public.sessionprop</code>.
      */
     public static final Sessionprop SESSIONPROP = bdd.generated.tables.Sessionprop.SESSIONPROP;
+
+    /**
+     * The table <code>public.typechiffrage</code>.
+     */
+    public static final Typechiffrage TYPECHIFFRAGE = bdd.generated.tables.Typechiffrage.TYPECHIFFRAGE;
 
     /**
      * The table <code>public.typefermeture</code>.
