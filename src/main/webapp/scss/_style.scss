@@ -60,6 +60,10 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 	}
 }
 
+.but, .mini-but, .nav-item {
+	user-select: none;
+}
+
 $header_height: 50px;
 $header_min: 2px;
 
@@ -87,7 +91,13 @@ $header_min: 2px;
 			height: $header_height;
 			padding: 15px 10px;
 			line-height: 20px;
+			cursor: pointer;
 			transition: $transition_dur;
+
+/*			&:hover {
+				color: darken($bg_dark_color, 5%);
+				background: rgba(0,0,0,0.02);
+			}*/
 
 			&:first-child {
 				margin-left: -15px;
@@ -170,10 +180,14 @@ $header_min: 2px;
 }
 
 .field {
-	/*margin: 1px;*/
 	padding: 2px;
 	border: 1px solid #9F9F9F;
 	background: #F8F8F8;
+	transition: color $transition_dur;
+
+	&:not(:focus):invalid {
+		color: rgba($color_error, .75);
+	}
 
 	&:focus {
 		background: #FFF;
@@ -420,7 +434,7 @@ a.but {
 		top: 0;
 		left: 0;
 	}
-	
+
 	.cleaner {
 		position: absolute;
 		top: 0;

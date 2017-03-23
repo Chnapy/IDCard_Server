@@ -9,5 +9,5 @@ export abstract class Modele {
 			.done((data) => ajaxc.onDone(data))
 			.always((data) => ajaxc.onAlways(data));
 	}
-	 
+
 }

@@ -33,7 +33,7 @@ interface BlocProprieteState {
 
 export class BlocPropriete extends Vue<BlocProprieteProps, BlocProprieteState> {
 
-	private static keys: number = 0;
+	//	private static keys: number = 0;
 
 	public constructor(props: BlocProprieteProps) {
 		super(props);
@@ -54,8 +54,8 @@ export class BlocPropriete extends Vue<BlocProprieteProps, BlocProprieteState> {
 					<div className="box-body row">
 						<div className="container-fluid">
 							{this.state.valeurs.map((v) => {
-								BlocPropriete.keys++;
-								return <LigneValeur key={BlocPropriete.keys} controleur={this.props.controleur} valeur={v.valeur}
+								//								BlocPropriete.keys++;
+								return <LigneValeur key={v.key} controleur={this.props.controleur} valeur={v.valeur}
 									type={this.props.type} principal={v.principal} publique={v.publique} prive={v.prive}
 									sites={v.sites} modifiable={this.props.modifiable}
 									supprimable={this.props.supprimable && this.state.valeurs.length > this.props.nbrmin}

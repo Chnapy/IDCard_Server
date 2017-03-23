@@ -67,7 +67,7 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 		this.open(this.alerts.length);
 		this.forceUpdate();
 	}
-	
+
 	public clean() {
 		this.alerts.forEach(a => a.hide = true);
 		this.check();
@@ -84,7 +84,7 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 		let alerts = this.alerts.map(a =>
 			<Alert key={a.key} level={a.level} title={a.title} content={a.content} code={a.code} time={a.time} onHide={() => {a.hide = true; this.check()}} />);
 
-		return <div id='alertList' className={classNames('dark',{
+		return <div id='alertList' className={classNames('dark', {
 			'open': this.state.open,
 			'possede': this.state.length > 0
 		})} onMouseOver={this.onOver}>

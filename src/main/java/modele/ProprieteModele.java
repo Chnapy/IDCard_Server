@@ -11,8 +11,10 @@ import static bdd.generated.tables.Propriete.PROPRIETE;
 import static bdd.generated.tables.Typechiffrage.TYPECHIFFRAGE;
 import static bdd.generated.tables.Typeprop.TYPEPROP;
 import static bdd.generated.tables.Valeur.VALEUR;
+import static bdd.generated.tables.Valeurbigint.VALEURBIGINT;
 import static bdd.generated.tables.Valeurboolean.VALEURBOOLEAN;
 import static bdd.generated.tables.Valeurdate.VALEURDATE;
+import static bdd.generated.tables.Valeurdouble.VALEURDOUBLE;
 import static bdd.generated.tables.Valeurinteger.VALEURINTEGER;
 import static bdd.generated.tables.Valeurmdp.VALEURMDP;
 import static bdd.generated.tables.Valeurstring.VALEURSTRING;
@@ -47,6 +49,7 @@ public class ProprieteModele extends Modele {
 
 				switch (r.get(TYPEPROP.ID_TYPEPROP)) {
 					case 1:
+					case 6:
 						valeur_val = VALEURSTRING.VALEUR;
 						val_ = VALEURSTRING;
 						break;
@@ -65,6 +68,14 @@ public class ProprieteModele extends Modele {
 					case 5:
 						valeur_val = TYPECHIFFRAGE.TYPECHIFFRAGE_;
 						val_ = VALEURMDP;
+						break;
+					case 7:
+						valeur_val = VALEURBIGINT.VALEUR;
+						val_ = VALEURBIGINT;
+						break;
+					case 8:
+						valeur_val = VALEURDOUBLE.VALEUR;
+						val_ = VALEURDOUBLE;
 						break;
 					default:
 						throw new TypePropNonGereError();
@@ -97,10 +108,10 @@ public class ProprieteModele extends Modele {
 					boolean prive = sites.isEmpty();
 					boolean publique = !prive && sites.contains("*");
 
-					return new ValeurEntity(v.get(valeur_val), v.get(VALEUR.PRINCIPALE), publique, prive, sites);
+					return new ValeurEntity(v.get(VALEUR.ID_VALEUR), v.get(valeur_val), v.get(VALEUR.PRINCIPALE), publique, prive, sites);
 				});
 
-				ProprieteEntity pe = new ProprieteEntity(r.get(PROPRIETE.NOM), r.get(TYPEPROP.TYPEPROP_), r.get(TYPEPROP.TYPEPROP_), r.get(PROPRIETE.MODIFIABLE), r.get(PROPRIETE.SUPPRIMABLE), r.get(PROPRIETE.TAILLEVALMIN), r.get(PROPRIETE.TAILLEVALMAX), r.get(PROPRIETE.NBRVALMIN), r.get(PROPRIETE.NBRVALMAX), valeurs);
+				ProprieteEntity pe = new ProprieteEntity(r.get(PROPRIETE.ID_PROPRIETE), r.get(PROPRIETE.NOM), r.get(TYPEPROP.TYPEPROP_), r.get(TYPEPROP.TYPEPROP_), r.get(PROPRIETE.MODIFIABLE), r.get(PROPRIETE.SUPPRIMABLE), r.get(PROPRIETE.TAILLEVALMIN), r.get(PROPRIETE.TAILLEVALMAX), r.get(PROPRIETE.NBRVALMIN), r.get(PROPRIETE.NBRVALMAX), valeurs);
 
 				return pe;
 			});

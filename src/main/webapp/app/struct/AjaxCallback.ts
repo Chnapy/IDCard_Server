@@ -23,7 +23,7 @@ export interface User {
 }
 
 export interface Donnees {
-	user: User, 
+	user: User,
 	proprietes: BlocProprieteProps[]
 }
 

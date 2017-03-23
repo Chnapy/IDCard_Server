@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class ProprieteEntity extends Entity {
 
+	private long key;
 	private String nom;
 	private String typeStr;
 	private String type;
@@ -24,7 +25,8 @@ public class ProprieteEntity extends Entity {
 	private int nbrmax;
 	private List<ValeurEntity> valeurs;
 
-	public ProprieteEntity(String nom, String typeStr, String type, boolean modifiable, boolean supprimable, int taillemin, int taillemax, int nbrmin, int nbrmax, List<ValeurEntity> valeurs) {
+	public ProprieteEntity(long key, String nom, String typeStr, String type, boolean modifiable, boolean supprimable, int taillemin, int taillemax, int nbrmin, int nbrmax, List<ValeurEntity> valeurs) {
+		this.key = key;
 		this.nom = nom;
 		this.typeStr = typeStr;
 		this.type = type;
@@ -35,6 +37,14 @@ public class ProprieteEntity extends Entity {
 		this.nbrmin = nbrmin;
 		this.nbrmax = nbrmax;
 		this.valeurs = valeurs;
+	}
+
+	public long getKey() {
+		return key;
+	}
+
+	public void setKey(long key) {
+		this.key = key;
 	}
 
 	public String getNom() {
@@ -119,18 +129,28 @@ public class ProprieteEntity extends Entity {
 
 	public static class ValeurEntity<T> extends Entity {
 
+		private long key;
 		private T valeur;
 		private boolean principal;
 		private boolean publique;
 		private boolean prive;
 		private List<String> sites;
 
-		public ValeurEntity(T valeur, boolean principal, boolean publique, boolean prive, List<String> sites) {
+		public ValeurEntity(long key, T valeur, boolean principal, boolean publique, boolean prive, List<String> sites) {
+			this.key = key;
 			this.valeur = valeur;
 			this.principal = principal;
 			this.publique = publique;
 			this.prive = prive;
 			this.sites = sites;
+		}
+
+		public long getKey() {
+			return key;
+		}
+
+		public void setKey(long key) {
+			this.key = key;
 		}
 
 		public T getValeur() {

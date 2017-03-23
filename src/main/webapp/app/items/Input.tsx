@@ -6,14 +6,14 @@ import {MainManager} from 'modules/main/MainManager';
 
 export interface InputProps extends VueProps<MainManager> {
 	type: string,
-//	name: string,
-//	value: string,
-//	readonly: boolean,
+	//	name: string,
+	//	value: string,
+	//	readonly: boolean,
 	required: boolean,
-//	disabled: boolean,
-//	minlength: number,
-//	maxlength: number,
-//	placeholder: string
+	//	disabled: boolean,
+	//	minlength: number,
+	//	maxlength: number,
+	//	placeholder: string
 }
 
 export class Input extends Vue<InputProps, undefined> {

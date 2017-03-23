@@ -85,6 +85,9 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 .dark .mini-but:hover, #alertList .mini-but:hover {
   background: rgba(255, 255, 255, 0.02); }
 
+.but, .mini-but, .nav-item {
+  user-select: none; }
+
 .header {
   display: block;
   position: fixed;
@@ -107,7 +110,12 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
       height: 50px;
       padding: 15px 10px;
       line-height: 20px;
-      transition: 0.5s; }
+      cursor: pointer;
+      transition: 0.5s;
+      /*			&:hover {
+      				color: darken($bg_dark_color, 5%);
+      				background: rgba(0,0,0,0.02);
+      			}*/ }
       .header .header-content .nav-item:first-child {
         margin-left: -15px; }
       .header .header-content .nav-item.active {
@@ -159,10 +167,12 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
     border-color: #CCC; }
 
 .field {
-  /*margin: 1px;*/
   padding: 2px;
   border: 1px solid #9F9F9F;
-  background: #F8F8F8; }
+  background: #F8F8F8;
+  transition: color 0.5s; }
+  .field:not(:focus):invalid {
+    color: rgba(231, 76, 60, 0.75); }
   .field:focus {
     background: #FFF;
     box-shadow: none;
@@ -414,8 +424,10 @@ body {
       height: 30px;
       line-height: 28px; }
       .box > .box-content .box-head .box-title {
+        text-transform: capitalize;
         font-size: 1.2em; }
       .box > .box-content .box-head .box-head-right {
+        text-transform: capitalize;
         float: right;
         height: 100%; }
         .box > .box-content .box-head .box-head-right > * {

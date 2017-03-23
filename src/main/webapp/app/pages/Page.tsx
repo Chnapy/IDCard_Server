@@ -9,19 +9,19 @@ export interface PageProps extends VueProps<MainManager> {
 }
 
 export abstract class Page<P extends PageProps> extends Vue<P, undefined> {
-	
+
 	private readonly _nom: string;
 	get nom(): string {
 		return this._nom;
 	}
-	
+
 	public constructor(props: P, nom: string) {
 		super(props);
 		this._nom = nom;
 	}
-	
+
 	public abstract hasHeader(): boolean;
-	
+
 	public abstract renderBandeau(): any;
 
 	public abstract render(): any;

@@ -27,7 +27,7 @@ export class Bouton extends React.Component<BoutonProps, BoutonState> {
 	}
 
 	public render() {
-		
+
 		return <button className={classNames({
 			'but': true,
 			'but-primary': this.props.primary,

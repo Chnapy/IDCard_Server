@@ -28,7 +28,7 @@ export class Alert extends React.Component<AlertProps, AlertState> {
 		this.state = {display: true};
 		this.hide = this.hide.bind(this, this.props.onHide);
 	}
-	
+
 	public hide(): void {
 		this.setState({display: false});
 		setTimeout(() => this.props.onHide(), Const.TRANSITION_DURATION);

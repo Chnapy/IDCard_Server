@@ -450,14 +450,12 @@ define("pages/Configuration", ["require", "exports", "react", "pages/Page", "ite
             var _this = this;
             return React.createElement("div", { id: "list-box", className: "page-content container" },
                 React.createElement("div", { className: "row" }, this.props.donnees.proprietes.map(function (p) {
-                    Configuration.keys++;
-                    return React.createElement(BlocPropriete_1.BlocPropriete, { key: Configuration.keys, controleur: _this.props.controleur, nom: p.nom, typeStr: p.typeStr, type: p.type, modifiable: p.modifiable, supprimable: p.supprimable, nbrmin: p.nbrmin, nbrmax: p.nbrmax, taillemin: p.taillemin, taillemax: p.taillemax, valeurs: p.valeurs });
+                    return React.createElement(BlocPropriete_1.BlocPropriete, { key: p.key, controleur: _this.props.controleur, nom: p.nom, typeStr: p.typeStr, type: p.type, modifiable: p.modifiable, supprimable: p.supprimable, nbrmin: p.nbrmin, nbrmax: p.nbrmax, taillemin: p.taillemin, taillemax: p.taillemax, valeurs: p.valeurs });
                 })));
         };
         return Configuration;
     }(Page_2.Page));
     Configuration.NOM = 'Configuration';
-    Configuration.keys = 0;
     exports.Configuration = Configuration;
 });
 define("pages/Pages", ["require", "exports", "pages/Accueil", "pages/Configuration"], function (require, exports, A, B) {
@@ -773,15 +771,13 @@ define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "ite
                         React.createElement("div", { className: "box-body row" },
                             React.createElement("div", { className: "container-fluid" },
                                 this.state.valeurs.map(function (v) {
-                                    BlocPropriete.keys++;
-                                    return React.createElement(LigneValeur_1.LigneValeur, { key: BlocPropriete.keys, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && _this.state.valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax });
+                                    return React.createElement(LigneValeur_1.LigneValeur, { key: v.key, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && _this.state.valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax });
                                 }),
                                 this.state.valeurs.length < this.props.nbrmax ? React.createElement("div", { className: "box-line row" },
                                     React.createElement("button", { className: "but but-add but-fh" })) : '')))));
         };
         return BlocPropriete;
     }(Vue_6.Vue));
-    BlocPropriete.keys = 0;
     exports.BlocPropriete = BlocPropriete;
 });
 define("items/Input", ["require", "exports", "react", "struct/Vue"], function (require, exports, React, Vue_7) {

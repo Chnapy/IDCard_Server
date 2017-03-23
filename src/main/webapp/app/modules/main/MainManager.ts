@@ -39,7 +39,7 @@ export class MainManager extends Controleur<MainModele, MainVue> {
 	public deconnexion(): void {
 		this.modele.deconnexion(new AjaxCallback(this, {
 			success: (data: Data) => {
-				this.modele.donnees = data.content; 
+				this.modele.donnees = data.content;
 				this.vue.mainSwitchPage(Pages.Accueil);
 			}
 		}));

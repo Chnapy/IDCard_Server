@@ -38,7 +38,10 @@ public abstract class Controleur extends HttpServlet {
 	}
 
 	protected void sendReturn(MainEntity e, HttpServletResponse response) {
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
 		try (PrintWriter out = response.getWriter()) {
+
 			out.print(this.entityToJSONString(e));
 		} catch (IOException ex) {
 			Logger.getLogger(Controleur.class.getName()).log(Level.SEVERE, null, ex);

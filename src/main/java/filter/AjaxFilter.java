@@ -35,6 +35,7 @@ public class AjaxFilter implements Filter {
 
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
+		request.setCharacterEncoding("UTF-8");
 
 		boolean isAjax = isAjax(req);
 
