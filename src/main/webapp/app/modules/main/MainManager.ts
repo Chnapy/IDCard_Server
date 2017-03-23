@@ -11,55 +11,64 @@ import {Pages} from 'pages/Pages';
 export class MainManager extends Controleur<MainModele, MainVue> {
 
 	public constructor() {
-		super(new MainModele());
+		super(new MainModele(GLOBALS));
 	}
 
 	public start(): void {
 		MainVue.applyVue(this);
 	}
 
+	private getConnexionSuccess(): any {
+		return (data: Data) => {
+			this.modele.donnees = data.content;
+			this.showAlertFromCode(1);
+			this.vue.setState({donnees: this.modele.donnees});
+			this.vue.mainSwitchPage(Pages.Configuration);
+		};
+	}
+
 	public connexion(pseudo: string, mail: string, mdp: string, isMail: boolean, vue: Vue<any, any>): void {
-		this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback({
+		let stopLoad = () => vue.setState({load: false});
+		this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback(this, {
+			success: this.getConnexionSuccess(),
+			error: stopLoad,
+			fail: stopLoad
+		}));
+	}
+
+	public deconnexion(): void {
+		this.modele.deconnexion(new AjaxCallback(this, {
 			success: (data: Data) => {
-				vue.addAlert(AlertLevel.Primary, "Connexion réussie", "Félicitations");
-				this.modele.user = data.content.user;
-				this.vue.setState({user: this.modele.user});
-			},
-			error: (data: Data) => this.showAlertFromCode(data.code, vue),
-			fail: () => this.showAlertFromCode(100, vue),
-			always: () => {
-				vue.setState({load: false});
-				vue.switchPage(Pages.Configuration);
+				this.modele.donnees = data.content; 
+				this.vue.mainSwitchPage(Pages.Accueil);
 			}
 		}));
 	}
 
-	public deconnexion(callbacks: any): void {
-		this.modele.deconnexion(new AjaxCallback(callbacks));
-	}
-
 	public inscription(pseudo: string, mail: string, mdp: string, vue: Vue<any, any>): void {
-		this.modele.inscription(pseudo, mail, mdp, new AjaxCallback({
-			success: (data: Data) => vue.addAlert(AlertLevel.Primary, "Inscription réussie", "Félicitations"),
-			error: (data: Data) => this.showAlertFromCode(data.code, vue),
-			fail: () => this.showAlertFromCode(100, vue),
-			always: () => vue.setState({load: false})
+		let stopLoad = () => vue.setState({load: false});
+		this.modele.inscription(pseudo, mail, mdp, new AjaxCallback(this, {
+			success: (data: Data) => {
+				this.showAlertFromCode(2);
+				this.getConnexionSuccess()(data);
+			},
+			error: stopLoad,
+			fail: stopLoad
 		}));
 	}
 
-	private showAlertFromCode(code_num: number, vue: Vue<any, any>) {
-		let code = Const.CODES[code_num];
-		//		console.debug(data);
+	public showAlertFromCode(code_num: number) {
+		var code = Const.CODES[code_num];
 		if (!code) {
 			code = Const.CODES[400];
 		}
 
-		let level: AlertLevel;
+		var level: AlertLevel;
 		switch (code.crit) {
 			case 0: level = AlertLevel.Normal; break;
 			default: level = AlertLevel.Error; break;
 		}
-		vue.addAlert(level, code.titre, code.message, code_num);
+		this.vue.mainAlert(level, code.titre, code.message, code_num);
 	}
 
 }

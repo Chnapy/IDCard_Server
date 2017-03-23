@@ -56,8 +56,10 @@ body {
 				height: 100%;
 
 				&>* {
+					display: inline-block;
 					height: 100%;
-					/*margin: 1px;*/
+					padding-left: 6px;
+					padding-right: 6px;
 					vertical-align: top;
 				}
 			}
@@ -73,6 +75,10 @@ body {
 
 				&>* {
 					height: 100%;
+				}
+
+				&.main .field {
+					font-weight: bold;
 				}
 
 				.box-line-visib {

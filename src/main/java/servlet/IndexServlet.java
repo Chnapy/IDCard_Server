@@ -5,14 +5,20 @@
  */
 package servlet;
 
+import entity.ContentEntity;
+import entity.MainEntity;
+import entity.ProprieteEntity;
+import entity.UserEntity;
 import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.jooq.tools.json.JSONObject;
+import modele.ProprieteModele;
 
 /**
  * Servlet appelé lors du premier accès à la page
@@ -20,7 +26,7 @@ import org.jooq.tools.json.JSONObject;
  * @author Richard
  */
 @WebServlet(name = "IndexServlet", urlPatterns = {IndexServlet.URL})
-public class IndexServlet extends HttpServlet {
+public class IndexServlet extends Controleur {
 
 	public static final String URL = "/index.html";
 
@@ -29,25 +35,31 @@ public class IndexServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.print("Acces index : ");
-		System.out.println(request.getRequestURI());
 
 		HttpSession session = request.getSession();
+
+		UserEntity user = (UserEntity) session.getAttribute(Sess.USER.sess);
 		boolean isConnected;
 		try {
-			isConnected = (boolean) session.getAttribute("isConnected");
+			isConnected = user.isConnected();
 		} catch (NullPointerException ex) {
 			isConnected = false;
 		}
-
-		JSONObject user = new JSONObject();
-		user.put("connected", isConnected);
-		if (isConnected) {
-			user.put("pseudo", session.getAttribute("pseudo"));
+		
+		ContentEntity donnees = new ContentEntity(user);
+		List<ProprieteEntity> proprietes;
+		if(isConnected) {
+			ProprieteModele modele = new ProprieteModele();
+			try {
+				proprietes = modele.getAllProprietes(user.getId_user());
+				donnees.setProprietes(proprietes);
+			} catch (Exception ex) {
+				Logger.getLogger(IndexServlet.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
-
-		request.setAttribute("user", user);
-		request.setAttribute("page", isConnected ? "Configuration" : "Accueil");
+//
+		request.setAttribute("donnees", this.entityToJSONString(donnees));
+		request.setAttribute("page", (isConnected ? Page.CONFIGURATION : Page.ACCUEIL).page);
 
 		getServletContext().getRequestDispatcher(WEB_FILE).forward(request, response);
 	}
@@ -56,6 +68,11 @@ public class IndexServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doGet(request, response);
+	}
+
+	@Override
+	protected MainEntity onPost(HttpServletRequest request, HttpServletResponse response) {
+		return null;
 	}
 
 }

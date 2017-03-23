@@ -5,20 +5,25 @@
  */
 
 import {Modele} from 'struct/Modele';
-import {AjaxCallback, User} from 'struct/AjaxCallback';
+import {AjaxCallback, Donnees} from 'struct/AjaxCallback';
 
 /**
  * MainModele
  * 
  */
 export class MainModele extends Modele {
-	
-	private _user: User;
-	get user(): User {
-		return this._user;
+
+	private _donnees: Donnees;
+	get donnees(): Donnees {
+		return this._donnees;
 	}
-	set user(user: User) {
-		this._user = user;
+	set donnees(donnees: Donnees) {
+		this._donnees = donnees;
+	}
+
+	public constructor(GLOBALS: {titre_main: string, donnees: Donnees, page: string}) {
+		super();
+		this.donnees = GLOBALS.donnees;
 	}
 
 	public connexion(pseudo: string, mail: string, mdp: string, isMail: boolean, ajaxc: AjaxCallback): void {

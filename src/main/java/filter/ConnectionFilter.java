@@ -5,7 +5,10 @@
  */
 package filter;
 
+import entity.UserEntity;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -16,6 +19,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import servlet.Controleur;
 import servlet.IndexServlet;
 
 /**
@@ -25,6 +29,12 @@ import servlet.IndexServlet;
  */
 @WebFilter(filterName = "ConnectionFilter")
 public class ConnectionFilter implements Filter {
+
+	private static final List<String> URL_NOCONNECT = Arrays.asList(new String[]{
+		"/index.html",
+		"/connexion",
+		"/inscription"
+	});
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -38,21 +48,41 @@ public class ConnectionFilter implements Filter {
 		HttpServletResponse res = (HttpServletResponse) response;
 
 		HttpSession session = req.getSession();
-		
-		boolean isConnected = this.isConnected(session);
-		
-		System.out.println("User connecté : " + isConnected);
 
-//		if (isConnected) {
-			chain.doFilter(request, response);
-//		} else {
-//			request.getRequestDispatcher(IndexServlet.URL).forward(request, response);
-//		}
+		boolean isConnected = this.isConnected(session);
+
+		String url = req.getServletPath();
+		
+		System.out.println("SERVLET: " + url);
+		
+		boolean isUrlNoconnect = URL_NOCONNECT.contains(url);
+
+		System.err.println("User connecté : " + isConnected);
+
+		if (isConnected) {
+			//Si l'url est une no-connect, rediriger sur start[/configuration]
+			//Sinon doFilter
+			if (isUrlNoconnect) {
+				//rediriger sur start[/configuration]
+			} else {
+				chain.doFilter(request, response);
+			}
+		} else {
+
+			//Si l'url n'est pas une no-connect, rediriger sur start[/]
+			//Sinon doFilter
+			if (!isUrlNoconnect) {
+				//rediriger sur start
+				request.getRequestDispatcher(IndexServlet.URL).forward(request, response);
+			} else {
+				chain.doFilter(request, response);
+			}
+		}
 	}
-	
+
 	private boolean isConnected(HttpSession session) {
 		try {
-			return (boolean) session.getAttribute("isConnected");
+			return ((UserEntity) session.getAttribute(Controleur.Sess.USER.sess)).isConnected();
 		} catch (NullPointerException ex) {
 			return false;
 		}

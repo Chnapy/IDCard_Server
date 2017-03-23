@@ -34,7 +34,34 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 	color: red;
 }
 
+.mini-but {
+	display: inline-block;
+	width: 26px;
+	height: 28px;
+	line-height: 100%;
+	text-align: center;
+	vertical-align: middle;
+	cursor: pointer;
+
+	&:hover {
+		background: rgba(0,0,0,0.02);
+	}
+
+	.glyphicon {
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}
+
+.dark .mini-but, #alertList .mini-but {
+
+	&:hover {
+		background: rgba(255,255,255,0.02);
+	}
+}
+
 $header_height: 50px;
+$header_min: 2px;
 
 .header {
 	display: block;
@@ -47,7 +74,7 @@ $header_height: 50px;
 	font-family: "Helvetica Neue", Helvetica, Open Sans, "Open Sans", sans-serif;
 	font-weight: 600;
 	background: $color_primary;
-	border-bottom: 2px solid $bg_dark_color;
+	/*border-bottom: 2px solid $bg_dark_color;*/
 	min-height: $header_height;
 	transition: $transition_dur;
 
@@ -83,23 +110,7 @@ $header_height: 50px;
 				line-height: 50px;
 
 				.deco {
-					display: inline-block;
-					width: 26px;
-					height: 28px;
-					line-height: 100%;
 					margin-left: 10px;
-					text-align: center;
-					vertical-align: middle;
-					cursor: pointer;
-
-					&:hover {
-						background: darken($color_primary, 2%);
-					}
-
-					.glyphicon {
-						top: 50%;
-						transform: translateY(-50%);
-					}
 				}
 			}
 		}
@@ -126,7 +137,7 @@ $header_height: 50px;
 	.header {
 		/*		min-height: 4px;
 				height: 4px;*/
-		transform: translateY(calc(-100% + 4px));
+		transform: translateY(calc(-100% + #{$header_min}));
 		overflow: hidden;
 
 		&>* {
@@ -138,7 +149,7 @@ $header_height: 50px;
 	}
 
 	.body-content {
-		margin-top: 4px;
+		margin-top: $header_min;
 	}
 }
 
@@ -168,10 +179,6 @@ $header_height: 50px;
 		background: #FFF;
 		box-shadow: none;
 		border-color: $color_primary;
-	}
-
-	&.field-main {
-		font-weight: bold;
 	}
 }
 
@@ -409,23 +416,16 @@ a.but {
 	}
 
 	.tiroir {
-		display: inline-block;
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: $alertListWidth;
-		color: darken($color_dark_main, 10%);
-		line-height: 30px;
-		text-align: center;
-		cursor: pointer;
-
-		&:hover {
-			color: $color_dark_main;
-		}
-
-		&::after {
-			content: 'Fermer';
-		}
+	}
+	
+	.cleaner {
+		position: absolute;
+		top: 0;
+		left: $alertListWidth;
+		transform: translateX(-100%);
 	}
 
 	&.possede:not(.open) {
@@ -451,8 +451,13 @@ a.but {
 
 		.myalert-title {
 			margin-bottom: 4px;
-			font-weight: bold;
+			/*font-weight: bold;*/
 			font-size: 1.2em;
+			margin-left: -4px;
+			margin-right: -4px;
+			padding-left: 4px;
+			padding-right: 4px;
+			background: rgba(0,0,0,0.1);
 		}
 
 		.myalert-content {
@@ -486,5 +491,5 @@ a.but {
 }
 
 .main-content.no-header #alertList {
-	top: 0;
+	top: $header_min;
 }

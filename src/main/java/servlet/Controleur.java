@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import bdd.Const;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import entity.Entity;
 import entity.MainEntity;
 import java.io.PrintWriter;
 import java.util.logging.Level;
@@ -36,7 +37,7 @@ public abstract class Controleur extends HttpServlet {
 		this.sendReturn(me, response);
 	}
 
-	private void sendReturn(MainEntity e, HttpServletResponse response) {
+	protected void sendReturn(MainEntity e, HttpServletResponse response) {
 		try (PrintWriter out = response.getWriter()) {
 			out.print(this.entityToJSONString(e));
 		} catch (IOException ex) {
@@ -44,7 +45,7 @@ public abstract class Controleur extends HttpServlet {
 		}
 	}
 
-	private String entityToJSONString(MainEntity e) throws JsonProcessingException {
+	protected String entityToJSONString(Entity e) throws JsonProcessingException {
 		return JSON_MAPPER.writeValueAsString(e);
 	}
 
@@ -54,6 +55,39 @@ public abstract class Controleur extends HttpServlet {
 			throw new NoCheckException(param, value);
 		}
 		return param.getCastValue(value);
+	}
+
+	public static enum Page {
+
+		ACCUEIL("Accueil"), CONFIGURATION("Configuration");
+
+		public final String page;
+
+		private Page(String page) {
+			this.page = page;
+		}
+	}
+
+	public static enum Sess {
+
+		USER("user");
+
+		public final String sess;
+
+		private Sess(String sess) {
+			this.sess = sess;
+		}
+	}
+
+	public static enum Attr {
+
+		IS_MAIL("isMail");
+
+		public final String attr;
+
+		private Attr(String attr) {
+			this.attr = attr;
+		}
 	}
 
 	public static enum Param {

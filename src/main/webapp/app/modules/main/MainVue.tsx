@@ -9,10 +9,10 @@ import {Page, PageProps} from 'pages/Page';
 import {Pages} from 'pages/Pages';
 import {AlertLevel} from 'items/Alert';
 import {AlertList, AlertData} from 'items/AlertList';
-import {User} from 'struct/AjaxCallback';
+import {Donnees} from 'struct/AjaxCallback';
 
 export interface MainVueProps extends VueProps<MainManager> {
-	user: User,
+	donnees: Donnees,
 	page: string
 }
 
@@ -20,14 +20,14 @@ interface MainVueState {
 	alertList?: AlertData[],
 	page?: any,
 	display?: boolean,
-	user?: User
+	donnees?: Donnees
 }
 
 export class MainVue extends Vue<MainVueProps, MainVueState> {
 
 	public static applyVue(controleur: MainManager): void {
 		ReactDOM.render(
-			<MainVue controleur={controleur} user={GLOBALS.user} page={GLOBALS.page} onSwitch={undefined} onAlert={undefined} />,
+			<MainVue controleur={controleur} donnees={GLOBALS.donnees} page={GLOBALS.page} />,
 			document.getElementById("react_container") as Element
 		);
 	}
@@ -40,19 +40,17 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 		this.alertList = [];
 		this.alertKey = 1;
 
-		this.state = {alertList: [], page: (Pages as any)[props.page], display: true, user: props.user};
-		this.mainAlert = this.mainAlert.bind(this, this.state.alertList);
-		this.mainSwitchPage = this.mainSwitchPage.bind(this, this.state.page);
+		this.state = {alertList: [], page: (Pages as any)[props.page], display: true, donnees: props.donnees};
 	}
 
-	public mainSwitchPage(arr: any, page: any) {
+	public mainSwitchPage(page: any) {
 		console.log("SWITCH " + page);
 		console.log(arguments.length);
 		this.setState({display: false});
 		setTimeout(() => this.setState({page: page, display: true}), Const.TRANSITION_DURATION);
 	}
 
-	public mainAlert(arr: any, level: AlertLevel, title: string, content: string, code?: number): void {
+	public mainAlert(level: AlertLevel, title: string, content: string, code: number) {
 		let curDate = new Date();
 		if (!code) {
 			code = 0;
@@ -75,7 +73,7 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 			controleur: this.props.controleur,
 			onSwitch: this.mainSwitchPage,
 			onAlert: this.mainAlert,
-			user: this.props.user
+			donnees: this.state.donnees
 		});
 
 		console.log('Page: ' + p.nom);
@@ -86,7 +84,7 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 				'no-display': !this.state.display
 			})}>
 
-				<Header controleur={this.props.controleur} user={this.state.user as User} page={p.nom} show={p.hasHeader()} onSwitch={this.mainSwitchPage} onAlert={this.mainAlert} />
+				<Header controleur={this.props.controleur} donnees={this.state.donnees as Donnees} page={p.nom} show={p.hasHeader()} />
 
 				<div id="content" className="body-content">
 

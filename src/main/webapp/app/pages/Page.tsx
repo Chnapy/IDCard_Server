@@ -2,9 +2,10 @@
 import * as React from 'react';
 import {Vue, VueProps} from 'struct/Vue';
 import {MainManager} from 'modules/main/MainManager';
+import {Donnees} from 'struct/AjaxCallback';
 
 export interface PageProps extends VueProps<MainManager> {
-	user: any
+	donnees: Donnees
 }
 
 export abstract class Page<P extends PageProps> extends Vue<P, undefined> {

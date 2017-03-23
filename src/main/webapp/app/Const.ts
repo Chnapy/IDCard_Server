@@ -39,6 +39,16 @@ class Const {
 			message: '',
 			crit: 0
 		},
+		1: {
+			titre: 'Connexion réussie',
+			message: 'Félicitation',
+			crit: 0
+		},
+		2: {
+			titre: 'Inscription réussie',
+			message: 'Félicitation',
+			crit: 0
+		},
 
 		//1xx = erreur réseau client
 		100: {

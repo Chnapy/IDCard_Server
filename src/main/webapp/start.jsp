@@ -26,7 +26,7 @@
 		<script>
 			var GLOBALS = {
 				titre_main: "${titre_main}",
-				user: ${user},
+				donnees: ${donnees},
 				page: "${page}"	//Défini la première page
 			};
 		</script>

@@ -14,5 +14,5 @@ import org.jooq.DSLContext;
 public interface BDDContent {
 
 	public Object act(DSLContext create) throws Exception;
-	
+
 }

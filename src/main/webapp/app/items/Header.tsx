@@ -5,10 +5,10 @@ import {Vue, VueProps} from 'struct/Vue';
 import {MainManager} from 'modules/main/MainManager';
 import {Pages} from 'pages/Pages';
 import {AlertLevel} from 'items/Alert';
-import {User} from 'struct/AjaxCallback';
+import {Donnees} from 'struct/AjaxCallback';
 
 export interface HeaderProps extends VueProps<MainManager> {
-	user: User,
+	donnees: Donnees,
 	page: string,
 	show: boolean
 }
@@ -17,14 +17,9 @@ export class Header extends Vue<HeaderProps, undefined> {
 
 	private renderCompte() {
 		return <span className="compte nav-item">
-			<span className="nompte-pseudo">{this.props.user.pseudo}</span>
-			<span className="deco" onClick={e =>
-				this.props.controleur.deconnexion({
-					fail: () => this.addAlert(AlertLevel.Error, "Deconnexion impossible", "Serveur inaccessible"),
-					always: () => {
-						this.switchPage(Pages.Accueil);
-					}
-				})}><span className='glyphicon glyphicon-off'></span></span>
+			<span className="nompte-pseudo">{this.props.donnees.user.pseudo}</span>
+			<span className="deco mini-but" onClick={e =>
+				this.props.controleur.deconnexion()}><span className='glyphicon glyphicon-off'></span></span>
 		</span>;
 	}
 

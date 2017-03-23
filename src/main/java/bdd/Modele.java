@@ -91,7 +91,7 @@ public abstract class Modele {
 
 		public static MdpCrypt getCryptFromString(String str) {
 			for (MdpCrypt crypt : MdpCrypt.values()) {
-				if(crypt.str.equals(str)) {
+				if (crypt.str.equals(str)) {
 					return crypt;
 				}
 			}

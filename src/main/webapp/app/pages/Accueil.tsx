@@ -54,7 +54,7 @@ export class Accueil extends Page<AccueilProps> {
 							blablabla blablabla blablabla blablabla blablabla blablabla blablabla blablabla
 						</div>
 				</div>
-				<StartForm controleur={this.props.controleur} onSwitch={this.props.onSwitch} onAlert={this.props.onAlert} />
+				<StartForm controleur={this.props.controleur} />
 			</div>
 		</div>;
 	}

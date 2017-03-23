@@ -1,4 +1,7 @@
 
+import {MainManager} from 'modules/main/MainManager';
+import {BlocProprieteProps} from 'items/BlocPropriete';
+
 interface Callbacks {
 	success?: any,
 	error?: any,
@@ -19,23 +22,26 @@ export interface User {
 
 }
 
+export interface Donnees {
+	user: User, 
+	proprietes: BlocProprieteProps[]
+}
+
 export interface Data {
 	success: boolean,
 	code: number,
 	message: string,
-	content: {
-		user: User
-	}
+	content: Donnees
 }
 
 export class AjaxCallback {
 
+	private readonly manager: MainManager;
 	private readonly cb: Callbacks;
 
-	public constructor(cb?: Callbacks) {
-		if (cb) {
-			this.cb = cb;
-		}
+	public constructor(manager: MainManager, cb: Callbacks) {
+		this.manager = manager;
+		this.cb = cb;
 	}
 
 	public onSuccess(data: Data): void {
@@ -44,6 +50,7 @@ export class AjaxCallback {
 				this.cb.success(data);
 			}
 		} else {
+			this.manager.showAlertFromCode(data.code)
 			if (this.cb.error) {
 				this.cb.error(data);
 			}
@@ -51,6 +58,7 @@ export class AjaxCallback {
 	}
 
 	public onFail(): void {
+		this.manager.showAlertFromCode(100)
 		if (this.cb.fail) {
 			this.cb.fail();
 		}

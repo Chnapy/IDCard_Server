@@ -37,7 +37,7 @@ public class AjaxFilter implements Filter {
 		HttpServletResponse res = (HttpServletResponse) response;
 
 		boolean isAjax = isAjax(req);
-		
+
 		System.out.println("Requete Ajax : " + isAjax);
 
 		if (isAjax) {
@@ -46,7 +46,7 @@ public class AjaxFilter implements Filter {
 			request.getRequestDispatcher(IndexServlet.URL).forward(request, response);
 		}
 	}
-	
+
 	private boolean isAjax(HttpServletRequest request) {
 		return "XMLHttpRequest".equals(request.getHeader("x-requested-with"));
 	}

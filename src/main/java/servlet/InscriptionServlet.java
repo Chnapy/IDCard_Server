@@ -10,11 +10,9 @@ import entity.ContentEntity;
 import entity.MainEntity;
 import entity.MainEntity.MainEntityError;
 import entity.MainEntity.MainEntitySuccess;
+import java.io.IOException;
 import modele.InscriptionModele;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +23,17 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "InscriptionServlet", urlPatterns = {"/inscription"})
 public class InscriptionServlet extends Controleur {
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		MainEntity me = this.onPost(request, response);
+		if (!me.isSuccess()) {
+			this.sendReturn(me, response);
+		} else {
+			request.setAttribute(Attr.IS_MAIL.attr, false);
+			request.getServletContext().getRequestDispatcher("/connexion").forward(request, response);
+		}
+	}
 
 	@Override
 	protected MainEntity onPost(HttpServletRequest request, HttpServletResponse response) {
@@ -39,23 +48,20 @@ public class InscriptionServlet extends Controleur {
 		} catch (Param.NoCheckException ex) {
 			//TODO Erreur
 			ex.printStackTrace();
-			System.err.println("Inscription impossible. Check des parametres échoué.");
-			return new MainEntityError(Const.Code.E_INSCRIPTION_CHECK, new ContentEntity(false, null));
+			return new MainEntityError(Const.Code.E_INSCRIPTION_CHECK, new ContentEntity(null));
 		}
 
 		InscriptionModele modele = new InscriptionModele();
 
 		try {
 			if (modele.issetClient(pseudo, mail)) {
-				//TODO Erreur
-				System.err.println("Inscription impossible. Client déjà existant.");
-				return new MainEntityError(Const.Code.E_INSCRIPTION_ISSET, new ContentEntity(false, null));
+				return new MainEntityError(Const.Code.E_INSCRIPTION_ISSET, new ContentEntity(null));
 			}
 
 			modele.inscription(pseudo, mail, mdp);
 		} catch (Exception ex) {
-			Logger.getLogger(InscriptionServlet.class.getName()).log(Level.SEVERE, null, ex);
+			return new MainEntityError(Const.Code.E_SERVEUR, new ContentEntity(null));
 		}
-		return new MainEntitySuccess(new ContentEntity(false, null));
+		return new MainEntitySuccess(new ContentEntity(null));
 	}
 }

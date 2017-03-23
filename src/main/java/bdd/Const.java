@@ -25,25 +25,21 @@ public class Const {
 	public static enum Code {
 
 		//0xx = messages informatifs
-		OK(000), 
-		
+		OK(000),
 		//1xx = erreur réseau client
 		//--
-		
+
 		//2xx = erreur serveur
-		E_SERVEUR(200), 
-		
+		E_SERVEUR(200),
 		//3xx = erreur serveur critique
-		E_CRITIQUE(300), 
-		
+		E_CRITIQUE(300),
 		//4xx = erreur inconnue (code inconnu)
 		//--
-		
+
 		//6xx = erreur classiques
-		
+
 		//61x = connexion
-		E_CONNEXION_CHECK(610), 
-		
+		E_CONNEXION_CHECK(610),
 		//62x = inscription
 		E_INSCRIPTION_CHECK(620), E_INSCRIPTION_ISSET(621);
 

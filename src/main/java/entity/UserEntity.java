@@ -21,8 +21,12 @@ public class UserEntity extends Entity {
 	private Date datederniereconnexion;
 	private long nbrconnexion;
 
+	public UserEntity(boolean connected) {
+		this.connected = connected;
+	}
+
 	public UserEntity(long id_user, String pseudo, String mail, Date dateinscription, Date datederniereconnexion, long nbrconnexion) {
-		this.connected = true;
+		this(true);
 		this.id_user = id_user;
 		this.pseudo = pseudo;
 		this.mail = mail;

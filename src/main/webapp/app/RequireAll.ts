@@ -45,7 +45,7 @@ class RequireAll {
 
 }
 
-declare var GLOBALS: {titre_main: string, user: any, page: string};
+declare var GLOBALS: {titre_main: string, donnees: any, page: string};
 
 window.onload = function () {
 	RequireAll.loadAll();

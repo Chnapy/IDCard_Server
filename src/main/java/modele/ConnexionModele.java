@@ -25,6 +25,8 @@ import org.jooq.Record;
  *
  */
 public class ConnexionModele extends Modele {
+	
+	private long id_user;
 
 	public UserEntity connexionParPseudo(String form_pseudo, String form_mdp) throws SQLException, NoIssetPseudoException, NoIssetMailException, NoIssetMdpException, MauvaisMdpException, NoSuchAlgorithmException, Exception {
 
@@ -37,7 +39,7 @@ public class ConnexionModele extends Modele {
 
 			Record record_pseudo = result_pseudo.orElseThrow(NoIssetPseudoException::new);
 
-			long id_user = record_pseudo.get(USER_1.ID_USER);
+			id_user = record_pseudo.get(USER_1.ID_USER);
 			String pseudo = record_pseudo.get(VALEURSTRING.VALEUR);
 			Date dateinscription = record_pseudo.get(USER_1.DATEINSCRIPTION);
 			Date datederniereconnexion = record_pseudo.get(USER_1.DATEDERNIERECONNEXION);
@@ -51,7 +53,7 @@ public class ConnexionModele extends Modele {
 			Record record_mail = result_mail.orElseThrow(NoIssetMailException::new);
 
 			String mail = record_mail.get(VALEURSTRING.VALEUR);
-			
+
 			return this.generalConnexion(create, id_user, pseudo, mail, form_mdp, dateinscription, datederniereconnexion, nbrconnexion);
 		});
 
@@ -68,7 +70,7 @@ public class ConnexionModele extends Modele {
 
 			Record record_mail = result_mail.orElseThrow(NoIssetMailException::new);
 
-			long id_user = record_mail.get(USER_1.ID_USER);
+			id_user = record_mail.get(USER_1.ID_USER);
 			String mail = record_mail.get(VALEURSTRING.VALEUR);
 			Date dateinscription = record_mail.get(USER_1.DATEINSCRIPTION);
 			Date datederniereconnexion = record_mail.get(USER_1.DATEDERNIERECONNEXION);
@@ -82,7 +84,7 @@ public class ConnexionModele extends Modele {
 			Record record_pseudo = result_pseudo.orElseThrow(NoIssetPseudoException::new);
 
 			String pseudo = record_pseudo.get(VALEURSTRING.VALEUR);
-			
+
 			return this.generalConnexion(create, id_user, pseudo, mail, form_mdp, dateinscription, datederniereconnexion, nbrconnexion);
 		});
 	}
@@ -123,6 +125,10 @@ public class ConnexionModele extends Modele {
 				.set(USER_1.NBRCONNEXION, nbrco)
 				.where(USER_1.ID_USER.eq(id_user))
 				.execute();
+	}
+
+	public long getId_user() {
+		return id_user;
 	}
 
 	public static class NoIssetPseudoException extends Exception {
