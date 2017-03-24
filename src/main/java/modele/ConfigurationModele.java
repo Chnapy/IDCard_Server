@@ -9,7 +9,9 @@ import bdd.Modele;
 import static bdd.generated.tables.Propriete.PROPRIETE;
 import static bdd.generated.tables.Typeprop.TYPEPROP;
 import static bdd.generated.tables.Valeur.VALEUR;
+import static bdd.generated.tables.Visibilite.VISIBILITE;
 import entity.ValeurInfos;
+import entity.VisibiliteInfos;
 import java.sql.SQLException;
 import java.util.Optional;
 import org.jooq.Field;
@@ -76,12 +78,46 @@ public class ConfigurationModele extends Modele {
 					.from(VALEUR)
 					.where(VALEUR.ID_VALEUR.eq(id_val).and(VALEUR.ID_VALEURTYPEE.eq(valeur_idtype)))
 					.execute();
-			
-			if(nbrRows != 1) {
-				
+
+			if (nbrRows != 1) {
 				throw new SQLException("Le nombre de lignes affectées est anormal: " + nbrRows);
 			}
-			
+
+			return null;
+		});
+	}
+
+	public VisibiliteInfos getVisibiliteInfos(long id_val, long id_site) throws NoIssetValeurException, Exception {
+
+		return (VisibiliteInfos) bdd((create) -> {
+
+			Optional<? extends Record> result_visi_infos = create.select(VALEUR.ID_USER,
+					VALEUR.ID_VALEUR, VISIBILITE.ID_DOMAINE)
+					.from(VALEUR).naturalJoin(VISIBILITE)
+					.where(VISIBILITE.ID_VALEUR.eq(id_val).and(VISIBILITE.ID_DOMAINE.eq(id_site)))
+					.fetchOptional();
+
+			Record record_visi_infos = result_visi_infos.orElseThrow(NoIssetValeurException::new);
+
+			VisibiliteInfos visi_infos = new VisibiliteInfos(record_visi_infos);
+
+			return visi_infos;
+		});
+
+	}
+
+	public void removeSite(long id_val, long id_site) throws Exception {
+
+		bdd((create) -> {
+
+			int nbrRows = create.delete(VISIBILITE)
+					.where(VISIBILITE.ID_VALEUR.eq(id_val).and(VISIBILITE.ID_DOMAINE.eq(id_site)))
+					.execute();
+
+			if (nbrRows != 1) {
+				throw new SQLException("Le nombre de lignes affectées est anormal: " + nbrRows);
+			}
+
 			return null;
 		});
 	}

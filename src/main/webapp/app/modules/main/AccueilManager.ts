@@ -25,7 +25,7 @@ export class AccueilManager extends Controleur<AccueilModele, Accueil> {
 
 	public connexion(pseudo: string, mail: string, mdp: string, isMail: boolean, vue: Vue<any, any>): void {
 		let stopLoad = () => vue.setState({load: false});
-		this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback(this, {
+		this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback(this, 'Connexion', {
 			success: this.getConnexionSuccess(),
 			error: stopLoad,
 			fail: stopLoad
@@ -34,7 +34,7 @@ export class AccueilManager extends Controleur<AccueilModele, Accueil> {
 
 	public inscription(pseudo: string, mail: string, mdp: string, vue: Vue<any, any>): void {
 		let stopLoad = () => vue.setState({load: false});
-		this.modele.inscription(pseudo, mail, mdp, new AjaxCallback(this, {
+		this.modele.inscription(pseudo, mail, mdp, new AjaxCallback(this, 'Inscription', {
 			success: (data: Data) => {
 				this.showAlertFromCode(2);
 				this.getConnexionSuccess()(data);

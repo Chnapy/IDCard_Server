@@ -14,4 +14,8 @@ export class ConfigModele extends Modele {
 		this.ajaxPost('configuration', {m: 'update_val', id_val: key, val: val}, ajaxc);
 	}
 
+	public removeSite(key_val: number, key_site: number, ajaxc: AjaxCallback): void {
+		this.ajaxPost('configuration', {m: 'remove_site', id_val: key_val, id_site: key_site}, ajaxc);
+	}
+
 }

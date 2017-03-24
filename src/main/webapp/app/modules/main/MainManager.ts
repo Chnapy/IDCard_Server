@@ -30,6 +30,7 @@ export class MainManager extends Controleur<MainModele, MainVue> {
 
 	public constructor() {
 		super(new MainModele(GLOBALS));
+		this.mainManager = this;
 		this.accueilM = new AccueilManager(this.modele.donnees, this);
 		this.configM = new ConfigManager(this.modele.donnees, this);
 	}
@@ -38,13 +39,25 @@ export class MainManager extends Controleur<MainModele, MainVue> {
 		MainVue.applyVue(this);
 	}
 
-	public deconnexion(): void {
-		this.modele.deconnexion(new AjaxCallback(this, {
-			success: (data: Data) => {
-				this.modele.donnees = data.content;
-				this.vue.mainSwitchPage(Pages.Accueil);
-			}
-		}));
+	public deconnexion(element: HTMLElement): void {
+
+		function deconnecter(manager: MainManager) {
+			manager.modele.deconnexion(new AjaxCallback(manager, 'Déconnexion', {
+				success: (data: Data) => {
+					manager.modele.donnees = data.content;
+					manager.vue.mainSwitchPage(Pages.Accueil);
+				}
+			}));
+		}
+
+
+		this.askConfirm('Deconnexion', 'Voulez-vous vraiment vous déconnecter ?', () => deconnecter(this), element, true);
+		//		this.modele.deconnexion(new AjaxCallback(this, 'Déconnexion', {
+		//			success: (data: Data) => {
+		//				this.modele.donnees = data.content;
+		//				this.vue.mainSwitchPage(Pages.Accueil);
+		//			}
+		//		}));
 	}
 
 	public showAlertFromCode(code_num: number) {

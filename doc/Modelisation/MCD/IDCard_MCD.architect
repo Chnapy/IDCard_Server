@@ -135,13 +135,13 @@
     </index>
    </folder>
   </table>
-  <table id="TAB33" populated="true" UUID="3d512af0-fec3-490f-9d1e-15d650212572" name="Visibilite" objectType="TABLE" physicalName="Visibilite" >
+  <table id="TAB33" populated="true" UUID="3d512af0-fec3-490f-9d1e-15d650212572" name="visibilite" objectType="TABLE" physicalName="visibilite" >
    <remarks></remarks>
    <folder id="FOLTAB331" populated="true" name="Columns" physicalName="Columns" type="1">
-    <column id="COL34" populated="true" UUID="62343492-fbb6-4efa-bea6-bd4b4549f1fa" autoIncrement="false" autoIncrementSequenceName="Valeur_id_valeur_seq_1" defaultValue="" name="id_valeur" nullable="0" physicalName="id_valeur" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-5" userDefinedTypeUUID="433cc8af-284d-4abb-8ef7-08ebcb34dbf1" >
+    <column id="COL34" populated="true" UUID="62343492-fbb6-4efa-bea6-bd4b4549f1fa" autoIncrement="false" autoIncrementSequenceName="visibilite_id_valeur_seq" defaultValue="" name="id_valeur" nullable="0" physicalName="id_valeur" precision="0" primaryKeySeq="0" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-5" userDefinedTypeUUID="433cc8af-284d-4abb-8ef7-08ebcb34dbf1" >
      <remarks></remarks>
     </column>
-    <column id="COL35" populated="true" UUID="74ccafb1-0fba-4308-b4a0-7971f8af7e7b" autoIncrement="false" autoIncrementSequenceName="Domaine_id_domaine_seq" defaultValue="" name="id_domaine" nullable="0" physicalName="id_domaine" precision="0" primaryKeySeq="1" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-5" userDefinedTypeUUID="433cc8af-284d-4abb-8ef7-08ebcb34dbf1" >
+    <column id="COL35" populated="true" UUID="74ccafb1-0fba-4308-b4a0-7971f8af7e7b" autoIncrement="false" autoIncrementSequenceName="visibilite_id_domaine_seq" defaultValue="" name="id_domaine" nullable="0" physicalName="id_domaine" precision="0" primaryKeySeq="1" referenceCount="1" scale="0" sourceDataTypeName="UserDefinedSQLType" type="-5" userDefinedTypeUUID="433cc8af-284d-4abb-8ef7-08ebcb34dbf1" >
      <remarks></remarks>
     </column>
     </folder>
@@ -150,7 +150,7 @@
     <folder id="FOLTAB332" populated="true" name="Imported Keys" physicalName="Imported Keys" type="2">
     </folder>
     <folder id="FOLTAB334" populated="true" name="Indices" physicalName="Indices" type="4">
-    <index id="IDX36" populated="true" UUID="ed47ad3d-25e2-44d6-9724-c8a5bfa1d37e" clustered="false" name="Visibilite_pk" physicalName="visibilite_pk" primaryKeyIndex="true" unique="false" >
+    <index id="IDX36" populated="true" UUID="ed47ad3d-25e2-44d6-9724-c8a5bfa1d37e" clustered="false" name="visibilite_pk" physicalName="visibilite_pk" primaryKeyIndex="true" unique="false" >
      <index-column id="IDC37" populated="true" UUID="86da381d-f088-4633-9ffa-74c936133ad0" ascendingOrDescending="UNSPECIFIED" column-ref="COL34" name="id_valeur" physicalName="id_valeur" />
      <index-column id="IDC38" populated="true" UUID="c32e3e85-dc55-40ef-a59b-39a391fb077a" ascendingOrDescending="UNSPECIFIED" column-ref="COL35" name="id_domaine" physicalName="id_domaine" />
     </index>
@@ -465,7 +465,7 @@
   <liquibase-settings useSeparateChangeSets="false" generateId="false" idStart="1"/>
  </compare-dm-settings>
  <create-kettle-job-settings filePath="" jobName="" schemaName="" kettleJoinType="0" savingToFile="true" />
- <play-pen zoom="1.0" viewportX="282" viewportY="0" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
+ <play-pen zoom="1.0" viewportX="281" viewportY="0" relationship-style="rectilinear" names-displayLogicalNames="true" showPrimaryTag="true" showForeignTag="true" showAlternateTag="true" columnVisibility="ALL" relationshipLabelVisibility="true">
   <table-pane table-ref="TAB1" x="476" y="159" bgColor="0xeeeeee" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB8" x="775" y="160" bgColor="0xeeeeee" fgColor="0x000000" rounded="false" dashed="false"/>
   <table-pane table-ref="TAB20" x="1075" y="233" bgColor="0xeeeeee" fgColor="0x000000" rounded="false" dashed="false"/>

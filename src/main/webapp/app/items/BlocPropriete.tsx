@@ -5,13 +5,18 @@ import {LigneValeur} from 'LigneValeur';
 import {BoutonAdd} from 'items/Bouton';
 import {ConfigManager} from 'modules/main/ConfigManager';
 
+export interface SiteProp {
+	key: number,
+	site: string
+}
+
 export interface ValeurProp {
 	key: number,
 	valeur: string,
 	principal: boolean,
 	publique: boolean,
 	prive: boolean,
-	sites: string[]
+	sites: SiteProp[]
 }
 
 export interface BlocProprieteProps extends VueProps<ConfigManager> {
@@ -54,7 +59,7 @@ export class BlocPropriete extends Vue<BlocProprieteProps, BlocProprieteState> {
 					<div className="box-body row">
 						<div className="container-fluid">
 							{this.state.valeurs.map((v) => {
-								return <LigneValeur key={v.key} id={v.key} controleur={this.props.controleur} valeur={v.valeur}
+								return <LigneValeur key={v.key} id={v.key} id_prop={this.props.id} controleur={this.props.controleur} valeur={v.valeur}
 									type={this.props.type} principal={v.principal} publique={v.publique} prive={v.prive}
 									sites={v.sites} modifiable={this.props.modifiable}
 									supprimable={this.props.supprimable && this.state.valeurs.length > this.props.nbrmin}

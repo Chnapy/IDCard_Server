@@ -106,6 +106,12 @@ class Const {
 			message: 'Votre entrée ne correspond pas au format demandé',
 			crit: 2
 		},
+		
+		631: {
+			titre: 'Échec de la suppression du site',
+			message: '',
+			crit: 2
+		},
 
 	};
 

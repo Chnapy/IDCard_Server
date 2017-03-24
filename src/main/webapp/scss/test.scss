@@ -43,19 +43,32 @@ body {
 	&>.box-content {
 		padding: 5px;
 
+				$boxheadright_width: 100px;
 		.box-head {
+			position: relative;
 			height: 30px;
 			line-height: 28px;
+			padding-right: $boxheadright_width;
 
 			.box-title {
+				display: block;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
 				text-transform: capitalize;
 				font-size: 1.2em;
 			}
 
 			.box-head-right {
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				right: 0;
 				text-transform: capitalize;
-				float: right;
+				text-align: right;
 				height: 100%;
+				width: $boxheadright_width;
+				overflow: hidden;
 
 				&>* {
 					display: inline-block;
@@ -109,6 +122,11 @@ body {
 
 						&:not(:last-child) {
 							margin-right: 4px;
+						}
+						
+						&:first-child:last-child {
+							display: block;
+							margin-right: 0 !important;
 						}
 					}
 

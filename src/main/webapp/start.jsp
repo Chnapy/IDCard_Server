@@ -18,7 +18,7 @@
 		<link rel="stylesheet" href="css/test.css"/>
 
     </head>
-    <body onload="console.debug(titi)">
+    <body>
 
 		<div id="react_container">
 		</div>

@@ -89,148 +89,12 @@ Const.CODES = {
         message: 'Votre entrée ne correspond pas au format demandé',
         crit: 2
     },
+    631: {
+        titre: 'Échec de la suppression du site',
+        message: '',
+        crit: 2
+    },
 };
-define("items/Alert", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
-    "use strict";
-    var AlertLevel;
-    (function (AlertLevel) {
-        AlertLevel[AlertLevel["Primary"] = 1] = "Primary";
-        AlertLevel[AlertLevel["Normal"] = 2] = "Normal";
-        AlertLevel[AlertLevel["Error"] = 3] = "Error";
-    })(AlertLevel = exports.AlertLevel || (exports.AlertLevel = {}));
-    var Alert = (function (_super) {
-        __extends(Alert, _super);
-        function Alert(props, context) {
-            var _this = _super.call(this, props, context) || this;
-            _this.state = { display: true };
-            _this.hide = _this.hide.bind(_this, _this.props.onHide);
-            return _this;
-        }
-        Alert.prototype.hide = function () {
-            var _this = this;
-            this.setState({ display: false });
-            setTimeout(function () { return _this.props.onHide(); }, Const.TRANSITION_DURATION);
-        };
-        Alert.prototype.render = function () {
-            return React.createElement("div", { className: classNames('myalert', {
-                    'primary': this.props.level === AlertLevel.Primary,
-                    'error': this.props.level === AlertLevel.Error,
-                    'no-display': !this.state.display
-                }), "data-time": this.props.time, "data-code": this.props.code },
-                React.createElement("span", { className: 'myalert-close', onClick: this.hide }),
-                React.createElement("div", { className: 'myalert-title' }, this.props.title),
-                React.createElement("div", { className: 'myalert-content' }, this.props.content));
-        };
-        return Alert;
-    }(React.Component));
-    exports.Alert = Alert;
-});
-define("items/AlertList", ["require", "exports", "react", "react-dom", "classnames", "items/Alert"], function (require, exports, React, ReactDOM, classNames, Alert_1) {
-    "use strict";
-    var AlertList = (function (_super) {
-        __extends(AlertList, _super);
-        function AlertList(props, context) {
-            var _this = _super.call(this, props, context) || this;
-            _this.alerts = [];
-            _this.state = { open: false, length: 0 };
-            _this.onOver = _this.onOver.bind(_this, _this.state);
-            _this.clean = _this.clean.bind(_this, _this.alerts);
-            return _this;
-        }
-        AlertList.prototype.componentWillReceiveProps = function (nextProps, nextContext) {
-            this.alerts = nextProps.alerts;
-            this.check();
-        };
-        AlertList.prototype.componentDidMount = function () {
-            document.addEventListener('click', this.handleClickOutside.bind(this), true);
-        };
-        AlertList.prototype.componentWillUnmount = function () {
-            document.removeEventListener('click', this.handleClickOutside.bind(this), true);
-        };
-        AlertList.prototype.handleClickOutside = function (e) {
-            var domNode = ReactDOM.findDOMNode(this);
-            if ((!domNode || !domNode.contains(e.target))) {
-                this.setState({
-                    open: false
-                });
-            }
-        };
-        AlertList.prototype.open = function (length) {
-            this.setState({ open: length > 0, length: length });
-        };
-        AlertList.prototype.check = function () {
-            this.alerts = this.alerts.filter(function (a) { return !a.hide; });
-            this.open(this.alerts.length);
-            this.forceUpdate();
-        };
-        AlertList.prototype.clean = function () {
-            this.alerts.forEach(function (a) { return a.hide = true; });
-            this.check();
-        };
-        AlertList.prototype.onOver = function () {
-            if (!this.state.open && this.state.length > 0) {
-                this.setState({ open: true });
-            }
-        };
-        AlertList.prototype.render = function () {
-            var _this = this;
-            var alerts = this.alerts.map(function (a) {
-                return React.createElement(Alert_1.Alert, { key: a.key, level: a.level, title: a.title, content: a.content, code: a.code, time: a.time, onHide: function () { a.hide = true; _this.check(); } });
-            });
-            return React.createElement("div", { id: 'alertList', className: classNames('dark', {
-                    'open': this.state.open,
-                    'possede': this.state.length > 0
-                }), onMouseOver: this.onOver },
-                React.createElement("span", { className: 'tiroir mini-but', onClick: function (e) { return _this.setState({ open: false }); } },
-                    React.createElement("span", { className: 'glyphicon glyphicon-remove' })),
-                React.createElement("span", { className: 'cleaner mini-but', onClick: this.clean },
-                    React.createElement("span", { className: 'glyphicon glyphicon-erase' })),
-                alerts);
-        };
-        return AlertList;
-    }(React.Component));
-    exports.AlertList = AlertList;
-});
-define("struct/AjaxCallback", ["require", "exports"], function (require, exports) {
-    "use strict";
-    var AjaxCallback = (function () {
-        function AjaxCallback(manager, cb) {
-            this.manager = manager;
-            this.cb = cb;
-        }
-        AjaxCallback.prototype.onSuccess = function (data) {
-            if (data.success) {
-                if (this.cb.success) {
-                    this.cb.success(data);
-                }
-            }
-            else {
-                this.manager.showAlertFromCode(data.code);
-                if (this.cb.error) {
-                    this.cb.error(data);
-                }
-            }
-        };
-        AjaxCallback.prototype.onFail = function () {
-            this.manager.showAlertFromCode(100);
-            if (this.cb.fail) {
-                this.cb.fail();
-            }
-        };
-        AjaxCallback.prototype.onDone = function (data) {
-            if (this.cb.done) {
-                this.cb.done(data);
-            }
-        };
-        AjaxCallback.prototype.onAlways = function (data) {
-            if (this.cb.always) {
-                this.cb.always(data);
-            }
-        };
-        return AjaxCallback;
-    }());
-    exports.AjaxCallback = AjaxCallback;
-});
 define("struct/Modele", ["require", "exports"], function (require, exports) {
     "use strict";
     var Modele = (function () {
@@ -248,6 +112,7 @@ define("struct/Modele", ["require", "exports"], function (require, exports) {
             configurable: true
         });
         Modele.prototype.ajaxPost = function (url, donnees, ajaxc) {
+            ajaxc.onStart();
             $.post(url, donnees, function (data) { return ajaxc.onSuccess(data); }, 'json')
                 .fail(function () { return ajaxc.onFail(); })
                 .done(function (data) { return ajaxc.onDone(data); })
@@ -256,6 +121,17 @@ define("struct/Modele", ["require", "exports"], function (require, exports) {
         return Modele;
     }());
     exports.Modele = Modele;
+});
+define("struct/Vue", ["require", "exports", "react"], function (require, exports, React) {
+    "use strict";
+    var Vue = (function (_super) {
+        __extends(Vue, _super);
+        function Vue(props, context) {
+            return _super.call(this, props, context) || this;
+        }
+        return Vue;
+    }(React.Component));
+    exports.Vue = Vue;
 });
 define("modules/main/MainModele", ["require", "exports", "struct/Modele"], function (require, exports, Modele_1) {
     "use strict";
@@ -311,7 +187,9 @@ define("items/Bouton", ["require", "exports", "react", "classnames"], function (
                     'disabled': this.state.disabled || this.props.disabled
                 }, this.props.className), type: this.props.submit ? 'submit' : 'button', onClick: function (e) {
                     return _this.props.onClick(e, _this);
-                }, disabled: this.state.disabled || this.props.disabled }, this.props.value);
+                }, disabled: this.state.disabled || this.props.disabled },
+                this.props.value,
+                this.props.ok ? React.createElement("span", { className: 'glyphicon glyphicon-ok' }) : '');
         };
         return Bouton;
     }(React.Component));
@@ -376,7 +254,7 @@ define("items/inputs/Input", ["require", "exports", "react", "classnames"], func
                     if (e.key === 'Enter' && onenter) {
                         onenter(e, _this);
                     }
-                }, readOnly: this.props.readonly, minLength: this.props.minlength, maxLength: this.props.maxlength, required: this.props.required, placeholder: this.props.placeholder, disabled: this.props.disabled });
+                }, readOnly: this.props.readonly, minLength: this.props.minlength, maxLength: this.props.maxlength, required: this.props.required, placeholder: this.props.placeholder, disabled: this.props.disabled, autoFocus: this.props.focus });
         };
         return Input;
     }(React.Component));
@@ -501,7 +379,7 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
                             React.createElement("span", { className: 'lbPseudo' }, "Pseudonyme"),
                             React.createElement("span", null, " ou "),
                             React.createElement("span", { className: 'lbMail' }, "email")),
-                        React.createElement(Input_1.Input, { type: this.state.isMail ? 'email' : 'text', id: "ip_pseudo", name: "ip_pseudo", value: this.state.ip_pseudoOrMail, onchange: function (e) { return _this.handlePseudoOrMail(e); }, minlength: this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min, maxlength: this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max, required: true })),
+                        React.createElement(Input_1.Input, { type: this.state.isMail ? 'email' : 'text', id: "ip_pseudo", name: "ip_pseudo", value: this.state.ip_pseudoOrMail, onchange: function (e) { return _this.handlePseudoOrMail(e); }, minlength: this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min, maxlength: this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max, required: true, focus: true })),
                     React.createElement("div", { className: "form-group" },
                         React.createElement("label", { htmlFor: "ip_mdp" }, "Mot de passe"),
                         React.createElement(Input_1.Input, { type: "password", id: "ip_mdp", name: "ip_mdp", value: this.state.ip_mdp, onchange: function (e) { return _this.handleMdp(e); }, minlength: Const.LENGTH.MDP.min, maxlength: Const.LENGTH.MDP.max, required: true })),
@@ -551,6 +429,35 @@ define("pages/Accueil", ["require", "exports", "react", "pages/Page", "items/Sta
     Accueil.NOM = 'Accueil';
     exports.Accueil = Accueil;
 });
+define("items/Tag", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
+    "use strict";
+    var Tag = (function (_super) {
+        __extends(Tag, _super);
+        function Tag(props) {
+            return _super.call(this, props) || this;
+        }
+        Tag.prototype.render = function () {
+            var _this = this;
+            return React.createElement("span", { className: classNames('tag', this.props.class, {
+                    'clickable': this.props.clickable,
+                    'deletable': this.props.deletable,
+                    'onhover': this.props.onhover
+                }), onClick: function (e) {
+                    if (_this.props.onclick) {
+                        _this.props.onclick(e, _this);
+                    }
+                }, title: this.props.value },
+                this.props.value,
+                React.createElement("span", { className: 'delete mini-but glyphicon glyphicon-remove', onClick: function (e) {
+                        if (_this.props.ondelete) {
+                            _this.props.ondelete(e, _this);
+                        }
+                    } }));
+        };
+        return Tag;
+    }(React.Component));
+    exports.Tag = Tag;
+});
 define("modules/main/ConfigModele", ["require", "exports", "struct/Modele"], function (require, exports, Modele_2) {
     "use strict";
     var ConfigModele = (function (_super) {
@@ -560,6 +467,9 @@ define("modules/main/ConfigModele", ["require", "exports", "struct/Modele"], fun
         }
         ConfigModele.prototype.updateValeur = function (key, val, ajaxc) {
             this.ajaxPost('configuration', { m: 'update_val', id_val: key, val: val }, ajaxc);
+        };
+        ConfigModele.prototype.removeSite = function (key_val, key_site, ajaxc) {
+            this.ajaxPost('configuration', { m: 'remove_site', id_val: key_val, id_site: key_site }, ajaxc);
         };
         return ConfigModele;
     }(Modele_2.Modele));
@@ -572,15 +482,103 @@ define("modules/main/ConfigManager", ["require", "exports", "struct/Controleur",
         function ConfigManager(donnees, mainManager) {
             return _super.call(this, new ConfigModele_1.ConfigModele(donnees), mainManager) || this;
         }
-        ConfigManager.prototype.updateValeur = function (key, val) {
-            this.modele.updateValeur(key, val, new AjaxCallback_1.AjaxCallback(this, {
+        ConfigManager.prototype.updateValeur = function (key, val, onsuccess) {
+            this.modele.updateValeur(key, val, new AjaxCallback_1.AjaxCallback(this, 'Mise à jour de valeur', {
                 success: function (data) {
+                    onsuccess();
                 }
             }));
+        };
+        ConfigManager.prototype.removeSite = function (key_prop, key_val, key_site, ligne, element) {
+            var _this = this;
+            function remover(manager) {
+                manager.modele.removeSite(key_val, key_site, new AjaxCallback_1.AjaxCallback(manager, 'Suppression de site', {
+                    success: function (data) {
+                        var sites = manager.modele.donnees
+                            .proprietes.filter(function (p) { return p.key === key_prop; })[0]
+                            .valeurs.filter(function (v) { return v.key === key_val; })[0]
+                            .sites;
+                        var sites_filtered = sites.filter(function (s) { return s.key !== key_site; });
+                        manager.modele.donnees
+                            .proprietes.filter(function (p) { return p.key === key_prop; })[0]
+                            .valeurs.filter(function (v) { return v.key === key_val; })[0]
+                            .sites = sites_filtered;
+                        ligne.setState({ sites: sites_filtered });
+                    }
+                }));
+            }
+            this.askConfirm('Suppression d\'un site', 'Voulez-vous vraiment supprimer ce site ?', function () { return remover(_this); }, element, true);
         };
         return ConfigManager;
     }(Controleur_1.Controleur));
     exports.ConfigManager = ConfigManager;
+});
+define("items/LigneValeur", ["require", "exports", "react", "classnames", "struct/Vue", "items/inputs/Input", "items/Tag"], function (require, exports, React, classNames, Vue_3, Input_2, Tag_1) {
+    "use strict";
+    var LigneValeur = (function (_super) {
+        __extends(LigneValeur, _super);
+        function LigneValeur(props) {
+            var _this = _super.call(this, props) || this;
+            _this.state = { sites: props.sites };
+            _this.onEnter = _this.onEnter.bind(_this);
+            _this.onRemoveSite = _this.onRemoveSite.bind(_this);
+            return _this;
+        }
+        LigneValeur.prototype.onEnter = function (e, input) {
+            var n = $(e.target).find('input')[0];
+            var f = function () { n.blur(); };
+            this.props.controleur.updateValeur(this.props.id, input.state.value, f);
+        };
+        LigneValeur.prototype.onRemoveSite = function (e, tag) {
+            this.props.controleur.removeSite(this.props.id_prop, this.props.id, tag.props.id, this, e.target);
+        };
+        LigneValeur.prototype.render = function () {
+            var _this = this;
+            return React.createElement("div", { className: classNames("box-line", "row", {
+                    "main": this.props.principal,
+                    "modifiable": this.props.modifiable,
+                    "supprimable": this.props.supprimable,
+                    "public": this.props.publique,
+                    "prive": this.props.prive
+                }) },
+                React.createElement("div", { className: 'box-line-ip col-xs-6', onSubmit: function (e) { return e.preventDefault(); } },
+                    React.createElement(Input_2.Input, { ref: function (i) { return _this.input = i; }, type: this.props.type, value: this.props.valeur, readonly: !this.props.modifiable, onenter: this.onEnter, minlength: this.props.taillemin, maxlength: this.props.taillemax, required: true, checkvalidation: true })),
+                React.createElement("div", { className: "box-line-visib col-xs-6" }, this.state.sites.map(function (s) { return React.createElement(Tag_1.Tag, { key: s.key, id: s.key, value: s.site, deletable: true, onhover: true, ondelete: _this.onRemoveSite }); })),
+                this.props.supprimable ? React.createElement("button", { className: "but but-delete but-error but-fh" }) : '');
+        };
+        return LigneValeur;
+    }(Vue_3.Vue));
+    exports.LigneValeur = LigneValeur;
+});
+define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "items/LigneValeur", "items/Bouton"], function (require, exports, React, Vue_4, LigneValeur_1, Bouton_2) {
+    "use strict";
+    var BlocPropriete = (function (_super) {
+        __extends(BlocPropriete, _super);
+        function BlocPropriete(props) {
+            var _this = _super.call(this, props) || this;
+            _this.state = { valeurs: props.valeurs };
+            return _this;
+        }
+        BlocPropriete.prototype.render = function () {
+            var _this = this;
+            return React.createElement("div", { className: "box col-md-6" },
+                React.createElement("div", { className: "box-content bloc col-md-12" },
+                    React.createElement("div", { className: "container-fluid" },
+                        React.createElement("div", { className: "box-head row" },
+                            React.createElement("span", { className: "box-title" }, this.props.nom),
+                            React.createElement("div", { className: "box-head-right" },
+                                React.createElement("span", { className: "tag typeStr" }, this.props.typeStr))),
+                        React.createElement("div", { className: "box-body row" },
+                            React.createElement("div", { className: "container-fluid" },
+                                this.state.valeurs.map(function (v) {
+                                    return React.createElement(LigneValeur_1.LigneValeur, { key: v.key, id: v.key, id_prop: _this.props.id, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && _this.state.valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax });
+                                }),
+                                this.state.valeurs.length < this.props.nbrmax ? React.createElement("div", { className: "box-line row" },
+                                    React.createElement(Bouton_2.BoutonAdd, { className: "but-fh", onClick: console.log })) : '')))));
+        };
+        return BlocPropriete;
+    }(Vue_4.Vue));
+    exports.BlocPropriete = BlocPropriete;
 });
 define("pages/Configuration", ["require", "exports", "react", "pages/Page", "items/BlocPropriete"], function (require, exports, React, Page_2, BlocPropriete_1) {
     "use strict";
@@ -654,7 +652,7 @@ define("modules/main/AccueilManager", ["require", "exports", "struct/Controleur"
         };
         AccueilManager.prototype.connexion = function (pseudo, mail, mdp, isMail, vue) {
             var stopLoad = function () { return vue.setState({ load: false }); };
-            this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback_2.AjaxCallback(this, {
+            this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback_2.AjaxCallback(this, 'Connexion', {
                 success: this.getConnexionSuccess(),
                 error: stopLoad,
                 fail: stopLoad
@@ -663,7 +661,7 @@ define("modules/main/AccueilManager", ["require", "exports", "struct/Controleur"
         AccueilManager.prototype.inscription = function (pseudo, mail, mdp, vue) {
             var _this = this;
             var stopLoad = function () { return vue.setState({ load: false }); };
-            this.modele.inscription(pseudo, mail, mdp, new AjaxCallback_2.AjaxCallback(this, {
+            this.modele.inscription(pseudo, mail, mdp, new AjaxCallback_2.AjaxCallback(this, 'Inscription', {
                 success: function (data) {
                     _this.showAlertFromCode(2);
                     _this.getConnexionSuccess()(data);
@@ -676,19 +674,22 @@ define("modules/main/AccueilManager", ["require", "exports", "struct/Controleur"
     }(Controleur_2.Controleur));
     exports.AccueilManager = AccueilManager;
 });
-define("items/Header", ["require", "exports", "react", "classnames", "pages/Pages"], function (require, exports, React, classNames, Pages_2) {
+define("items/Header", ["require", "exports", "react", "classnames", "pages/Pages", "items/AjaxNotif"], function (require, exports, React, classNames, Pages_2, AjaxNotif_1) {
     "use strict";
     var Header = (function (_super) {
         __extends(Header, _super);
         function Header() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        Header.prototype.renderCompte = function () {
+        Header.prototype.renderRight = function () {
             var _this = this;
-            return React.createElement("span", { className: "compte nav-item" },
-                React.createElement("span", { className: "nompte-pseudo" }, this.props.donnees.user.pseudo),
-                React.createElement("span", { className: "deco mini-but", onClick: function (e) { return _this.props.mainManager.deconnexion(); } },
-                    React.createElement("span", { className: 'glyphicon glyphicon-off' })));
+            return React.createElement("span", { className: "nav-right" },
+                React.createElement("span", { className: "nav-ajax nav-item" },
+                    React.createElement(AjaxNotif_1.AjaxNotif, { value: this.props.nomAjax, etat: this.props.etatAjax })),
+                React.createElement("span", { className: "compte nav-item" },
+                    React.createElement("span", { className: "compte-pseudo" }, this.props.donnees.user.pseudo),
+                    React.createElement("span", { className: "deco mini-but", onClick: function (e) { return _this.props.mainManager.deconnexion(e.target); } },
+                        React.createElement("span", { className: 'glyphicon glyphicon-off' }))));
         };
         Header.prototype.renderNav = function () {
             return React.createElement("nav", { className: "header-content container" },
@@ -699,17 +700,177 @@ define("items/Header", ["require", "exports", "react", "classnames", "pages/Page
                 React.createElement("span", { className: classNames("nav-item", {
                         'active': this.props.page === 'sessions'
                     }) }, "Sessions"),
-                this.renderCompte());
+                this.renderRight());
         };
         Header.prototype.render = function () {
-            console.log('HEADER');
             return React.createElement("header", { className: "header" }, !this.props.show ? null : this.renderNav());
         };
         return Header;
     }(React.Component));
     exports.Header = Header;
 });
-define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "classnames", "struct/Vue", "items/Header", "pages/Pages", "items/AlertList"], function (require, exports, React, ReactDOM, classNames, Vue_3, Header_1, Pages_3, AlertList_1) {
+define("items/Alert", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
+    "use strict";
+    var AlertLevel;
+    (function (AlertLevel) {
+        AlertLevel[AlertLevel["Primary"] = 1] = "Primary";
+        AlertLevel[AlertLevel["Normal"] = 2] = "Normal";
+        AlertLevel[AlertLevel["Error"] = 3] = "Error";
+    })(AlertLevel = exports.AlertLevel || (exports.AlertLevel = {}));
+    var Alert = (function (_super) {
+        __extends(Alert, _super);
+        function Alert(props, context) {
+            var _this = _super.call(this, props, context) || this;
+            _this.state = { hide: props.hide };
+            _this.hide = _this.hide.bind(_this, _this.props.onHide);
+            return _this;
+        }
+        Alert.prototype.componentDidMount = function () {
+            if (this.props.hide || this.state.hide) {
+                this.hide();
+            }
+        };
+        Alert.prototype.hide = function () {
+            this.setState({ hide: true });
+            setTimeout(this.props.onHide, Const.TRANSITION_DURATION);
+        };
+        Alert.prototype.render = function () {
+            return React.createElement("div", { className: classNames('myalert hidable', {
+                    'primary': this.props.level === AlertLevel.Primary,
+                    'error': this.props.level === AlertLevel.Error,
+                    'ishide': this.state.hide || this.props.hide
+                }), "data-time": this.props.time, "data-code": this.props.code },
+                React.createElement("span", { className: 'myalert-close', onClick: this.hide }),
+                React.createElement("div", { className: 'myalert-title' }, this.props.title),
+                React.createElement("div", { className: 'myalert-content' }, this.props.content));
+        };
+        return Alert;
+    }(React.Component));
+    exports.Alert = Alert;
+});
+define("items/ConfirmBox", ["require", "exports", "react", "react-dom", "classnames", "items/Bouton"], function (require, exports, React, ReactDOM, classNames, Bouton_3) {
+    "use strict";
+    var ConfirmBox = (function (_super) {
+        __extends(ConfirmBox, _super);
+        function ConfirmBox(props, context) {
+            var _this = _super.call(this, props, context) || this;
+            var pos = $(_this.props.srcElement).offset();
+            var eWidth = $(_this.props.srcElement).outerWidth();
+            _this.state = { hide: false, top: pos.top, left: pos.left + eWidth };
+            _this.hide = _this.hide.bind(_this, _this.state.hide);
+            return _this;
+        }
+        ConfirmBox.prototype.componentDidMount = function () {
+            document.addEventListener('click', this.confirmClickOutside.bind(this), true);
+        };
+        ConfirmBox.prototype.componentWillUnmount = function () {
+            document.removeEventListener('click', this.confirmClickOutside.bind(this), true);
+        };
+        ConfirmBox.prototype.confirmClickOutside = function (e) {
+            try {
+                var domNode = ReactDOM.findDOMNode(this);
+                var n = e.target;
+                if ((!domNode || !domNode.contains(n)) && !$(n).hasClass('declic') && !$(n).parents('.declic').length) {
+                    this.hide();
+                }
+            }
+            catch (e) {
+            }
+        };
+        ConfirmBox.prototype.hide = function () {
+            this.setState({ hide: true, top: this.state.top, left: this.state.left });
+            setTimeout(this.props.onHide, Const.TRANSITION_DURATION);
+        };
+        ConfirmBox.prototype.render = function () {
+            var _this = this;
+            return React.createElement("div", { className: classNames('bloc confirm hidable declic', {
+                    'fixed': this.props.fixed,
+                    'ishide': this.state.hide
+                }), style: {
+                    top: this.state.top,
+                    left: this.state.left
+                } },
+                React.createElement("div", { className: 'confirm-head' }, this.props.titre),
+                React.createElement("div", { className: 'confirm-body' }, this.props.content),
+                React.createElement("div", { className: 'confirm-foot' },
+                    React.createElement(Bouton_3.Bouton, { value: 'Annuler', onClick: this.hide }),
+                    React.createElement(Bouton_3.Bouton, { ok: true, value: '', onClick: function (e) { _this.hide(); _this.props.onConfirm(); }, primary: true })));
+        };
+        return ConfirmBox;
+    }(React.Component));
+    exports.ConfirmBox = ConfirmBox;
+});
+define("items/AlertList", ["require", "exports", "react", "react-dom", "classnames", "items/Alert"], function (require, exports, React, ReactDOM, classNames, Alert_1) {
+    "use strict";
+    var AlertList = (function (_super) {
+        __extends(AlertList, _super);
+        function AlertList(props, context) {
+            var _this = _super.call(this, props, context) || this;
+            _this.alerts = [];
+            _this.state = { open: false, length: 0 };
+            _this.onOver = _this.onOver.bind(_this, _this.state);
+            _this.clean = _this.clean.bind(_this, _this.alerts);
+            _this.check = _this.check.bind(_this, _this.alerts);
+            return _this;
+        }
+        AlertList.prototype.componentWillReceiveProps = function (nextProps, nextContext) {
+            if (this.alerts.length !== nextProps.alerts.length) {
+                this.alerts = nextProps.alerts;
+                this.check();
+            }
+        };
+        AlertList.prototype.componentDidMount = function () {
+            document.addEventListener('click', this.alertClickOutside.bind(this), true);
+        };
+        AlertList.prototype.componentWillUnmount = function () {
+            document.removeEventListener('click', this.alertClickOutside.bind(this), true);
+        };
+        AlertList.prototype.alertClickOutside = function (e) {
+            var domNode = ReactDOM.findDOMNode(this);
+            var n = e.target;
+            if ((!domNode || !domNode.contains(n)) && !$(n).hasClass('declic') && !$(n).parents('.declic').length) {
+                this.setState({
+                    open: false
+                });
+            }
+        };
+        AlertList.prototype.open = function (length) {
+            this.setState({ open: length > 0, length: length });
+        };
+        AlertList.prototype.check = function () {
+            this.alerts = this.alerts.filter(function (a) { return !a.hide; });
+            this.open(this.alerts.length);
+        };
+        AlertList.prototype.clean = function () {
+            this.alerts.forEach(function (a) { return a.hide = true; });
+            this.forceUpdate();
+            setTimeout(this.check, Const.TRANSITION_DURATION);
+        };
+        AlertList.prototype.onOver = function () {
+            if (!this.state.open && this.state.length > 0) {
+                this.setState({ open: true });
+            }
+        };
+        AlertList.prototype.render = function () {
+            var _this = this;
+            var alerts = this.alerts.map(function (a) {
+                return React.createElement(Alert_1.Alert, { key: a.key, hide: a.hide, level: a.level, title: a.title, content: a.content, code: a.code, time: a.time, onHide: function () { a.hide = true; _this.check(); } });
+            });
+            return React.createElement("div", { id: 'alertList', className: classNames('dark declic', {
+                    'open': this.state.open,
+                    'possede': this.state.length > 0
+                }), onMouseOver: this.onOver },
+                React.createElement("span", { className: 'tiroir mini-but', onClick: function (e) { return _this.setState({ open: false }); } },
+                    React.createElement("span", { className: 'glyphicon glyphicon-remove' })),
+                React.createElement("span", { className: 'cleaner mini-but', onClick: this.clean },
+                    React.createElement("span", { className: 'glyphicon glyphicon-erase' })),
+                alerts);
+        };
+        return AlertList;
+    }(React.Component));
+    exports.AlertList = AlertList;
+});
+define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "classnames", "struct/Vue", "items/Header", "pages/Pages", "items/ConfirmBox", "items/AlertList", "struct/AjaxCallback"], function (require, exports, React, ReactDOM, classNames, Vue_5, Header_1, Pages_3, ConfirmBox_1, AlertList_1, AjaxCallback_3) {
     "use strict";
     var MainVue = (function (_super) {
         __extends(MainVue, _super);
@@ -719,7 +880,7 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
             _this.alertKey = 1;
             var page = Pages_3.Pages[props.page];
             var controleur = _this.getControleurFromPage(page);
-            _this.state = { controleur: controleur, alertList: [], page: page, display: true, donnees: props.donnees };
+            _this.state = { controleur: controleur, alertList: [], page: page, display: true, donnees: props.donnees, etatAjax: AjaxCallback_3.AjaxEnum.None };
             return _this;
         }
         MainVue.applyVue = function (controleur) {
@@ -757,6 +918,7 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
             });
         };
         MainVue.prototype.render = function () {
+            var _this = this;
             this.props.controleur.vue = this;
             var p = new this.state.page({
                 controleur: this.state.controleur,
@@ -769,23 +931,25 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
                     'no-header': !p.hasHeader(),
                     'no-display': !this.state.display
                 }) },
-                React.createElement(Header_1.Header, { mainManager: this.props.controleur, donnees: this.state.donnees, page: p.nom, show: p.hasHeader() }),
+                React.createElement(Header_1.Header, { mainManager: this.props.controleur, donnees: this.state.donnees, page: p.nom, show: p.hasHeader(), nomAjax: this.state.nomAjax, etatAjax: this.state.etatAjax }),
                 React.createElement("div", { id: "content", className: "body-content" },
                     p.renderBandeau(),
                     p.render()),
                 React.createElement(AlertList_1.AlertList, { alerts: this.state.alertList }),
-                React.createElement("footer", { className: "footer" })));
+                React.createElement("footer", { className: "footer" }),
+                this.state.confirmBox ? React.createElement(ConfirmBox_1.ConfirmBox, __assign({}, this.state.confirmBox, { onHide: function () { return _this.setState({ confirmBox: undefined }); } })) : ''));
         };
         return MainVue;
-    }(Vue_3.Vue));
+    }(Vue_5.Vue));
     exports.MainVue = MainVue;
 });
-define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "modules/main/MainModele", "modules/main/AccueilManager", "modules/main/ConfigManager", "modules/main/MainVue", "struct/AjaxCallback", "items/Alert", "pages/Pages"], function (require, exports, Controleur_3, MainModele_1, AccueilManager_1, ConfigManager_1, MainVue_1, AjaxCallback_3, Alert_2, Pages_4) {
+define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "modules/main/MainModele", "modules/main/AccueilManager", "modules/main/ConfigManager", "modules/main/MainVue", "struct/AjaxCallback", "items/Alert", "pages/Pages"], function (require, exports, Controleur_3, MainModele_1, AccueilManager_1, ConfigManager_1, MainVue_1, AjaxCallback_4, Alert_2, Pages_4) {
     "use strict";
     var MainManager = (function (_super) {
         __extends(MainManager, _super);
         function MainManager() {
             var _this = _super.call(this, new MainModele_1.MainModele(GLOBALS)) || this;
+            _this.mainManager = _this;
             _this.accueilM = new AccueilManager_1.AccueilManager(_this.modele.donnees, _this);
             _this.configM = new ConfigManager_1.ConfigManager(_this.modele.donnees, _this);
             return _this;
@@ -813,14 +977,17 @@ define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "
         MainManager.prototype.start = function () {
             MainVue_1.MainVue.applyVue(this);
         };
-        MainManager.prototype.deconnexion = function () {
+        MainManager.prototype.deconnexion = function (element) {
             var _this = this;
-            this.modele.deconnexion(new AjaxCallback_3.AjaxCallback(this, {
-                success: function (data) {
-                    _this.modele.donnees = data.content;
-                    _this.vue.mainSwitchPage(Pages_4.Pages.Accueil);
-                }
-            }));
+            function deconnecter(manager) {
+                manager.modele.deconnexion(new AjaxCallback_4.AjaxCallback(manager, 'Déconnexion', {
+                    success: function (data) {
+                        manager.modele.donnees = data.content;
+                        manager.vue.mainSwitchPage(Pages_4.Pages.Accueil);
+                    }
+                }));
+            }
+            this.askConfirm('Deconnexion', 'Voulez-vous vraiment vous déconnecter ?', function () { return deconnecter(_this); }, element, true);
         };
         MainManager.prototype.showAlertFromCode = function (code_num) {
             var code = Const.CODES[code_num];
@@ -842,7 +1009,7 @@ define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "
     }(Controleur_3.Controleur));
     exports.MainManager = MainManager;
 });
-define("struct/Controleur", ["require", "exports"], function (require, exports) {
+define("struct/Controleur", ["require", "exports", "struct/AjaxCallback"], function (require, exports, AjaxCallback_5) {
     "use strict";
     var Controleur = (function () {
         function Controleur(modele, mainManager) {
@@ -879,6 +1046,15 @@ define("struct/Controleur", ["require", "exports"], function (require, exports) 
             enumerable: true,
             configurable: true
         });
+        Controleur.prototype.startAjax = function (nom) {
+            this.mainManager.vue.setState({ nomAjax: nom, etatAjax: AjaxCallback_5.AjaxEnum.Load });
+        };
+        Controleur.prototype.endAjax = function (etat) {
+            this.mainManager.vue.setState({ etatAjax: etat });
+        };
+        Controleur.prototype.askConfirm = function (titre, content, onConfirm, element, fixed) {
+            this.mainManager.vue.setState({ confirmBox: { display: true, srcElement: element, titre: titre, content: content, onConfirm: onConfirm, fixed: fixed } });
+        };
         Controleur.prototype.showAlertFromCode = function (code_num) {
             this.mainManager.showAlertFromCode(code_num);
         };
@@ -886,103 +1062,85 @@ define("struct/Controleur", ["require", "exports"], function (require, exports) 
     }());
     exports.Controleur = Controleur;
 });
-define("struct/Vue", ["require", "exports", "react"], function (require, exports, React) {
+define("struct/AjaxCallback", ["require", "exports"], function (require, exports) {
     "use strict";
-    var Vue = (function (_super) {
-        __extends(Vue, _super);
-        function Vue(props, context) {
-            return _super.call(this, props, context) || this;
+    var AjaxEnum;
+    (function (AjaxEnum) {
+        AjaxEnum[AjaxEnum["None"] = 0] = "None";
+        AjaxEnum[AjaxEnum["Load"] = 1] = "Load";
+        AjaxEnum[AjaxEnum["Success"] = 2] = "Success";
+        AjaxEnum[AjaxEnum["Error"] = 3] = "Error";
+    })(AjaxEnum = exports.AjaxEnum || (exports.AjaxEnum = {}));
+    var AjaxCallback = (function () {
+        function AjaxCallback(manager, label, cb) {
+            this.manager = manager;
+            this.label = label;
+            this.cb = cb;
         }
-        return Vue;
-    }(React.Component));
-    exports.Vue = Vue;
+        AjaxCallback.prototype.onStart = function () {
+            this.manager.startAjax(this.label);
+        };
+        AjaxCallback.prototype.onSuccess = function (data) {
+            if (data.success) {
+                this.manager.endAjax(AjaxEnum.Success);
+                if (this.cb.success) {
+                    this.cb.success(data);
+                }
+            }
+            else {
+                this.manager.endAjax(AjaxEnum.Error);
+                this.manager.showAlertFromCode(data.code);
+                if (this.cb.error) {
+                    this.cb.error(data);
+                }
+            }
+        };
+        AjaxCallback.prototype.onFail = function () {
+            this.manager.endAjax(AjaxEnum.Error);
+            this.manager.showAlertFromCode(100);
+            if (this.cb.fail) {
+                this.cb.fail();
+            }
+        };
+        AjaxCallback.prototype.onDone = function (data) {
+            if (this.cb.done) {
+                this.cb.done(data);
+            }
+        };
+        AjaxCallback.prototype.onAlways = function (data) {
+            if (this.cb.always) {
+                this.cb.always(data);
+            }
+        };
+        return AjaxCallback;
+    }());
+    exports.AjaxCallback = AjaxCallback;
 });
-define("items/Tag", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
+define("items/AjaxNotif", ["require", "exports", "react", "classnames", "struct/AjaxCallback"], function (require, exports, React, classNames, AjaxCallback_6) {
     "use strict";
-    var Tag = (function (_super) {
-        __extends(Tag, _super);
-        function Tag(props) {
+    var AjaxNotif = (function (_super) {
+        __extends(AjaxNotif, _super);
+        function AjaxNotif(props) {
             return _super.call(this, props) || this;
         }
-        Tag.prototype.render = function () {
-            var _this = this;
-            return React.createElement("span", { id: this.props.id, className: classNames('tag', this.props.class, {
-                    'clickable': this.props.clickable,
-                    'deletable': this.props.deletable
-                }), onClick: function (e) {
-                    if (_this.props.onclick) {
-                        _this.props.onclick(e);
-                    }
-                }, title: this.props.value },
-                this.props.value,
-                React.createElement("span", { className: 'delete mini-but glyphicon glyphicon-remove', onClick: function (e) {
-                        if (_this.props.ondelete) {
-                            _this.props.ondelete(e);
-                        }
-                    } }));
-        };
-        return Tag;
-    }(React.Component));
-    exports.Tag = Tag;
-});
-define("items/LigneValeur", ["require", "exports", "react", "classnames", "struct/Vue", "items/inputs/Input", "items/Tag"], function (require, exports, React, classNames, Vue_4, Input_2, Tag_1) {
-    "use strict";
-    var LigneValeur = (function (_super) {
-        __extends(LigneValeur, _super);
-        function LigneValeur(props) {
-            var _this = _super.call(this, props) || this;
-            _this.onEnter = _this.onEnter.bind(_this);
-            return _this;
-        }
-        LigneValeur.prototype.onEnter = function (e, input) {
-            this.props.controleur.updateValeur(this.props.id, input.state.value);
-        };
-        LigneValeur.prototype.render = function () {
-            return React.createElement("div", { className: classNames("box-line", "row", {
-                    "main": this.props.principal,
-                    "modifiable": this.props.modifiable,
-                    "supprimable": this.props.supprimable,
-                    "public": this.props.publique,
-                    "prive": this.props.prive
+        AjaxNotif.prototype.render = function () {
+            return React.createElement("span", { className: classNames('ajax-bloc', {
+                    'hide': this.props.etat == AjaxCallback_6.AjaxEnum.None,
+                    'load': this.props.etat == AjaxCallback_6.AjaxEnum.Load,
+                    'success': this.props.etat == AjaxCallback_6.AjaxEnum.Success,
+                    'error': this.props.etat == AjaxCallback_6.AjaxEnum.Error,
                 }) },
-                React.createElement("div", { className: 'box-line-ip col-xs-6', onSubmit: function (e) { return e.preventDefault(); } },
-                    React.createElement(Input_2.Input, { type: this.props.type, value: this.props.valeur, readonly: !this.props.modifiable, onenter: this.onEnter, minlength: this.props.taillemin, maxlength: this.props.taillemax, required: true, checkvalidation: true })),
-                React.createElement("div", { className: "box-line-visib col-xs-6" }, this.props.sites.map(function (s, i) { return React.createElement(Tag_1.Tag, { key: i, value: s }); })),
-                this.props.supprimable ? React.createElement("button", { className: "but but-delete but-error but-fh" }) : '');
+                this.props.value,
+                React.createElement("span", { className: 'spinner-box' },
+                    React.createElement("span", { className: classNames('icon', 'l-white', {
+                            'spinner visible': this.props.etat == AjaxCallback_6.AjaxEnum.Load,
+                            'glyphicon glyphicon-ok': this.props.etat == AjaxCallback_6.AjaxEnum.Success,
+                            'glyphicon glyphicon-remove': this.props.etat == AjaxCallback_6.AjaxEnum.Error,
+                        }) })));
         };
-        return LigneValeur;
-    }(Vue_4.Vue));
-    exports.LigneValeur = LigneValeur;
-});
-define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "items/LigneValeur", "items/Bouton"], function (require, exports, React, Vue_5, LigneValeur_1, Bouton_2) {
-    "use strict";
-    var BlocPropriete = (function (_super) {
-        __extends(BlocPropriete, _super);
-        function BlocPropriete(props) {
-            var _this = _super.call(this, props) || this;
-            _this.state = { valeurs: props.valeurs };
-            return _this;
-        }
-        BlocPropriete.prototype.render = function () {
-            var _this = this;
-            return React.createElement("div", { className: "box col-md-6" },
-                React.createElement("div", { className: "box-content bloc col-md-12" },
-                    React.createElement("div", { className: "container-fluid" },
-                        React.createElement("div", { className: "box-head row" },
-                            React.createElement("span", { className: "box-title" }, this.props.nom),
-                            React.createElement("div", { className: "box-head-right" },
-                                React.createElement("span", { className: "tag typeStr" }, this.props.typeStr))),
-                        React.createElement("div", { className: "box-body row" },
-                            React.createElement("div", { className: "container-fluid" },
-                                this.state.valeurs.map(function (v) {
-                                    return React.createElement(LigneValeur_1.LigneValeur, { key: v.key, id: v.key, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && _this.state.valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax });
-                                }),
-                                this.state.valeurs.length < this.props.nbrmax ? React.createElement("div", { className: "box-line row" },
-                                    React.createElement(Bouton_2.BoutonAdd, { className: "but-fh", onClick: console.log })) : '')))));
-        };
-        return BlocPropriete;
-    }(Vue_5.Vue));
-    exports.BlocPropriete = BlocPropriete;
+        return AjaxNotif;
+    }(React.Component));
+    exports.AjaxNotif = AjaxNotif;
 });
 define("Main", ["require", "exports", "modules/main/MainManager"], function (require, exports, MainManager_1) {
     "use strict";

@@ -11,7 +11,8 @@ interface BoutonProps {
 	submit?: boolean,
 	disabled?: boolean,
 	load?: boolean,
-	onClick: any
+	ok?: boolean,
+	onClick: (e: React.MouseEvent, b: Bouton) => void
 }
 
 interface BoutonState {
@@ -38,7 +39,10 @@ export class Bouton extends React.Component<BoutonProps, BoutonState> {
 		}, this.props.className)
 		} type={this.props.submit ? 'submit' : 'button'} onClick={e =>
 			this.props.onClick(e, this)
-		} disabled={this.state.disabled || this.props.disabled}>{this.props.value}</button>
+		} disabled={this.state.disabled || this.props.disabled}>
+			{this.props.value}
+			{this.props.ok ? <span className='glyphicon glyphicon-ok'></span> : ''}
+		</button>
 	}
 
 }
@@ -57,7 +61,7 @@ export class BoutonAdd extends React.Component<BoutonAddProps, BoutonState> {
 	public constructor(props?: BoutonAddProps, context?: BoutonState) {
 		super(props, context);
 	}
-	
+
 	public render() {
 		return <Bouton value='' add={true} delete={false} className={'but-add'.concat(this.props.className as string)} {...this.props} />
 	}

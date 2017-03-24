@@ -11,21 +11,13 @@ import static bdd.generated.tables.Propriete.PROPRIETE;
 import static bdd.generated.tables.Typechiffrage.TYPECHIFFRAGE;
 import static bdd.generated.tables.Typeprop.TYPEPROP;
 import static bdd.generated.tables.Valeur.VALEUR;
-import static bdd.generated.tables.Valeurbigint.VALEURBIGINT;
-import static bdd.generated.tables.Valeurboolean.VALEURBOOLEAN;
-import static bdd.generated.tables.Valeurdate.VALEURDATE;
-import static bdd.generated.tables.Valeurdouble.VALEURDOUBLE;
-import static bdd.generated.tables.Valeurinteger.VALEURINTEGER;
-import static bdd.generated.tables.Valeurmdp.VALEURMDP;
-import static bdd.generated.tables.Valeurstring.VALEURSTRING;
 import static bdd.generated.tables.Visibilite.VISIBILITE;
 import entity.ProprieteEntity;
 import entity.ProprieteEntity.ValeurEntity;
+import entity.ProprieteEntity.ValeurEntity.SiteEntity;
 import java.util.List;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.jooq.TableField;
-import org.jooq.impl.TableImpl;
 
 /**
  * ProprieteModele.java
@@ -63,15 +55,15 @@ public class ProprieteModele extends Modele {
 
 				List<ValeurEntity> valeurs = res_val.map((v) -> {
 
-					Result<? extends Record> res_sites = create.select(DOMAINE.IP)
+					Result<? extends Record> res_sites = create.select(DOMAINE.ID_DOMAINE, DOMAINE.IP)
 							.from(VISIBILITE).naturalJoin(DOMAINE)
 							.where(VISIBILITE.ID_VALEUR.eq(v.get(VALEUR.ID_VALEUR)))
 							.fetch();
 
-					List<String> sites = res_sites.map(s -> s.get(DOMAINE.IP));
+					List<SiteEntity> sites = res_sites.map(s -> new SiteEntity(s.get(DOMAINE.ID_DOMAINE), s.get(DOMAINE.IP)));
 
 					boolean prive = sites.isEmpty();
-					boolean publique = !prive && sites.contains("*");
+					boolean publique = !sites.isEmpty() && "*".equals(sites.get(0).getSite());
 
 					return new ValeurEntity(v.get(VALEUR.ID_VALEUR), v.get(tvp.getValeur_val()), v.get(VALEUR.PRINCIPALE), publique, prive, sites);
 				});

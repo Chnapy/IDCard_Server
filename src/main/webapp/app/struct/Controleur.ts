@@ -2,7 +2,7 @@
 import {Modele} from 'Modele';
 import {Vue} from 'Vue';
 import {MainManager} from 'modules/main/MainManager';
-import {Page} from 'pages/Page';
+import {AjaxEnum} from 'struct/AjaxCallback';
 
 export abstract class Controleur<M extends Modele, V extends Vue<any, any>> {
 
@@ -33,6 +33,18 @@ export abstract class Controleur<M extends Modele, V extends Vue<any, any>> {
 	public constructor(modele: M, mainManager?: MainManager) {
 		this.modele = modele;
 		this.mainManager = mainManager as MainManager;
+	}
+	
+	public startAjax(nom: string) {
+		this.mainManager.vue.setState({nomAjax: nom, etatAjax: AjaxEnum.Load});
+	}
+	
+	public endAjax(etat: AjaxEnum) {
+		this.mainManager.vue.setState({etatAjax: etat});
+	}
+	
+	public askConfirm(titre: string, content: string, onConfirm: () => void, element: HTMLElement, fixed?: boolean) {
+		this.mainManager.vue.setState({confirmBox: {display: true, srcElement: element, titre: titre, content: content, onConfirm: onConfirm, fixed: fixed}})
 	}
 
 	public showAlertFromCode(code_num: number) {

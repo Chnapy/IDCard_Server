@@ -33,25 +33,28 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 		this.state = {open: false, length: 0};
 		this.onOver = this.onOver.bind(this, this.state);
 		this.clean = this.clean.bind(this, this.alerts);
+		this.check = this.check.bind(this, this.alerts);
 	}
 
 	public componentWillReceiveProps?(nextProps: AlertListProps, nextContext: any): void {
-		this.alerts = nextProps.alerts;
-		this.check();
+		if (this.alerts.length !== nextProps.alerts.length) {
+			this.alerts = nextProps.alerts;
+			this.check();
+		}
 	}
 
 	public componentDidMount() {
-		document.addEventListener('click', this.handleClickOutside.bind(this), true);
+		document.addEventListener('click', this.alertClickOutside.bind(this), true);
 	}
 
 	public componentWillUnmount() {
-		document.removeEventListener('click', this.handleClickOutside.bind(this), true);
+		document.removeEventListener('click', this.alertClickOutside.bind(this), true);
 	}
 
-	public handleClickOutside(e: any) {
+	public alertClickOutside(e: React.MouseEvent) {
 		const domNode = ReactDOM.findDOMNode(this);
-
-		if ((!domNode || !domNode.contains(e.target))) {
+		let n: Node = e.target as Node;
+		if ((!domNode || !domNode.contains(n)) && !$(n).hasClass('declic') && !$(n).parents('.declic').length) {
 			this.setState({
 				open: false
 			});
@@ -65,12 +68,13 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 	public check(): void {
 		this.alerts = this.alerts.filter(a => !a.hide);
 		this.open(this.alerts.length);
-		this.forceUpdate();
 	}
 
 	public clean() {
 		this.alerts.forEach(a => a.hide = true);
-		this.check();
+		this.forceUpdate();
+		setTimeout(this.check, Const.TRANSITION_DURATION);
+//		this.check();
 	}
 
 	public onOver() {
@@ -82,9 +86,9 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 	public render(): any {
 
 		let alerts = this.alerts.map(a =>
-			<Alert key={a.key} level={a.level} title={a.title} content={a.content} code={a.code} time={a.time} onHide={() => {a.hide = true; this.check()}} />);
+			<Alert key={a.key} hide={a.hide} level={a.level} title={a.title} content={a.content} code={a.code} time={a.time} onHide={() => {a.hide = true; this.check()}} />);
 
-		return <div id='alertList' className={classNames('dark', {
+		return <div id='alertList' className={classNames('dark declic', {
 			'open': this.state.open,
 			'possede': this.state.length > 0
 		})} onMouseOver={this.onOver}>

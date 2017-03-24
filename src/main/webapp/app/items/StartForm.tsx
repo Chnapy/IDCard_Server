@@ -171,7 +171,7 @@ export class StartForm extends Vue<VueProps<AccueilManager>, StartFormState> {
 						name="ip_pseudo" value={this.state.ip_pseudoOrMail} onchange={e => this.handlePseudoOrMail(e)}
 						minlength={this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min}
 						maxlength={this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max}
-						required={true} />
+						required={true} focus={true} />
 				</div>
 				<div className="form-group">
 					<label htmlFor="ip_mdp">Mot de passe</label>

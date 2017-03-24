@@ -134,9 +134,9 @@ public class ProprieteEntity extends Entity {
 		private boolean principal;
 		private boolean publique;
 		private boolean prive;
-		private List<String> sites;
+		private List<SiteEntity> sites;
 
-		public ValeurEntity(long key, T valeur, boolean principal, boolean publique, boolean prive, List<String> sites) {
+		public ValeurEntity(long key, T valeur, boolean principal, boolean publique, boolean prive, List<SiteEntity> sites) {
 			this.key = key;
 			this.valeur = valeur;
 			this.principal = principal;
@@ -185,12 +185,39 @@ public class ProprieteEntity extends Entity {
 			this.prive = prive;
 		}
 
-		public List<String> getSites() {
+		public List<SiteEntity> getSites() {
 			return sites;
 		}
 
-		public void setSites(List<String> sites) {
+		public void setSites(List<SiteEntity> sites) {
 			this.sites = sites;
+		}
+
+		public static class SiteEntity extends Entity {
+
+			private long key;
+			private String site;
+
+			public SiteEntity(long key, String site) {
+				this.key = key;
+				this.site = site;
+			}
+
+			public long getKey() {
+				return key;
+			}
+
+			public void setKey(long key) {
+				this.key = key;
+			}
+
+			public String getSite() {
+				return site;
+			}
+
+			public void setSite(String site) {
+				this.site = site;
+			}
 		}
 	}
 }

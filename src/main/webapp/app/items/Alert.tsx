@@ -10,6 +10,7 @@ export enum AlertLevel {
 
 interface AlertProps {
 	level: AlertLevel,
+	hide: boolean,
 	title: string,
 	content: string,
 	code: number,
@@ -18,28 +19,34 @@ interface AlertProps {
 }
 
 export interface AlertState {
-	display: boolean
+	hide: boolean
 }
 
 export class Alert extends React.Component<AlertProps, AlertState> {
 
-	public constructor(props?: AlertProps, context?: AlertState) {
+	public constructor(props: AlertProps, context?: AlertState) {
 		super(props, context);
-		this.state = {display: true};
+		this.state = {hide: props.hide};
 		this.hide = this.hide.bind(this, this.props.onHide);
 	}
 
-	public hide(): void {
-		this.setState({display: false});
-		setTimeout(() => this.props.onHide(), Const.TRANSITION_DURATION);
+	public componentDidMount() {
+		if(this.props.hide || this.state.hide) {
+			this.hide();
+		}
+	}
+
+	private hide(): void {
+		this.setState({hide: true});
+		setTimeout(this.props.onHide as () => void, Const.TRANSITION_DURATION);
 	}
 
 	public render(): any {
 
-		return <div className={classNames('myalert', {
+		return <div className={classNames('myalert hidable', {
 			'primary': this.props.level === AlertLevel.Primary,
 			'error': this.props.level === AlertLevel.Error,
-			'no-display': !this.state.display
+			'ishide': this.state.hide || this.props.hide
 		})} data-time={this.props.time} data-code={this.props.code}>
 			<span className='myalert-close' onClick={this.hide}></span>
 			<div className='myalert-title'>{this.props.title}</div>

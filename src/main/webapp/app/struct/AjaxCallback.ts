@@ -34,22 +34,35 @@ export interface Data {
 	content: Donnees
 }
 
+export enum AjaxEnum {
+	None, Load, Success, Error
+}
+
+
 export class AjaxCallback {
 
 	private readonly manager: Controleur<any, any>;
+	private readonly label: string;
 	private readonly cb: Callbacks;
 
-	public constructor(manager: Controleur<any, any>, cb: Callbacks) {
+	public constructor(manager: Controleur<any, any>, label: string, cb: Callbacks) {
 		this.manager = manager;
+		this.label = label;
 		this.cb = cb;
+	}
+
+	public onStart(): void {
+		this.manager.startAjax(this.label);
 	}
 
 	public onSuccess(data: Data): void {
 		if (data.success) {
+			this.manager.endAjax(AjaxEnum.Success);
 			if (this.cb.success) {
 				this.cb.success(data);
 			}
 		} else {
+			this.manager.endAjax(AjaxEnum.Error);
 			this.manager.showAlertFromCode(data.code)
 			if (this.cb.error) {
 				this.cb.error(data);
@@ -58,6 +71,7 @@ export class AjaxCallback {
 	}
 
 	public onFail(): void {
+		this.manager.endAjax(AjaxEnum.Error);
 		this.manager.showAlertFromCode(100)
 		if (this.cb.fail) {
 			this.cb.fail();

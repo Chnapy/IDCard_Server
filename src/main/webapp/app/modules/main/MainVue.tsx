@@ -10,11 +10,13 @@ import {Header} from 'items/Header';
 import {Page, PageProps} from 'pages/Page';
 import {Pages} from 'pages/Pages';
 import {AlertLevel} from 'items/Alert';
+import {ConfirmBox, ConfirmBoxProps} from 'items/ConfirmBox';
 import {AlertList, AlertData} from 'items/AlertList';
 import {Donnees} from 'struct/AjaxCallback';
+import {AjaxEnum} from 'struct/AjaxCallback';
 
 export interface MainVueProps extends VueProps<MainManager> {
-//	mainManager: MainManager,
+	//	mainManager: MainManager,
 	donnees: Donnees,
 	page: string
 }
@@ -24,7 +26,10 @@ interface MainVueState {
 	alertList?: AlertData[],
 	page?: any,
 	display?: boolean,
-	donnees?: Donnees
+	donnees?: Donnees,
+	etatAjax?: AjaxEnum,
+	nomAjax?: string,
+	confirmBox?: ConfirmBoxProps
 }
 
 export class MainVue extends Vue<MainVueProps, MainVueState> {
@@ -43,13 +48,13 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 		super(props, context);
 		this.alertList = [];
 		this.alertKey = 1;
-		
+
 		let page = (Pages as any)[props.page];
 		let controleur = this.getControleurFromPage(page);
 
-		this.state = {controleur: controleur, alertList: [], page: page, display: true, donnees: props.donnees};
+		this.state = {controleur: controleur, alertList: [], page: page, display: true, donnees: props.donnees, etatAjax: AjaxEnum.None};
 	}
-	
+
 	private getControleurFromPage(page: any): Controleur<Modele, Page<PageProps<any>>> {
 		if (page === Pages.Accueil) {
 			return this.props.controleur.accueilM;
@@ -64,7 +69,7 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 		console.log("SWITCH " + page);
 		console.log(arguments.length);
 		this.setState({display: false});
-		
+
 		let controleur = this.getControleurFromPage(page)
 		setTimeout(() => this.setState({controleur: controleur, page: page, display: true}), Const.TRANSITION_DURATION);
 	}
@@ -103,7 +108,10 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 				'no-display': !this.state.display
 			})}>
 
-				<Header mainManager={this.props.controleur} donnees={this.state.donnees as Donnees} page={p.nom} show={p.hasHeader()} />
+				<Header mainManager={this.props.controleur} donnees={this.state.donnees as Donnees}
+					page={p.nom} show={p.hasHeader()}
+					nomAjax={this.state.nomAjax as string} etatAjax={this.state.etatAjax as AjaxEnum}
+				/>
 
 				<div id="content" className="body-content">
 
@@ -118,6 +126,9 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 				<footer className="footer">
 
 				</footer>
+				
+				{this.state.confirmBox ? <ConfirmBox {...this.state.confirmBox} onHide={() => this.setState({confirmBox: undefined})} /> : ''}
+				
 			</div>
 		);
 	}

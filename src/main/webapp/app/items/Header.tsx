@@ -1,26 +1,33 @@
 
 import * as React from 'react';
 import * as classNames from 'classnames';
-import {Vue, VueProps} from 'struct/Vue';
 import {MainManager} from 'modules/main/MainManager';
 import {Pages} from 'pages/Pages';
-import {AlertLevel} from 'items/Alert';
 import {Donnees} from 'struct/AjaxCallback';
+import {AjaxEnum} from 'struct/AjaxCallback';
+import {AjaxNotif} from 'items/AjaxNotif';
 
 export interface HeaderProps {
 	mainManager: MainManager,
 	donnees: Donnees,
 	page: string,
-	show: boolean
+	show: boolean,
+	nomAjax: string,
+	etatAjax: AjaxEnum
 }
 
 export class Header extends React.Component<HeaderProps, undefined> {
 
-	private renderCompte() {
-		return <span className="compte nav-item">
-			<span className="nompte-pseudo">{this.props.donnees.user.pseudo}</span>
-			<span className="deco mini-but" onClick={e => this.props.mainManager.deconnexion()}>
-				<span className='glyphicon glyphicon-off'></span>
+	private renderRight() {
+		return <span className="nav-right">
+			<span className="nav-ajax nav-item">
+				<AjaxNotif value={this.props.nomAjax} etat={this.props.etatAjax} />
+			</span>
+			<span className="compte nav-item">
+				<span className="compte-pseudo">{this.props.donnees.user.pseudo}</span>
+				<span className="deco mini-but" onClick={e => this.props.mainManager.deconnexion(e.target as HTMLElement)}>
+					<span className='glyphicon glyphicon-off'></span>
+				</span>
 			</span>
 		</span>;
 	}
@@ -34,13 +41,11 @@ export class Header extends React.Component<HeaderProps, undefined> {
 			<span className={classNames("nav-item", {
 				'active': this.props.page === 'sessions'
 			})}>Sessions</span>
-			{this.renderCompte()}
+			{this.renderRight()}
 		</nav>;
 	}
 
 	public render() {
-
-		console.log('HEADER');
 
 		return <header className="header">
 			{!this.props.show ? null : this.renderNav()}

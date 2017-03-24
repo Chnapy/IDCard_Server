@@ -49,7 +49,7 @@ public class Const {
 		//62x = inscription
 		E_INSCRIPTION_CHECK(620), E_INSCRIPTION_ISSET(621),
 		//63x = configuration
-		E_CONFIGURATION_UPDATE(630),
+		E_CONFIGURATION_UPDATE(630), E_CONFIGURATION_REMOVESITE(631)
 		;
 
 		public final int code;

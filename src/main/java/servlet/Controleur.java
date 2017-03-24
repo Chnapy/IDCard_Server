@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.Entity;
 import entity.MainEntity;
+import entity.UserEntity;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.text.DateFormat;
@@ -32,11 +33,14 @@ import servlet.Controleur.Param.NoCheckException;
 public abstract class Controleur extends HttpServlet {
 
 	private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+	
+	protected UserEntity user;
 
 	protected abstract MainEntity onPost(HttpServletRequest request, HttpServletResponse response);
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		this.user = (UserEntity) request.getSession().getAttribute(Controleur.Sess.USER.sess);
 		MainEntity me = this.onPost(request, response);
 		this.sendReturn(me, response);
 	}
@@ -49,6 +53,12 @@ public abstract class Controleur extends HttpServlet {
 			out.print(this.entityToJSONString(e));
 		} catch (IOException ex) {
 			Logger.getLogger(Controleur.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	protected void checkIdUser(long id) throws Param.NoCheckException {
+		if (this.user.getId_user() != id) {
+			throw new Param.NoCheckException("Id_user différents: " + this.user.getId_user() + " != " + id);
 		}
 	}
 
@@ -159,6 +169,7 @@ public abstract class Controleur extends HttpServlet {
 		MDP("mdp", Const.CD_MDP),
 		IS_MAIL("isMail", Const.CD_BOOLEAN),
 		ID_VAL("id_val", Const.CD_LONG),
+		ID_SITE("id_site", Const.CD_LONG),
 		VAL("val", Const.CD_VALSTRING);
 
 		public final String param;

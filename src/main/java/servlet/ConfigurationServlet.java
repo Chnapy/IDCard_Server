@@ -10,6 +10,7 @@ import bdd.Const.Code;
 import entity.MainEntity;
 import entity.MainEntity.MainEntityError;
 import entity.ValeurInfos;
+import entity.VisibiliteInfos;
 import java.sql.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +37,8 @@ public class ConfigurationServlet extends Controleur {
 		switch (module) {
 			case "update_val":
 				return updateVal(request, response);
+			case "remove_site":
+				return removeSite(request, response);
 			default:
 				return new MainEntityError(Const.Code.E_SERVEUR);
 		}
@@ -86,10 +89,12 @@ public class ConfigurationServlet extends Controleur {
 	}
 
 	private Object checkVal(String form_val, ValeurInfos infos) throws Param.NoCheckException {
-		
-		if(!infos.isModifiable()) {
+
+		if (!infos.isModifiable()) {
 			throw new Param.NoCheckException("Propriété non modifiable");
 		}
+
+		this.checkIdUser(infos.getId_user());
 
 		Const.CheckData cd = this.getCheckDataFromTypeProp(infos.getId_typeprop(), infos.getPropriete_nom());
 
@@ -123,6 +128,33 @@ public class ConfigurationServlet extends Controleur {
 		}
 
 		throw new Param.NoCheckException(cd, form_val);
+	}
+
+	private MainEntity removeSite(HttpServletRequest request, HttpServletResponse response) {
+		boolean success = false;
+		Code code;
+		try {
+			long id_val = this.checkParam(Param.ID_VAL, request);
+			long id_site = this.checkParam(Param.ID_SITE, request);
+
+			ConfigurationModele modele = new ConfigurationModele();
+
+			VisibiliteInfos infos = modele.getVisibiliteInfos(id_val, id_site);
+
+			this.checkIdUser(infos.getId_user());
+
+			modele.removeSite(id_val, id_site);
+
+			code = Code.OK;
+			success = true;
+		} catch (Param.NoCheckException ex) {
+			code = Code.E_CONFIGURATION_REMOVESITE;
+		} catch (Exception ex) {
+			Logger.getLogger(ConfigurationServlet.class.getName()).log(Level.SEVERE, null, ex);
+			code = Code.E_SERVEUR;
+		}
+
+		return new MainEntity(success, code);
 	}
 
 }
