@@ -24,11 +24,11 @@ public class DeconnexionServlet extends Controleur {
 	@Override
 	protected MainEntity onPost(HttpServletRequest request, HttpServletResponse response) {
 
-		DeconnexionModele modele = new DeconnexionModele();
+//		DeconnexionModele modele = new DeconnexionModele();
 
 		this.deconnexion(request);
 
-		return new MainEntity(true, Const.Code.OK, new ContentEntity(new UserEntity(false)));
+		return new MainEntity(true, Const.Code.OK, new ContentEntity(new UserEntity(false), null));
 
 	}
 

@@ -4,14 +4,14 @@ import * as classNames from 'classnames';
 
 interface BoutonProps {
 	value: string,
+	add?: boolean,
+	delete?: boolean,
 	primary?: boolean,
 	className?: string,
 	submit?: boolean,
 	disabled?: boolean,
 	load?: boolean,
-	onClick: any,
-	onClickDisable?: boolean,
-	onClickLoad?: boolean
+	onClick: any
 }
 
 interface BoutonState {
@@ -21,28 +21,45 @@ interface BoutonState {
 
 export class Bouton extends React.Component<BoutonProps, BoutonState> {
 
-	public constructor(props?: BoutonProps, context?: BoutonState) {
+	public constructor(props: BoutonProps, context?: BoutonState) {
 		super(props, context);
-		this.state = {disabled: this.props.disabled, load: false};
+		this.state = {disabled: this.props.disabled, load: this.props.load};
 	}
 
 	public render() {
 
 		return <button className={classNames({
 			'but': true,
-			'but-primary': this.props.primary,
+			'primary': this.props.primary,
+			'add': this.props.add,
+			'delete': this.props.delete,
 			'load': this.props.load,
 			'disabled': this.state.disabled || this.props.disabled
 		}, this.props.className)
-		} type={this.props.submit ? 'submit' : 'button'} onClick={e => {
-			this.props.onClick(e, this);
-			if (this.props.onClickDisable) {
-				this.setState({disabled: true});
-			}
-			if (this.props.onClickLoad) {
-				this.setState({load: true});
-			}
-		}} disabled={this.state.disabled || this.props.disabled}>{this.props.value}</button>
+		} type={this.props.submit ? 'submit' : 'button'} onClick={e =>
+			this.props.onClick(e, this)
+		} disabled={this.state.disabled || this.props.disabled}>{this.props.value}</button>
+	}
+
+}
+
+interface BoutonAddProps {
+	primary?: boolean;
+	className?: string;
+	submit?: boolean;
+	disabled?: boolean;
+	load?: boolean;
+	onClick: any;
+}
+
+export class BoutonAdd extends React.Component<BoutonAddProps, BoutonState> {
+
+	public constructor(props?: BoutonAddProps, context?: BoutonState) {
+		super(props, context);
+	}
+	
+	public render() {
+		return <Bouton value='' add={true} delete={false} className={'but-add'.concat(this.props.className as string)} {...this.props} />
 	}
 
 }

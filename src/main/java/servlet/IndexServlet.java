@@ -45,10 +45,10 @@ public class IndexServlet extends Controleur {
 		} catch (NullPointerException ex) {
 			isConnected = false;
 		}
-		
-		ContentEntity donnees = new ContentEntity(user);
+
+		ContentEntity donnees = new ContentEntity(user, null);
 		List<ProprieteEntity> proprietes;
-		if(isConnected) {
+		if (isConnected) {
 			ProprieteModele modele = new ProprieteModele();
 			try {
 				proprietes = modele.getAllProprietes(user.getId_user());

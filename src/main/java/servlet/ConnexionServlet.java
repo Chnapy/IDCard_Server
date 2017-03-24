@@ -29,7 +29,7 @@ public class ConnexionServlet extends Controleur {
 
 	@Override
 	protected MainEntity onPost(HttpServletRequest request, HttpServletResponse response) {
-		
+
 		ConnexionModele con_modele = new ConnexionModele();
 
 		boolean success;
@@ -49,14 +49,14 @@ public class ConnexionServlet extends Controleur {
 				String pseudo = this.checkParam(Param.LOGIN, request);
 				user = con_modele.connexionParPseudo(pseudo, mdp);
 			}
-			
+
 			ProprieteModele prop_modele = new ProprieteModele();
-			
+
 			proprietes = prop_modele.getAllProprietes(con_modele.getId_user());
 
 			success = true;
 			code = Code.OK;
-			
+
 			request.getSession().setAttribute(Sess.USER.sess, user);
 
 		} catch (Param.NoCheckException | NullPointerException | NoIssetPseudoException | NoIssetMailException | MauvaisMdpException ex) {

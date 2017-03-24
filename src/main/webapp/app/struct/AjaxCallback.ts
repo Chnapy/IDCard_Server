@@ -1,5 +1,5 @@
 
-import {MainManager} from 'modules/main/MainManager';
+import {Controleur} from 'struct/Controleur';
 import {BlocProprieteProps} from 'items/BlocPropriete';
 
 interface Callbacks {
@@ -36,10 +36,10 @@ export interface Data {
 
 export class AjaxCallback {
 
-	private readonly manager: MainManager;
+	private readonly manager: Controleur<any, any>;
 	private readonly cb: Callbacks;
 
-	public constructor(manager: MainManager, cb: Callbacks) {
+	public constructor(manager: Controleur<any, any>, cb: Callbacks) {
 		this.manager = manager;
 		this.cb = cb;
 	}

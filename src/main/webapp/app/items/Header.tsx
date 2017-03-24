@@ -7,19 +7,21 @@ import {Pages} from 'pages/Pages';
 import {AlertLevel} from 'items/Alert';
 import {Donnees} from 'struct/AjaxCallback';
 
-export interface HeaderProps extends VueProps<MainManager> {
+export interface HeaderProps {
+	mainManager: MainManager,
 	donnees: Donnees,
 	page: string,
 	show: boolean
 }
 
-export class Header extends Vue<HeaderProps, undefined> {
+export class Header extends React.Component<HeaderProps, undefined> {
 
 	private renderCompte() {
 		return <span className="compte nav-item">
 			<span className="nompte-pseudo">{this.props.donnees.user.pseudo}</span>
-			<span className="deco mini-but" onClick={e =>
-				this.props.controleur.deconnexion()}><span className='glyphicon glyphicon-off'></span></span>
+			<span className="deco mini-but" onClick={e => this.props.mainManager.deconnexion()}>
+				<span className='glyphicon glyphicon-off'></span>
+			</span>
 		</span>;
 	}
 

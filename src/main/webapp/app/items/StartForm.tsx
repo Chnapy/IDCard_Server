@@ -1,8 +1,9 @@
 
 import * as React from 'react';
 import {Vue, VueProps} from 'struct/Vue';
-import {MainManager} from 'modules/main/MainManager';
+import {AccueilManager} from 'modules/main/AccueilManager';
 import {Bouton} from 'items/Bouton';
+import {Input} from 'items/inputs/Input';
 
 enum BoutonType {
 	Inscription,
@@ -20,13 +21,13 @@ interface StartFormState {
 	load?: boolean
 }
 
-export class StartForm extends Vue<VueProps<MainManager>, StartFormState> {
+export class StartForm extends Vue<VueProps<AccueilManager>, StartFormState> {
 
 	private static readonly MAIL_REGEX: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	private form: HTMLFormElement;
 
-	public constructor(props?: VueProps<MainManager>, context?: StartFormState) {
+	public constructor(props?: VueProps<AccueilManager>, context?: StartFormState) {
 		super(props, context);
 		this.state = {type: BoutonType.Connexion, ip_pseudoOrMail: '', ip_pseudo: '', ip_mail: '', ip_mdp: '', isMail: false, load: false};
 	}
@@ -125,22 +126,22 @@ export class StartForm extends Vue<VueProps<MainManager>, StartFormState> {
 		if (this.state.isMail) {
 			ret = <div className="form-group">
 				<label htmlFor="ip_insc">Pseudonyme</label>
-				<input type="text" className="field" id="ip_insc" name="ip_insc"
+				<Input type="text" id="ip_insc" name="ip_insc"
 					value={this.state.ip_pseudo}
-					onChange={e => this.handlePseudo(e)}
-					minLength={Const.LENGTH.PSEUDO.min}
-					maxLength={Const.LENGTH.PSEUDO.max}
-					required />
+					onchange={e => this.handlePseudo(e)}
+					minlength={Const.LENGTH.PSEUDO.min}
+					maxlength={Const.LENGTH.PSEUDO.max}
+					required={true} />
 			</div>;
 		} else {
 			ret = <div className="form-group">
 				<label htmlFor="ip_insc">Email</label>
-				<input type="email" className="field" id="ip_insc" name="ip_insc"
+				<Input type="email" id="ip_insc" name="ip_insc"
 					value={this.state.ip_mail}
-					onChange={e => this.handleMail(e)}
-					minLength={Const.LENGTH.MAIL.min}
-					maxLength={Const.LENGTH.MAIL.max}
-					required />
+					onchange={e => this.handleMail(e)}
+					minlength={Const.LENGTH.MAIL.min}
+					maxlength={Const.LENGTH.MAIL.max}
+					required={true} />
 			</div>;
 		}
 
@@ -166,20 +167,19 @@ export class StartForm extends Vue<VueProps<MainManager>, StartFormState> {
 					<label htmlFor="ip_pseudo">
 						<span className='lbPseudo'>Pseudonyme</span><span> ou </span><span className='lbMail'>email</span>
 					</label>
-					<input type={this.state.isMail ? 'email' : 'text'} className="field" id="ip_pseudo" name="ip_pseudo"
-						value={this.state.ip_pseudoOrMail}
-						onChange={e => this.handlePseudoOrMail(e)}
-						minLength={this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min}
-						maxLength={this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max}
-						required />
+					<Input type={this.state.isMail ? 'email' : 'text'} id="ip_pseudo"
+						name="ip_pseudo" value={this.state.ip_pseudoOrMail} onchange={e => this.handlePseudoOrMail(e)}
+						minlength={this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min}
+						maxlength={this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max}
+						required={true} />
 				</div>
 				<div className="form-group">
 					<label htmlFor="ip_mdp">Mot de passe</label>
-					<input type="password" className="field" id="ip_mdp" name="ip_mdp"
+					<Input type="password" id="ip_mdp" name="ip_mdp"
 						value={this.state.ip_mdp}
-						onChange={e => this.handleMdp(e)}
-						minLength={Const.LENGTH.MDP.min}
-						maxLength={Const.LENGTH.MDP.max}
+						onchange={e => this.handleMdp(e)}
+						minlength={Const.LENGTH.MDP.min}
+						maxlength={Const.LENGTH.MDP.max}
 						required />
 				</div>
 

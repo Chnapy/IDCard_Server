@@ -101,6 +101,12 @@ class Const {
 			crit: 2
 		},
 
+		630: {
+			titre: 'Échec de la mise à jour du champ',
+			message: 'Votre entrée ne correspond pas au format demandé',
+			crit: 2
+		},
+
 	};
 
 	private constructor() {}

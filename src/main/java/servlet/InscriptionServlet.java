@@ -48,20 +48,20 @@ public class InscriptionServlet extends Controleur {
 		} catch (Param.NoCheckException ex) {
 			//TODO Erreur
 			ex.printStackTrace();
-			return new MainEntityError(Const.Code.E_INSCRIPTION_CHECK, new ContentEntity(null));
+			return new MainEntityError(Const.Code.E_INSCRIPTION_CHECK);
 		}
 
 		InscriptionModele modele = new InscriptionModele();
 
 		try {
 			if (modele.issetClient(pseudo, mail)) {
-				return new MainEntityError(Const.Code.E_INSCRIPTION_ISSET, new ContentEntity(null));
+				return new MainEntityError(Const.Code.E_INSCRIPTION_ISSET);
 			}
 
 			modele.inscription(pseudo, mail, mdp);
 		} catch (Exception ex) {
-			return new MainEntityError(Const.Code.E_SERVEUR, new ContentEntity(null));
+			return new MainEntityError(Const.Code.E_SERVEUR);
 		}
-		return new MainEntitySuccess(new ContentEntity(null));
+		return new MainEntitySuccess();
 	}
 }

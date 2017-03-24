@@ -62,6 +62,8 @@ body {
 					height: 100%;
 					padding-left: 6px;
 					padding-right: 6px;
+					padding-top: 0;
+					padding-bottom: 0;
 					vertical-align: top;
 				}
 			}
@@ -70,7 +72,7 @@ body {
 		.box-body {
 
 			.box-line {
-				height: 25px;
+				/*height: 25px;*/
 				line-height: 25px;
 				margin-top: 5px;
 				margin-bottom: 5px;
@@ -79,12 +81,49 @@ body {
 					height: 100%;
 				}
 
+				&>[class*=' col-']:first-child,&>[class^='col-']:first-child {
+					padding-left: 0;
+				}
+
+				&>[class*=' col-']:last-child,&>[class^='col-']:last-child {
+					padding-right: 0;
+				}
+
 				&.main .field {
 					font-weight: bold;
 				}
 
 				.box-line-visib {
 					width: calc(50% - 20px);
+					min-height: 27px;
+					overflow: hidden;
+					white-space: nowrap;
+
+					&:not(:hover) {
+						height: 27px;
+					}
+
+					.tag {
+						padding-top: 0;
+						padding-bottom: 0;
+
+						&:not(:last-child) {
+							margin-right: 4px;
+						}
+					}
+
+					&.open, &:hover {
+						height: auto;
+
+						.tag {
+							display: block;
+							margin-right: 0 !important;
+
+							&:not(:last-child) {
+								margin-bottom: 4px;
+							}
+						}
+					}
 				}
 
 				.but-delete {

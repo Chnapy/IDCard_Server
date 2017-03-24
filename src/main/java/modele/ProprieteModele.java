@@ -44,54 +44,19 @@ public class ProprieteModele extends Modele {
 
 			List<ProprieteEntity> proprietes = result.map((r) -> {
 
-				TableField valeur_val;
-				TableImpl val_;
-
-				switch (r.get(TYPEPROP.ID_TYPEPROP)) {
-					case 1:
-					case 6:
-						valeur_val = VALEURSTRING.VALEUR;
-						val_ = VALEURSTRING;
-						break;
-					case 2:
-						valeur_val = VALEURINTEGER.VALEUR;
-						val_ = VALEURINTEGER;
-						break;
-					case 3:
-						valeur_val = VALEURBOOLEAN.VALEUR;
-						val_ = VALEURBOOLEAN;
-						break;
-					case 4:
-						valeur_val = VALEURDATE.VALEUR;
-						val_ = VALEURDATE;
-						break;
-					case 5:
-						valeur_val = TYPECHIFFRAGE.TYPECHIFFRAGE_;
-						val_ = VALEURMDP;
-						break;
-					case 7:
-						valeur_val = VALEURBIGINT.VALEUR;
-						val_ = VALEURBIGINT;
-						break;
-					case 8:
-						valeur_val = VALEURDOUBLE.VALEUR;
-						val_ = VALEURDOUBLE;
-						break;
-					default:
-						throw new TypePropNonGereError();
-				}
+				TypeValeurProp tvp = this.parseType(r.get(TYPEPROP.ID_TYPEPROP));
 
 				Result<? extends Record> res_val;
 
 				if (r.get(TYPEPROP.ID_TYPEPROP) == 5) {
 					//MDP
-					res_val = create.select(valeur_val, VALEUR.ID_VALEUR, VALEUR.PRINCIPALE)
-							.from(VALEUR).naturalJoin(val_).naturalJoin(TYPECHIFFRAGE)
+					res_val = create.select(tvp.getValeur_val(), VALEUR.ID_VALEUR, VALEUR.PRINCIPALE)
+							.from(VALEUR).naturalJoin(tvp.getVal_()).naturalJoin(TYPECHIFFRAGE)
 							.where(VALEUR.ID_USER.eq(id_user).and(VALEUR.ID_PROPRIETE.eq(r.get(PROPRIETE.ID_PROPRIETE))))
 							.fetch();
 				} else {
-					res_val = create.select(valeur_val, VALEUR.ID_VALEUR, VALEUR.PRINCIPALE)
-							.from(VALEUR).naturalJoin(val_)
+					res_val = create.select(tvp.getValeur_val(), VALEUR.ID_VALEUR, VALEUR.PRINCIPALE)
+							.from(VALEUR).naturalJoin(tvp.getVal_())
 							.where(VALEUR.ID_USER.eq(id_user).and(VALEUR.ID_PROPRIETE.eq(r.get(PROPRIETE.ID_PROPRIETE))))
 							.fetch();
 				}
@@ -108,10 +73,10 @@ public class ProprieteModele extends Modele {
 					boolean prive = sites.isEmpty();
 					boolean publique = !prive && sites.contains("*");
 
-					return new ValeurEntity(v.get(VALEUR.ID_VALEUR), v.get(valeur_val), v.get(VALEUR.PRINCIPALE), publique, prive, sites);
+					return new ValeurEntity(v.get(VALEUR.ID_VALEUR), v.get(tvp.getValeur_val()), v.get(VALEUR.PRINCIPALE), publique, prive, sites);
 				});
 
-				ProprieteEntity pe = new ProprieteEntity(r.get(PROPRIETE.ID_PROPRIETE), r.get(PROPRIETE.NOM), r.get(TYPEPROP.TYPEPROP_), r.get(TYPEPROP.TYPEPROP_), r.get(PROPRIETE.MODIFIABLE), r.get(PROPRIETE.SUPPRIMABLE), r.get(PROPRIETE.TAILLEVALMIN), r.get(PROPRIETE.TAILLEVALMAX), r.get(PROPRIETE.NBRVALMIN), r.get(PROPRIETE.NBRVALMAX), valeurs);
+				ProprieteEntity pe = new ProprieteEntity(r.get(PROPRIETE.ID_PROPRIETE), r.get(PROPRIETE.NOM), r.get(TYPEPROP.TYPEPROP_), tvp.getType(), r.get(PROPRIETE.MODIFIABLE), r.get(PROPRIETE.SUPPRIMABLE), r.get(PROPRIETE.TAILLEVALMIN), r.get(PROPRIETE.TAILLEVALMAX), r.get(PROPRIETE.NBRVALMIN), r.get(PROPRIETE.NBRVALMAX), valeurs);
 
 				return pe;
 			});

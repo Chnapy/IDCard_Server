@@ -1,14 +1,15 @@
 
 import * as React from 'react';
 import {Vue, VueProps} from 'struct/Vue';
+import {Controleur} from 'struct/Controleur';
 import {MainManager} from 'modules/main/MainManager';
 import {Donnees} from 'struct/AjaxCallback';
 
-export interface PageProps extends VueProps<MainManager> {
+export interface PageProps<C extends Controleur<any, any>> extends VueProps<C> {
 	donnees: Donnees
 }
 
-export abstract class Page<P extends PageProps> extends Vue<P, undefined> {
+export abstract class Page<P extends PageProps<any>> extends Vue<P, undefined> {
 
 	private readonly _nom: string;
 	get nom(): string {

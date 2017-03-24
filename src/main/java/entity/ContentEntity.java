@@ -17,13 +17,13 @@ public class ContentEntity extends Entity {
 	private UserEntity user;
 	private List<ProprieteEntity> proprietes;
 
-	public ContentEntity() {
-		this(new UserEntity(false));
-	}
-
-	public ContentEntity(UserEntity user) {
-		this(user, Collections.EMPTY_LIST);
-	}
+//	public ContentEntity() {
+//		this(null);
+//	}
+//
+//	public ContentEntity(UserEntity user) {
+//		this(user, null);
+//	}
 
 	public ContentEntity(UserEntity user, List<ProprieteEntity> proprietes) {
 		this.user = user;

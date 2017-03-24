@@ -2,8 +2,9 @@
 import * as React from 'react';
 import {Page, PageProps} from 'Page';
 import {StartForm} from 'items/StartForm';
+import {AccueilManager} from 'modules/main/AccueilManager';
 
-export interface AccueilProps extends PageProps {
+export interface AccueilProps extends PageProps<AccueilManager> {
 
 }
 

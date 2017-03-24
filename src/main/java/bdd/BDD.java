@@ -34,13 +34,10 @@ class BDD {
 		try (Connection conn = SOURCE.getConnection();
 				DSLContext create = DSL.using(conn, SQLDialect.POSTGRES)) {
 
-//			final T ret;
 			return create.transactionResult(configuration -> {
 				DSLContext ctx = DSL.using(configuration);
 				return (T) bddC.act(ctx);
 			});
-
-//			return (T) bddC.act(create);
 		}
 	}
 

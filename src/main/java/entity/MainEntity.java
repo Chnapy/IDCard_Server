@@ -17,6 +17,10 @@ public class MainEntity extends Entity {
 	private int code;
 	private ContentEntity content;
 
+	public MainEntity(boolean success, Const.Code code) {
+		this(success, code, null);
+	}
+
 	public MainEntity(boolean success, Const.Code code, ContentEntity content) {
 		this.success = success;
 		this.code = code.code;
@@ -49,6 +53,10 @@ public class MainEntity extends Entity {
 
 	public static class MainEntitySuccess extends MainEntity {
 
+		public MainEntitySuccess() {
+			this(null);
+		}
+
 		public MainEntitySuccess(ContentEntity content) {
 			super(true, Const.Code.OK, content);
 		}
@@ -56,6 +64,10 @@ public class MainEntity extends Entity {
 	}
 
 	public static class MainEntityError extends MainEntity {
+
+		public MainEntityError(Const.Code code) {
+			this(code, null);
+		}
 
 		public MainEntityError(Const.Code code, ContentEntity content) {
 			super(false, code, content);

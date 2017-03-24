@@ -2,10 +2,13 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
 import {Vue, VueProps} from 'struct/Vue';
-import {MainManager} from 'modules/main/MainManager';
+import {Input} from 'items/inputs/Input';
+import {Tag} from 'items/Tag';
+import {ConfigManager} from 'modules/main/ConfigManager';
 
-interface LigneValeurProps extends VueProps<MainManager> {
+interface LigneValeurProps extends VueProps<ConfigManager> {
 	key: number,
+	id: number,
 	valeur: string,
 	type: string,
 	principal: boolean,
@@ -19,18 +22,20 @@ interface LigneValeurProps extends VueProps<MainManager> {
 }
 
 interface LigneValeurState {
-	valeur: string
 }
 
 export class LigneValeur extends Vue<LigneValeurProps, LigneValeurState> {
 
 	public constructor(props: LigneValeurProps) {
 		super(props);
-		this.state = {valeur: props.valeur};
+		this.onEnter = this.onEnter.bind(this);
+	}
+
+	private onEnter(e: React.KeyboardEvent, input: Input) {
+		this.props.controleur.updateValeur(this.props.id, input.state.value);
 	}
 
 	public render() {
-
 		return <div className={classNames("box-line", "row", {
 			"main": this.props.principal,
 			"modifiable": this.props.modifiable,
@@ -38,9 +43,15 @@ export class LigneValeur extends Vue<LigneValeurProps, LigneValeurState> {
 			"public": this.props.publique,
 			"prive": this.props.prive
 		})}>
-			<input type={this.props.type} className={classNames("box-line-ip", "field", "col-xs-6")}
-				value={this.state.valeur} onChange={e => this.setState({valeur: (e.target as HTMLInputElement).value})} readOnly={!this.props.modifiable} minLength={this.props.taillemin} maxLength={this.props.taillemax} />
-			<div className="box-line-visib col-xs-6">{this.props.sites.join(', ')}</div>
+			<div className='box-line-ip col-xs-6' onSubmit={e => e.preventDefault()}>
+				<Input type={this.props.type}
+					value={this.props.valeur} readonly={!this.props.modifiable} onenter={this.onEnter}
+					minlength={this.props.taillemin} maxlength={this.props.taillemax} required={true}
+					checkvalidation={true} />
+			</div>
+			<div className="box-line-visib col-xs-6">
+				{this.props.sites.map((s, i) => <Tag key={i} value={s} />)}
+			</div>
 			{this.props.supprimable ? <button className="but but-delete but-error but-fh"></button> : ''}
 		</div>;
 

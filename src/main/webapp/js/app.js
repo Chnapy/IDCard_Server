@@ -3,6 +3,14 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var Const = (function () {
     function Const() {
     }
@@ -74,6 +82,11 @@ Const.CODES = {
     621: {
         titre: 'Échec de l\'inscription',
         message: 'Un utilisateur avec le même pseudo ou mail existe déjà',
+        crit: 2
+    },
+    630: {
+        titre: 'Échec de la mise à jour du champ',
+        message: 'Votre entrée ne correspond pas au format demandé',
         crit: 2
     },
 };
@@ -178,33 +191,81 @@ define("items/AlertList", ["require", "exports", "react", "react-dom", "classnam
     }(React.Component));
     exports.AlertList = AlertList;
 });
+define("struct/AjaxCallback", ["require", "exports"], function (require, exports) {
+    "use strict";
+    var AjaxCallback = (function () {
+        function AjaxCallback(manager, cb) {
+            this.manager = manager;
+            this.cb = cb;
+        }
+        AjaxCallback.prototype.onSuccess = function (data) {
+            if (data.success) {
+                if (this.cb.success) {
+                    this.cb.success(data);
+                }
+            }
+            else {
+                this.manager.showAlertFromCode(data.code);
+                if (this.cb.error) {
+                    this.cb.error(data);
+                }
+            }
+        };
+        AjaxCallback.prototype.onFail = function () {
+            this.manager.showAlertFromCode(100);
+            if (this.cb.fail) {
+                this.cb.fail();
+            }
+        };
+        AjaxCallback.prototype.onDone = function (data) {
+            if (this.cb.done) {
+                this.cb.done(data);
+            }
+        };
+        AjaxCallback.prototype.onAlways = function (data) {
+            if (this.cb.always) {
+                this.cb.always(data);
+            }
+        };
+        return AjaxCallback;
+    }());
+    exports.AjaxCallback = AjaxCallback;
+});
+define("struct/Modele", ["require", "exports"], function (require, exports) {
+    "use strict";
+    var Modele = (function () {
+        function Modele(donnees) {
+            this.donnees = donnees;
+        }
+        Object.defineProperty(Modele.prototype, "donnees", {
+            get: function () {
+                return Modele._donnees;
+            },
+            set: function (donnees) {
+                Modele._donnees = donnees;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Modele.prototype.ajaxPost = function (url, donnees, ajaxc) {
+            $.post(url, donnees, function (data) { return ajaxc.onSuccess(data); }, 'json')
+                .fail(function () { return ajaxc.onFail(); })
+                .done(function (data) { return ajaxc.onDone(data); })
+                .always(function (data) { return ajaxc.onAlways(data); });
+        };
+        return Modele;
+    }());
+    exports.Modele = Modele;
+});
 define("modules/main/MainModele", ["require", "exports", "struct/Modele"], function (require, exports, Modele_1) {
     "use strict";
     var MainModele = (function (_super) {
         __extends(MainModele, _super);
         function MainModele(GLOBALS) {
-            var _this = _super.call(this) || this;
-            _this.donnees = GLOBALS.donnees;
-            return _this;
+            return _super.call(this, GLOBALS.donnees) || this;
         }
-        Object.defineProperty(MainModele.prototype, "donnees", {
-            get: function () {
-                return this._donnees;
-            },
-            set: function (donnees) {
-                this._donnees = donnees;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        MainModele.prototype.connexion = function (pseudo, mail, mdp, isMail, ajaxc) {
-            this.ajaxPost('connexion', { pseudo: pseudo, mail: mail, mdp: mdp, isMail: isMail }, ajaxc);
-        };
         MainModele.prototype.deconnexion = function (ajaxc) {
             this.ajaxPost('deconnexion', {}, ajaxc);
-        };
-        MainModele.prototype.inscription = function (pseudo, mail, mdp, ajaxc) {
-            this.ajaxPost('inscription', { pseudo: pseudo, mail: mail, mdp: mdp }, ajaxc);
         };
         return MainModele;
     }(Modele_1.Modele));
@@ -236,31 +297,84 @@ define("items/Bouton", ["require", "exports", "react", "classnames"], function (
         __extends(Bouton, _super);
         function Bouton(props, context) {
             var _this = _super.call(this, props, context) || this;
-            _this.state = { disabled: _this.props.disabled, load: false };
+            _this.state = { disabled: _this.props.disabled, load: _this.props.load };
             return _this;
         }
         Bouton.prototype.render = function () {
             var _this = this;
             return React.createElement("button", { className: classNames({
                     'but': true,
-                    'but-primary': this.props.primary,
+                    'primary': this.props.primary,
+                    'add': this.props.add,
+                    'delete': this.props.delete,
                     'load': this.props.load,
                     'disabled': this.state.disabled || this.props.disabled
                 }, this.props.className), type: this.props.submit ? 'submit' : 'button', onClick: function (e) {
-                    _this.props.onClick(e, _this);
-                    if (_this.props.onClickDisable) {
-                        _this.setState({ disabled: true });
-                    }
-                    if (_this.props.onClickLoad) {
-                        _this.setState({ load: true });
-                    }
+                    return _this.props.onClick(e, _this);
                 }, disabled: this.state.disabled || this.props.disabled }, this.props.value);
         };
         return Bouton;
     }(React.Component));
     exports.Bouton = Bouton;
+    var BoutonAdd = (function (_super) {
+        __extends(BoutonAdd, _super);
+        function BoutonAdd(props, context) {
+            return _super.call(this, props, context) || this;
+        }
+        BoutonAdd.prototype.render = function () {
+            return React.createElement(Bouton, __assign({ value: '', add: true, delete: false, className: 'but-add'.concat(this.props.className) }, this.props));
+        };
+        return BoutonAdd;
+    }(React.Component));
+    exports.BoutonAdd = BoutonAdd;
 });
-define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/Bouton"], function (require, exports, React, Vue_2, Bouton_1) {
+define("items/inputs/Input", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
+    "use strict";
+    var Input = (function (_super) {
+        __extends(Input, _super);
+        function Input(props) {
+            var _this = _super.call(this, props) || this;
+            _this.state = { value: props.value };
+            return _this;
+        }
+        Input.prototype.render = function () {
+            var classes = classNames(this.props.class, 'field');
+            return this.props.checkvalidation
+                ? this.renderForm(classes, this.props.onenter)
+                : this.renderDiv(classes, this.props.onenter);
+        };
+        Input.prototype.renderDiv = function (classes, onenter) {
+            return React.createElement("div", { className: classes }, this.getInput(onenter));
+        };
+        Input.prototype.renderForm = function (classes, onenter) {
+            var _this = this;
+            return React.createElement("form", { onSubmit: function (e) {
+                    console.debug("SUBMIT");
+                    e.preventDefault();
+                    if (onenter) {
+                        console.debug("ONENTER");
+                        onenter(e, _this);
+                    }
+                }, className: classes }, this.getInput());
+        };
+        Input.prototype.getInput = function (onenter) {
+            var _this = this;
+            return React.createElement("input", { type: this.props.type, id: this.props.id, name: this.props.name, value: this.state.value, onChange: function (e) {
+                    _this.setState({ value: e.target.value });
+                    if (_this.props.onchange) {
+                        _this.props.onchange(e);
+                    }
+                }, onKeyUp: function (e) {
+                    if (e.key === 'Enter' && onenter) {
+                        onenter(e, _this);
+                    }
+                }, readOnly: this.props.readonly, minLength: this.props.minlength, maxLength: this.props.maxlength, required: this.props.required, placeholder: this.props.placeholder, disabled: this.props.disabled });
+        };
+        return Input;
+    }(React.Component));
+    exports.Input = Input;
+});
+define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/Bouton", "items/inputs/Input"], function (require, exports, React, Vue_2, Bouton_1, Input_1) {
     "use strict";
     var BoutonType;
     (function (BoutonType) {
@@ -358,12 +472,12 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
             if (this.state.isMail) {
                 ret = React.createElement("div", { className: "form-group" },
                     React.createElement("label", { htmlFor: "ip_insc" }, "Pseudonyme"),
-                    React.createElement("input", { type: "text", className: "field", id: "ip_insc", name: "ip_insc", value: this.state.ip_pseudo, onChange: function (e) { return _this.handlePseudo(e); }, minLength: Const.LENGTH.PSEUDO.min, maxLength: Const.LENGTH.PSEUDO.max, required: true }));
+                    React.createElement(Input_1.Input, { type: "text", id: "ip_insc", name: "ip_insc", value: this.state.ip_pseudo, onchange: function (e) { return _this.handlePseudo(e); }, minlength: Const.LENGTH.PSEUDO.min, maxlength: Const.LENGTH.PSEUDO.max, required: true }));
             }
             else {
                 ret = React.createElement("div", { className: "form-group" },
                     React.createElement("label", { htmlFor: "ip_insc" }, "Email"),
-                    React.createElement("input", { type: "email", className: "field", id: "ip_insc", name: "ip_insc", value: this.state.ip_mail, onChange: function (e) { return _this.handleMail(e); }, minLength: Const.LENGTH.MAIL.min, maxLength: Const.LENGTH.MAIL.max, required: true }));
+                    React.createElement(Input_1.Input, { type: "email", id: "ip_insc", name: "ip_insc", value: this.state.ip_mail, onchange: function (e) { return _this.handleMail(e); }, minlength: Const.LENGTH.MAIL.min, maxlength: Const.LENGTH.MAIL.max, required: true }));
             }
             return ret;
         };
@@ -379,10 +493,10 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
                             React.createElement("span", { className: 'lbPseudo' }, "Pseudonyme"),
                             React.createElement("span", null, " ou "),
                             React.createElement("span", { className: 'lbMail' }, "email")),
-                        React.createElement("input", { type: this.state.isMail ? 'email' : 'text', className: "field", id: "ip_pseudo", name: "ip_pseudo", value: this.state.ip_pseudoOrMail, onChange: function (e) { return _this.handlePseudoOrMail(e); }, minLength: this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min, maxLength: this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max, required: true })),
+                        React.createElement(Input_1.Input, { type: this.state.isMail ? 'email' : 'text', id: "ip_pseudo", name: "ip_pseudo", value: this.state.ip_pseudoOrMail, onchange: function (e) { return _this.handlePseudoOrMail(e); }, minlength: this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min, maxlength: this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max, required: true })),
                     React.createElement("div", { className: "form-group" },
                         React.createElement("label", { htmlFor: "ip_mdp" }, "Mot de passe"),
-                        React.createElement("input", { type: "password", className: "field", id: "ip_mdp", name: "ip_mdp", value: this.state.ip_mdp, onChange: function (e) { return _this.handleMdp(e); }, minLength: Const.LENGTH.MDP.min, maxLength: Const.LENGTH.MDP.max, required: true })),
+                        React.createElement(Input_1.Input, { type: "password", id: "ip_mdp", name: "ip_mdp", value: this.state.ip_mdp, onchange: function (e) { return _this.handleMdp(e); }, minlength: Const.LENGTH.MDP.min, maxlength: Const.LENGTH.MDP.max, required: true })),
                     inscription,
                     React.createElement("div", { className: "form-group" },
                         React.createElement(Bouton_1.Bouton, { value: "Inscrivez-vous", className: "d-block", primary: this.state.type === BoutonType.Inscription, submit: this.state.type === BoutonType.Inscription, onClick: function (e, bouton) { return _this.onClick(e, bouton, BoutonType.Inscription); }, disabled: this.state.load, load: this.state.load && this.state.type === BoutonType.Inscription })),
@@ -429,6 +543,37 @@ define("pages/Accueil", ["require", "exports", "react", "pages/Page", "items/Sta
     Accueil.NOM = 'Accueil';
     exports.Accueil = Accueil;
 });
+define("modules/main/ConfigModele", ["require", "exports", "struct/Modele"], function (require, exports, Modele_2) {
+    "use strict";
+    var ConfigModele = (function (_super) {
+        __extends(ConfigModele, _super);
+        function ConfigModele(donnees) {
+            return _super.call(this, donnees) || this;
+        }
+        ConfigModele.prototype.updateValeur = function (key, val, ajaxc) {
+            this.ajaxPost('configuration', { m: 'update_val', id_val: key, val: val }, ajaxc);
+        };
+        return ConfigModele;
+    }(Modele_2.Modele));
+    exports.ConfigModele = ConfigModele;
+});
+define("modules/main/ConfigManager", ["require", "exports", "struct/Controleur", "modules/main/ConfigModele", "struct/AjaxCallback"], function (require, exports, Controleur_1, ConfigModele_1, AjaxCallback_1) {
+    "use strict";
+    var ConfigManager = (function (_super) {
+        __extends(ConfigManager, _super);
+        function ConfigManager(donnees, mainManager) {
+            return _super.call(this, new ConfigModele_1.ConfigModele(donnees), mainManager) || this;
+        }
+        ConfigManager.prototype.updateValeur = function (key, val) {
+            this.modele.updateValeur(key, val, new AjaxCallback_1.AjaxCallback(this, {
+                success: function (data) {
+                }
+            }));
+        };
+        return ConfigManager;
+    }(Controleur_1.Controleur));
+    exports.ConfigManager = ConfigManager;
+});
 define("pages/Configuration", ["require", "exports", "react", "pages/Page", "items/BlocPropriete"], function (require, exports, React, Page_2, BlocPropriete_1) {
     "use strict";
     var Configuration = (function (_super) {
@@ -450,7 +595,7 @@ define("pages/Configuration", ["require", "exports", "react", "pages/Page", "ite
             var _this = this;
             return React.createElement("div", { id: "list-box", className: "page-content container" },
                 React.createElement("div", { className: "row" }, this.props.donnees.proprietes.map(function (p) {
-                    return React.createElement(BlocPropriete_1.BlocPropriete, { key: p.key, controleur: _this.props.controleur, nom: p.nom, typeStr: p.typeStr, type: p.type, modifiable: p.modifiable, supprimable: p.supprimable, nbrmin: p.nbrmin, nbrmax: p.nbrmax, taillemin: p.taillemin, taillemax: p.taillemax, valeurs: p.valeurs });
+                    return React.createElement(BlocPropriete_1.BlocPropriete, { key: p.key, id: p.key, controleur: _this.props.controleur, nom: p.nom, typeStr: p.typeStr, type: p.type, modifiable: p.modifiable, supprimable: p.supprimable, nbrmin: p.nbrmin, nbrmax: p.nbrmax, taillemin: p.taillemin, taillemax: p.taillemax, valeurs: p.valeurs });
                 })));
         };
         return Configuration;
@@ -458,15 +603,72 @@ define("pages/Configuration", ["require", "exports", "react", "pages/Page", "ite
     Configuration.NOM = 'Configuration';
     exports.Configuration = Configuration;
 });
-define("pages/Pages", ["require", "exports", "pages/Accueil", "pages/Configuration"], function (require, exports, A, B) {
+define("pages/Pages", ["require", "exports", "pages/Accueil", "pages/Configuration"], function (require, exports, A, C) {
     "use strict";
     var Pages;
     (function (Pages) {
         Pages.Accueil = A.Accueil;
-        Pages.Configuration = B.Configuration;
+        Pages.Configuration = C.Configuration;
     })(Pages = exports.Pages || (exports.Pages = {}));
 });
-define("items/Header", ["require", "exports", "react", "classnames", "struct/Vue", "pages/Pages"], function (require, exports, React, classNames, Vue_3, Pages_1) {
+define("modules/main/AccueilModele", ["require", "exports", "struct/Modele"], function (require, exports, Modele_3) {
+    "use strict";
+    var AccueilModele = (function (_super) {
+        __extends(AccueilModele, _super);
+        function AccueilModele(donnees) {
+            return _super.call(this, donnees) || this;
+        }
+        AccueilModele.prototype.connexion = function (pseudo, mail, mdp, isMail, ajaxc) {
+            this.ajaxPost('connexion', { pseudo: pseudo, mail: mail, mdp: mdp, isMail: isMail }, ajaxc);
+        };
+        AccueilModele.prototype.inscription = function (pseudo, mail, mdp, ajaxc) {
+            this.ajaxPost('inscription', { pseudo: pseudo, mail: mail, mdp: mdp }, ajaxc);
+        };
+        return AccueilModele;
+    }(Modele_3.Modele));
+    exports.AccueilModele = AccueilModele;
+});
+define("modules/main/AccueilManager", ["require", "exports", "struct/Controleur", "struct/AjaxCallback", "pages/Pages", "modules/main/AccueilModele"], function (require, exports, Controleur_2, AjaxCallback_2, Pages_1, AccueilModele_1) {
+    "use strict";
+    var AccueilManager = (function (_super) {
+        __extends(AccueilManager, _super);
+        function AccueilManager(donnees, mainManager) {
+            return _super.call(this, new AccueilModele_1.AccueilModele(donnees), mainManager) || this;
+        }
+        AccueilManager.prototype.getConnexionSuccess = function () {
+            var _this = this;
+            return function (data) {
+                _this.modele.donnees = data.content;
+                _this.showAlertFromCode(1);
+                _this.mainManager.vue.setState({ donnees: _this.modele.donnees });
+                _this.mainManager.vue.mainSwitchPage(Pages_1.Pages.Configuration);
+            };
+        };
+        AccueilManager.prototype.connexion = function (pseudo, mail, mdp, isMail, vue) {
+            var stopLoad = function () { return vue.setState({ load: false }); };
+            this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback_2.AjaxCallback(this, {
+                success: this.getConnexionSuccess(),
+                error: stopLoad,
+                fail: stopLoad
+            }));
+        };
+        AccueilManager.prototype.inscription = function (pseudo, mail, mdp, vue) {
+            var _this = this;
+            var stopLoad = function () { return vue.setState({ load: false }); };
+            this.modele.inscription(pseudo, mail, mdp, new AjaxCallback_2.AjaxCallback(this, {
+                success: function (data) {
+                    _this.showAlertFromCode(2);
+                    _this.getConnexionSuccess()(data);
+                },
+                error: stopLoad,
+                fail: stopLoad
+            }));
+        };
+        return AccueilManager;
+    }(Controleur_2.Controleur));
+    exports.AccueilManager = AccueilManager;
+});
+define("items/Header", ["require", "exports", "react", "classnames", "pages/Pages"], function (require, exports, React, classNames, Pages_2) {
     "use strict";
     var Header = (function (_super) {
         __extends(Header, _super);
@@ -477,17 +679,15 @@ define("items/Header", ["require", "exports", "react", "classnames", "struct/Vue
             var _this = this;
             return React.createElement("span", { className: "compte nav-item" },
                 React.createElement("span", { className: "nompte-pseudo" }, this.props.donnees.user.pseudo),
-                React.createElement("span", { className: "deco mini-but", onClick: function (e) {
-                        return _this.props.controleur.deconnexion();
-                    } },
+                React.createElement("span", { className: "deco mini-but", onClick: function (e) { return _this.props.mainManager.deconnexion(); } },
                     React.createElement("span", { className: 'glyphicon glyphicon-off' })));
         };
         Header.prototype.renderNav = function () {
             return React.createElement("nav", { className: "header-content container" },
                 React.createElement("span", { className: "logo nav-item" }, Const.TITRE_MAIN),
                 React.createElement("span", { className: classNames("nav-item", {
-                        'active': this.props.page === Pages_1.Pages.Configuration.NOM
-                    }) }, Pages_1.Pages.Configuration.NOM),
+                        'active': this.props.page === Pages_2.Pages.Configuration.NOM
+                    }) }, Pages_2.Pages.Configuration.NOM),
                 React.createElement("span", { className: classNames("nav-item", {
                         'active': this.props.page === 'sessions'
                     }) }, "Sessions"),
@@ -498,10 +698,10 @@ define("items/Header", ["require", "exports", "react", "classnames", "struct/Vue
             return React.createElement("header", { className: "header" }, !this.props.show ? null : this.renderNav());
         };
         return Header;
-    }(Vue_3.Vue));
+    }(React.Component));
     exports.Header = Header;
 });
-define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "classnames", "struct/Vue", "items/Header", "pages/Pages", "items/AlertList"], function (require, exports, React, ReactDOM, classNames, Vue_4, Header_1, Pages_2, AlertList_1) {
+define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "classnames", "struct/Vue", "items/Header", "pages/Pages", "items/AlertList"], function (require, exports, React, ReactDOM, classNames, Vue_3, Header_1, Pages_3, AlertList_1) {
     "use strict";
     var MainVue = (function (_super) {
         __extends(MainVue, _super);
@@ -509,18 +709,30 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
             var _this = _super.call(this, props, context) || this;
             _this.alertList = [];
             _this.alertKey = 1;
-            _this.state = { alertList: [], page: Pages_2.Pages[props.page], display: true, donnees: props.donnees };
+            var page = Pages_3.Pages[props.page];
+            var controleur = _this.getControleurFromPage(page);
+            _this.state = { controleur: controleur, alertList: [], page: page, display: true, donnees: props.donnees };
             return _this;
         }
         MainVue.applyVue = function (controleur) {
             ReactDOM.render(React.createElement(MainVue, { controleur: controleur, donnees: GLOBALS.donnees, page: GLOBALS.page }), document.getElementById("react_container"));
+        };
+        MainVue.prototype.getControleurFromPage = function (page) {
+            if (page === Pages_3.Pages.Accueil) {
+                return this.props.controleur.accueilM;
+            }
+            if (page === Pages_3.Pages.Configuration) {
+                return this.props.controleur.configM;
+            }
+            throw new Error('Page non gérée: ' + page);
         };
         MainVue.prototype.mainSwitchPage = function (page) {
             var _this = this;
             console.log("SWITCH " + page);
             console.log(arguments.length);
             this.setState({ display: false });
-            setTimeout(function () { return _this.setState({ page: page, display: true }); }, Const.TRANSITION_DURATION);
+            var controleur = this.getControleurFromPage(page);
+            setTimeout(function () { return _this.setState({ controleur: controleur, page: page, display: true }); }, Const.TRANSITION_DURATION);
         };
         MainVue.prototype.mainAlert = function (level, title, content, code) {
             var curDate = new Date();
@@ -539,7 +751,7 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
         MainVue.prototype.render = function () {
             this.props.controleur.vue = this;
             var p = new this.state.page({
-                controleur: this.props.controleur,
+                controleur: this.state.controleur,
                 onSwitch: this.mainSwitchPage,
                 onAlert: this.mainAlert,
                 donnees: this.state.donnees
@@ -549,7 +761,7 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
                     'no-header': !p.hasHeader(),
                     'no-display': !this.state.display
                 }) },
-                React.createElement(Header_1.Header, { controleur: this.props.controleur, donnees: this.state.donnees, page: p.nom, show: p.hasHeader() }),
+                React.createElement(Header_1.Header, { mainManager: this.props.controleur, donnees: this.state.donnees, page: p.nom, show: p.hasHeader() }),
                 React.createElement("div", { id: "content", className: "body-content" },
                     p.renderBandeau(),
                     p.render()),
@@ -557,55 +769,49 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
                 React.createElement("footer", { className: "footer" })));
         };
         return MainVue;
-    }(Vue_4.Vue));
+    }(Vue_3.Vue));
     exports.MainVue = MainVue;
 });
-define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "modules/main/MainModele", "modules/main/MainVue", "struct/AjaxCallback", "items/Alert", "pages/Pages"], function (require, exports, Controleur_1, MainModele_1, MainVue_1, AjaxCallback_1, Alert_2, Pages_3) {
+define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "modules/main/MainModele", "modules/main/AccueilManager", "modules/main/ConfigManager", "modules/main/MainVue", "struct/AjaxCallback", "items/Alert", "pages/Pages"], function (require, exports, Controleur_3, MainModele_1, AccueilManager_1, ConfigManager_1, MainVue_1, AjaxCallback_3, Alert_2, Pages_4) {
     "use strict";
     var MainManager = (function (_super) {
         __extends(MainManager, _super);
         function MainManager() {
-            return _super.call(this, new MainModele_1.MainModele(GLOBALS)) || this;
+            var _this = _super.call(this, new MainModele_1.MainModele(GLOBALS)) || this;
+            _this.accueilM = new AccueilManager_1.AccueilManager(_this.modele.donnees, _this);
+            _this.configM = new ConfigManager_1.ConfigManager(_this.modele.donnees, _this);
+            return _this;
         }
+        Object.defineProperty(MainManager.prototype, "accueilM", {
+            get: function () {
+                return this._accueilM;
+            },
+            set: function (accueilM) {
+                this._accueilM = accueilM;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(MainManager.prototype, "configM", {
+            get: function () {
+                return this._configM;
+            },
+            set: function (configM) {
+                this._configM = configM;
+            },
+            enumerable: true,
+            configurable: true
+        });
         MainManager.prototype.start = function () {
             MainVue_1.MainVue.applyVue(this);
         };
-        MainManager.prototype.getConnexionSuccess = function () {
-            var _this = this;
-            return function (data) {
-                _this.modele.donnees = data.content;
-                _this.showAlertFromCode(1);
-                _this.vue.setState({ donnees: _this.modele.donnees });
-                _this.vue.mainSwitchPage(Pages_3.Pages.Configuration);
-            };
-        };
-        MainManager.prototype.connexion = function (pseudo, mail, mdp, isMail, vue) {
-            var stopLoad = function () { return vue.setState({ load: false }); };
-            this.modele.connexion(pseudo, mail, mdp, isMail, new AjaxCallback_1.AjaxCallback(this, {
-                success: this.getConnexionSuccess(),
-                error: stopLoad,
-                fail: stopLoad
-            }));
-        };
         MainManager.prototype.deconnexion = function () {
             var _this = this;
-            this.modele.deconnexion(new AjaxCallback_1.AjaxCallback(this, {
+            this.modele.deconnexion(new AjaxCallback_3.AjaxCallback(this, {
                 success: function (data) {
                     _this.modele.donnees = data.content;
-                    _this.vue.mainSwitchPage(Pages_3.Pages.Accueil);
+                    _this.vue.mainSwitchPage(Pages_4.Pages.Accueil);
                 }
-            }));
-        };
-        MainManager.prototype.inscription = function (pseudo, mail, mdp, vue) {
-            var _this = this;
-            var stopLoad = function () { return vue.setState({ load: false }); };
-            this.modele.inscription(pseudo, mail, mdp, new AjaxCallback_1.AjaxCallback(this, {
-                success: function (data) {
-                    _this.showAlertFromCode(2);
-                    _this.getConnexionSuccess()(data);
-                },
-                error: stopLoad,
-                fail: stopLoad
             }));
         };
         MainManager.prototype.showAlertFromCode = function (code_num) {
@@ -625,69 +831,15 @@ define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "
             this.vue.mainAlert(level, code.titre, code.message, code_num);
         };
         return MainManager;
-    }(Controleur_1.Controleur));
+    }(Controleur_3.Controleur));
     exports.MainManager = MainManager;
-});
-define("struct/AjaxCallback", ["require", "exports"], function (require, exports) {
-    "use strict";
-    var AjaxCallback = (function () {
-        function AjaxCallback(manager, cb) {
-            this.manager = manager;
-            this.cb = cb;
-        }
-        AjaxCallback.prototype.onSuccess = function (data) {
-            if (data.success) {
-                if (this.cb.success) {
-                    this.cb.success(data);
-                }
-            }
-            else {
-                this.manager.showAlertFromCode(data.code);
-                if (this.cb.error) {
-                    this.cb.error(data);
-                }
-            }
-        };
-        AjaxCallback.prototype.onFail = function () {
-            this.manager.showAlertFromCode(100);
-            if (this.cb.fail) {
-                this.cb.fail();
-            }
-        };
-        AjaxCallback.prototype.onDone = function (data) {
-            if (this.cb.done) {
-                this.cb.done(data);
-            }
-        };
-        AjaxCallback.prototype.onAlways = function (data) {
-            if (this.cb.always) {
-                this.cb.always(data);
-            }
-        };
-        return AjaxCallback;
-    }());
-    exports.AjaxCallback = AjaxCallback;
-});
-define("struct/Modele", ["require", "exports"], function (require, exports) {
-    "use strict";
-    var Modele = (function () {
-        function Modele() {
-        }
-        Modele.prototype.ajaxPost = function (url, donnees, ajaxc) {
-            $.post(url, donnees, function (data) { return ajaxc.onSuccess(data); }, 'json')
-                .fail(function () { return ajaxc.onFail(); })
-                .done(function (data) { return ajaxc.onDone(data); })
-                .always(function (data) { return ajaxc.onAlways(data); });
-        };
-        return Modele;
-    }());
-    exports.Modele = Modele;
 });
 define("struct/Controleur", ["require", "exports"], function (require, exports) {
     "use strict";
     var Controleur = (function () {
-        function Controleur(modele) {
+        function Controleur(modele, mainManager) {
             this.modele = modele;
+            this.mainManager = mainManager;
         }
         Object.defineProperty(Controleur.prototype, "modele", {
             get: function () {
@@ -709,6 +861,19 @@ define("struct/Controleur", ["require", "exports"], function (require, exports) 
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(Controleur.prototype, "mainManager", {
+            get: function () {
+                return this._mainManager;
+            },
+            set: function (mainManager) {
+                this._mainManager = mainManager;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Controleur.prototype.showAlertFromCode = function (code_num) {
+            this.mainManager.showAlertFromCode(code_num);
+        };
         return Controleur;
     }());
     exports.Controleur = Controleur;
@@ -724,17 +889,47 @@ define("struct/Vue", ["require", "exports", "react"], function (require, exports
     }(React.Component));
     exports.Vue = Vue;
 });
-define("items/LigneValeur", ["require", "exports", "react", "classnames", "struct/Vue"], function (require, exports, React, classNames, Vue_5) {
+define("items/Tag", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
+    "use strict";
+    var Tag = (function (_super) {
+        __extends(Tag, _super);
+        function Tag(props) {
+            return _super.call(this, props) || this;
+        }
+        Tag.prototype.render = function () {
+            var _this = this;
+            return React.createElement("span", { id: this.props.id, className: classNames('tag', this.props.class, {
+                    'clickable': this.props.clickable,
+                    'deletable': this.props.deletable
+                }), onClick: function (e) {
+                    if (_this.props.onclick) {
+                        _this.props.onclick(e);
+                    }
+                }, title: this.props.value },
+                this.props.value,
+                React.createElement("span", { className: 'delete mini-but glyphicon glyphicon-remove', onClick: function (e) {
+                        if (_this.props.ondelete) {
+                            _this.props.ondelete(e);
+                        }
+                    } }));
+        };
+        return Tag;
+    }(React.Component));
+    exports.Tag = Tag;
+});
+define("items/LigneValeur", ["require", "exports", "react", "classnames", "struct/Vue", "items/inputs/Input", "items/Tag"], function (require, exports, React, classNames, Vue_4, Input_2, Tag_1) {
     "use strict";
     var LigneValeur = (function (_super) {
         __extends(LigneValeur, _super);
         function LigneValeur(props) {
             var _this = _super.call(this, props) || this;
-            _this.state = { valeur: props.valeur };
+            _this.onEnter = _this.onEnter.bind(_this);
             return _this;
         }
+        LigneValeur.prototype.onEnter = function (e, input) {
+            this.props.controleur.updateValeur(this.props.id, input.state.value);
+        };
         LigneValeur.prototype.render = function () {
-            var _this = this;
             return React.createElement("div", { className: classNames("box-line", "row", {
                     "main": this.props.principal,
                     "modifiable": this.props.modifiable,
@@ -742,15 +937,16 @@ define("items/LigneValeur", ["require", "exports", "react", "classnames", "struc
                     "public": this.props.publique,
                     "prive": this.props.prive
                 }) },
-                React.createElement("input", { type: this.props.type, className: classNames("box-line-ip", "field", "col-xs-6"), value: this.state.valeur, onChange: function (e) { return _this.setState({ valeur: e.target.value }); }, readOnly: !this.props.modifiable, minLength: this.props.taillemin, maxLength: this.props.taillemax }),
-                React.createElement("div", { className: "box-line-visib col-xs-6" }, this.props.sites.join(', ')),
+                React.createElement("div", { className: 'box-line-ip col-xs-6', onSubmit: function (e) { return e.preventDefault(); } },
+                    React.createElement(Input_2.Input, { type: this.props.type, value: this.props.valeur, readonly: !this.props.modifiable, onenter: this.onEnter, minlength: this.props.taillemin, maxlength: this.props.taillemax, required: true, checkvalidation: true })),
+                React.createElement("div", { className: "box-line-visib col-xs-6" }, this.props.sites.map(function (s, i) { return React.createElement(Tag_1.Tag, { key: i, value: s }); })),
                 this.props.supprimable ? React.createElement("button", { className: "but but-delete but-error but-fh" }) : '');
         };
         return LigneValeur;
-    }(Vue_5.Vue));
+    }(Vue_4.Vue));
     exports.LigneValeur = LigneValeur;
 });
-define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "items/LigneValeur"], function (require, exports, React, Vue_6, LigneValeur_1) {
+define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "items/LigneValeur", "items/Bouton"], function (require, exports, React, Vue_5, LigneValeur_1, Bouton_2) {
     "use strict";
     var BlocPropriete = (function (_super) {
         __extends(BlocPropriete, _super);
@@ -767,32 +963,18 @@ define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "ite
                         React.createElement("div", { className: "box-head row" },
                             React.createElement("span", { className: "box-title" }, this.props.nom),
                             React.createElement("div", { className: "box-head-right" },
-                                React.createElement("span", { className: "field typeStr" }, this.props.typeStr))),
+                                React.createElement("span", { className: "tag typeStr" }, this.props.typeStr))),
                         React.createElement("div", { className: "box-body row" },
                             React.createElement("div", { className: "container-fluid" },
                                 this.state.valeurs.map(function (v) {
-                                    return React.createElement(LigneValeur_1.LigneValeur, { key: v.key, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && _this.state.valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax });
+                                    return React.createElement(LigneValeur_1.LigneValeur, { key: v.key, id: v.key, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && _this.state.valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax });
                                 }),
                                 this.state.valeurs.length < this.props.nbrmax ? React.createElement("div", { className: "box-line row" },
-                                    React.createElement("button", { className: "but but-add but-fh" })) : '')))));
+                                    React.createElement(Bouton_2.BoutonAdd, { className: "but-fh", onClick: console.log })) : '')))));
         };
         return BlocPropriete;
-    }(Vue_6.Vue));
+    }(Vue_5.Vue));
     exports.BlocPropriete = BlocPropriete;
-});
-define("items/Input", ["require", "exports", "react", "struct/Vue"], function (require, exports, React, Vue_7) {
-    "use strict";
-    var Input = (function (_super) {
-        __extends(Input, _super);
-        function Input() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        Input.prototype.render = function () {
-            return React.createElement("input", { type: this.props.type, required: this.props.required });
-        };
-        return Input;
-    }(Vue_7.Vue));
-    exports.Input = Input;
 });
 define("Main", ["require", "exports", "modules/main/MainManager"], function (require, exports, MainManager_1) {
     "use strict";

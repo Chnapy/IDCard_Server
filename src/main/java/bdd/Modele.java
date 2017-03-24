@@ -5,11 +5,22 @@
  */
 package bdd;
 
+import static bdd.generated.tables.Typechiffrage.TYPECHIFFRAGE;
+import static bdd.generated.tables.Valeurbigint.VALEURBIGINT;
+import static bdd.generated.tables.Valeurboolean.VALEURBOOLEAN;
+import static bdd.generated.tables.Valeurdate.VALEURDATE;
+import static bdd.generated.tables.Valeurdouble.VALEURDOUBLE;
+import static bdd.generated.tables.Valeurinteger.VALEURINTEGER;
+import static bdd.generated.tables.Valeurmdp.VALEURMDP;
+import static bdd.generated.tables.Valeurstring.VALEURSTRING;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import javafx.util.Pair;
+import modele.ProprieteModele;
+import org.jooq.Field;
+import org.jooq.Table;
 
 /**
  * Modele.java
@@ -29,6 +40,68 @@ public abstract class Modele {
 
 	protected <T> T bdd(BDDContent bddC) throws SQLException, Exception {
 		return DB.act(bddC);
+	}
+
+	protected TypeValeurProp parseType(long id_typeprop) {
+
+		Field valeur_val;
+		Field valeur_idtype;
+		Table val_;
+		String type;
+
+		switch ((int) id_typeprop) {
+			case 1:
+				type = "text";
+				valeur_val = VALEURSTRING.VALEUR;
+				valeur_idtype = VALEURSTRING.ID_VALEURTYPEE;
+				val_ = VALEURSTRING;
+				break;
+			case 6:
+				type = "email";
+				valeur_val = VALEURSTRING.VALEUR;
+				valeur_idtype = VALEURSTRING.ID_VALEURTYPEE;
+				val_ = VALEURSTRING;
+				break;
+			case 2:
+				type = "number";
+				valeur_val = VALEURINTEGER.VALEUR;
+				valeur_idtype = VALEURINTEGER.ID_VALEURTYPEE;
+				val_ = VALEURINTEGER;
+				break;
+			case 3:
+				type = "checkbox";
+				valeur_val = VALEURBOOLEAN.VALEUR;
+				valeur_idtype = VALEURBOOLEAN.ID_VALEURTYPEE;
+				val_ = VALEURBOOLEAN;
+				break;
+			case 4:
+				type = "date";
+				valeur_val = VALEURDATE.VALEUR;
+				valeur_idtype = VALEURDATE.ID_VALEURTYPEE;
+				val_ = VALEURDATE;
+				break;
+			case 5:
+				type = "mdp";
+				valeur_val = TYPECHIFFRAGE.TYPECHIFFRAGE_;
+				valeur_idtype = VALEURMDP.ID_VALEURTYPEE;
+				val_ = VALEURMDP;
+				break;
+			case 7:
+				type = "number";
+				valeur_val = VALEURBIGINT.VALEUR;
+				valeur_idtype = VALEURBIGINT.ID_VALEURTYPEE;
+				val_ = VALEURBIGINT;
+				break;
+			case 8:
+				type = "double";
+				valeur_val = VALEURDOUBLE.VALEUR;
+				valeur_idtype = VALEURDOUBLE.ID_VALEURTYPEE;
+				val_ = VALEURDOUBLE;
+				break;
+			default:
+				throw new ProprieteModele.TypePropNonGereError();
+		}
+		return new TypeValeurProp(valeur_val, valeur_idtype, val_, type);
 	}
 
 	protected Pair<byte[], String> getCryptedPassword(String mdp, MdpCrypt crypt) throws NoSuchAlgorithmException {
@@ -54,6 +127,37 @@ public abstract class Modele {
 			salt[i] = Byte.parseByte(split[i]);
 		}
 		return salt;
+	}
+
+	public static class TypeValeurProp {
+
+		private final Field valeur_val;
+		private final Field valeur_idtype;
+		private final Table val_;
+		private final String type;
+
+		public TypeValeurProp(Field valeur_val, Field valeur_idtype, Table val_, String type) {
+			this.valeur_val = valeur_val;
+			this.valeur_idtype = valeur_idtype;
+			this.val_ = val_;
+			this.type = type;
+		}
+
+		public Field getValeur_val() {
+			return valeur_val;
+		}
+
+		public Field getValeur_idtype() {
+			return valeur_idtype;
+		}
+
+		public Table getVal_() {
+			return val_;
+		}
+
+		public String getType() {
+			return type;
+		}
 	}
 
 	public static enum MdpCrypt {

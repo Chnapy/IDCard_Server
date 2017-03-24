@@ -2,15 +2,15 @@
 import * as React from 'react';
 import {Page, PageProps} from 'Page';
 import {BlocPropriete} from 'items/BlocPropriete';
+import {ConfigManager} from 'modules/main/ConfigManager';
 
-export interface ConfigurationProps extends PageProps {
+export interface ConfigurationProps extends PageProps<ConfigManager> {
 
 }
 
 export class Configuration extends Page<ConfigurationProps> {
 
 	public static readonly NOM = 'Configuration';
-	//	private static keys: number = 0;
 
 	public constructor(props: ConfigurationProps) {
 		super(props, Configuration.NOM);
@@ -38,9 +38,8 @@ export class Configuration extends Page<ConfigurationProps> {
 			<div className="row">
 
 				{this.props.donnees.proprietes.map(p => {
-					//					Configuration.keys++;
 					return <BlocPropriete
-						key={p.key} controleur={this.props.controleur} nom={p.nom} typeStr={p.typeStr}
+						key={p.key} id={p.key} controleur={this.props.controleur} nom={p.nom} typeStr={p.typeStr}
 						type={p.type} modifiable={p.modifiable} supprimable={p.supprimable}
 						nbrmin={p.nbrmin} nbrmax={p.nbrmax} taillemin={p.taillemin} taillemax={p.taillemax}
 						valeurs={p.valeurs}

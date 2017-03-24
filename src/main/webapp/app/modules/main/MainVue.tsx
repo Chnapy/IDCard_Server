@@ -3,6 +3,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as classNames from 'classnames';
 import {Vue, VueProps} from 'struct/Vue';
+import {Controleur} from 'struct/Controleur';
+import {Modele} from 'struct/Modele';
 import {MainManager} from 'MainManager';
 import {Header} from 'items/Header';
 import {Page, PageProps} from 'pages/Page';
@@ -12,11 +14,13 @@ import {AlertList, AlertData} from 'items/AlertList';
 import {Donnees} from 'struct/AjaxCallback';
 
 export interface MainVueProps extends VueProps<MainManager> {
+//	mainManager: MainManager,
 	donnees: Donnees,
 	page: string
 }
 
 interface MainVueState {
+	controleur?: Controleur<Modele, Page<PageProps<any>>>,
 	alertList?: AlertData[],
 	page?: any,
 	display?: boolean,
@@ -39,15 +43,30 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 		super(props, context);
 		this.alertList = [];
 		this.alertKey = 1;
+		
+		let page = (Pages as any)[props.page];
+		let controleur = this.getControleurFromPage(page);
 
-		this.state = {alertList: [], page: (Pages as any)[props.page], display: true, donnees: props.donnees};
+		this.state = {controleur: controleur, alertList: [], page: page, display: true, donnees: props.donnees};
+	}
+	
+	private getControleurFromPage(page: any): Controleur<Modele, Page<PageProps<any>>> {
+		if (page === Pages.Accueil) {
+			return this.props.controleur.accueilM;
+		}
+		if (page === Pages.Configuration) {
+			return this.props.controleur.configM;
+		}
+		throw new Error('Page non gérée: ' + page);
 	}
 
 	public mainSwitchPage(page: any) {
 		console.log("SWITCH " + page);
 		console.log(arguments.length);
 		this.setState({display: false});
-		setTimeout(() => this.setState({page: page, display: true}), Const.TRANSITION_DURATION);
+		
+		let controleur = this.getControleurFromPage(page)
+		setTimeout(() => this.setState({controleur: controleur, page: page, display: true}), Const.TRANSITION_DURATION);
 	}
 
 	public mainAlert(level: AlertLevel, title: string, content: string, code: number) {
@@ -69,8 +88,8 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 	public render() {
 		this.props.controleur.vue = this;
 
-		let p: Page<PageProps> = new this.state.page({
-			controleur: this.props.controleur,
+		let p: Page<PageProps<any>> = new this.state.page({
+			controleur: this.state.controleur,
 			onSwitch: this.mainSwitchPage,
 			onAlert: this.mainAlert,
 			donnees: this.state.donnees
@@ -84,7 +103,7 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 				'no-display': !this.state.display
 			})}>
 
-				<Header controleur={this.props.controleur} donnees={this.state.donnees as Donnees} page={p.nom} show={p.hasHeader()} />
+				<Header mainManager={this.props.controleur} donnees={this.state.donnees as Donnees} page={p.nom} show={p.hasHeader()} />
 
 				<div id="content" className="body-content">
 
