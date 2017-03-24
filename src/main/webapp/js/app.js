@@ -344,7 +344,9 @@ define("items/inputs/Input", ["require", "exports", "react", "classnames"], func
                 : this.renderDiv(classes, this.props.onenter);
         };
         Input.prototype.renderDiv = function (classes, onenter) {
-            return React.createElement("div", { className: classes }, this.getInput(onenter));
+            return React.createElement("div", { className: classes },
+                this.getInput(onenter),
+                this.getFeedback());
         };
         Input.prototype.renderForm = function (classes, onenter) {
             var _this = this;
@@ -355,7 +357,13 @@ define("items/inputs/Input", ["require", "exports", "react", "classnames"], func
                         console.debug("ONENTER");
                         onenter(e, _this);
                     }
-                }, className: classes }, this.getInput());
+                }, className: classes },
+                this.getInput(),
+                this.getFeedback());
+        };
+        Input.prototype.getFeedback = function () {
+            return React.createElement("span", { className: 'field-feedback form-control-feedback' },
+                React.createElement("span", { className: 'glyphicon' }));
         };
         Input.prototype.getInput = function (onenter) {
             var _this = this;
@@ -1029,6 +1037,4 @@ var RequireAll = (function () {
     return RequireAll;
 }());
 RequireAll.LOADED = false;
-window.onload = function () {
-    RequireAll.loadAll();
-};
+RequireAll.loadAll();

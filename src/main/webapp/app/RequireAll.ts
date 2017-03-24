@@ -47,6 +47,9 @@ class RequireAll {
 
 declare var GLOBALS: {titre_main: string, donnees: any, page: string};
 
-window.onload = function () {
-	RequireAll.loadAll();
-};
+//Ne marche pas avec firefox...
+//window.onload = function () {
+//	RequireAll.loadAll();
+//};
+
+RequireAll.loadAll();

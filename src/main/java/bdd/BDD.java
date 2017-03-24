@@ -31,6 +31,7 @@ class BDD {
 		if (!INITIALISED) {
 			init();
 		}
+
 		try (Connection conn = SOURCE.getConnection();
 				DSLContext create = DSL.using(conn, SQLDialect.POSTGRES)) {
 
@@ -62,6 +63,8 @@ class BDD {
 		SOURCE.setPassword(bddInfos.mdp);
 
 		INITIALISED = true;
+
+		System.out.println("BDD Max Connexions: " + SOURCE.getMaxConnections());
 	}
 
 	public static enum TypeProp {

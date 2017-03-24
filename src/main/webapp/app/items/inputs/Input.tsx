@@ -42,6 +42,7 @@ export class Input extends React.Component<InputProps, InputState> {
 	private renderDiv(classes: string, onenter?: (e: React.SyntheticEvent, input: Input) => void) {
 		return <div className={classes}>
 			{this.getInput(onenter)}
+			{this.getFeedback()}
 		</div>;
 	}
 
@@ -55,7 +56,12 @@ export class Input extends React.Component<InputProps, InputState> {
 			}
 		}} className={classes}>
 			{this.getInput()}
+			{this.getFeedback()}
 		</form>;
+	}
+	
+	private getFeedback() {
+		return <span className='field-feedback form-control-feedback'><span className='glyphicon'></span></span>;
 	}
 
 	private getInput(onenter?: (e: React.SyntheticEvent, input: Input) => void) {

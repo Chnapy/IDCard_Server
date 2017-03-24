@@ -18,7 +18,7 @@
 		<link rel="stylesheet" href="css/test.css"/>
 
     </head>
-    <body>
+    <body onload="console.debug(titi)">
 
 		<div id="react_container">
 		</div>
@@ -30,6 +30,6 @@
 				page: "${page}"	//Défini la première page
 			};
 		</script>
-		<script data-main="js/app" src="libs/require/require.js"></script>
+		<script type="text/javascript" data-main="js/app" src="libs/require/require.js"></script>
     </body>
 </html>
