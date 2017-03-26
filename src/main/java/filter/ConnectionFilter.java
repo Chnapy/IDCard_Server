@@ -19,8 +19,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import servlet.Controleur;
 import servlet.IndexServlet;
+import servlet.enumerations.Session;
 
 /**
  * Filtre limittant l'acces selon si l'user est connecté ou non
@@ -82,7 +82,7 @@ public class ConnectionFilter implements Filter {
 
 	private boolean isConnected(HttpSession session) {
 		try {
-			return ((UserEntity) session.getAttribute(Controleur.Sess.USER.sess)).isConnected();
+			return ((UserEntity) session.getAttribute(Session.USER.tostring)).isConnected();
 		} catch (NullPointerException ex) {
 			return false;
 		}

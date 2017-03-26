@@ -11,7 +11,7 @@ INSERT INTO typeprop (id_typeprop, typeprop) VALUES
 ;
 
 INSERT INTO propriete (nom, id_typeprop, principal, supprimable, modifiable, nbrvalmin, nbrvalmax, taillevalmin, taillevalmax) VALUES
-('login', 1, true, false, false, 1, 64, 3, 32),
+('login', 1, true, false, true, 1, 64, 3, 32),
 ('mdp', 5, true, false, true, 1, 64, 6, 32),
 ('mail', 6, true, true, true, 1, 64, 6, 128)
 ;

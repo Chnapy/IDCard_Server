@@ -5,14 +5,13 @@
  */
 package servlet;
 
-import bdd.Const;
 import entity.ContentEntity;
 import entity.MainEntity;
 import entity.UserEntity;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modele.DeconnexionModele;
+import servlet.enumerations.Code;
 
 /**
  *
@@ -28,7 +27,7 @@ public class DeconnexionServlet extends Controleur {
 
 		this.deconnexion(request);
 
-		return new MainEntity(true, Const.Code.OK, new ContentEntity(new UserEntity(false), null));
+		return new MainEntity(true, Code.OK, new ContentEntity(new UserEntity(false), null));
 
 	}
 

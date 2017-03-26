@@ -5,8 +5,7 @@
  */
 package servlet;
 
-import bdd.Const;
-import bdd.Const.Code;
+import bdd.CheckData;
 import bdd.Modele.TypeValeurProp;
 import entity.MainEntity;
 import entity.MainEntity.MainEntityError;
@@ -19,6 +18,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modele.ConfigurationModele;
+import servlet.enumerations.Code;
+import servlet.enumerations.Param;
 
 /**
  *
@@ -40,7 +41,7 @@ public class ConfigurationServlet extends Controleur {
 			case "remove_site":
 				return removeSite(request, response);
 			default:
-				return new MainEntityError(Const.Code.E_SERVEUR);
+				return new MainEntityError(Code.E_SERVEUR);
 		}
 	}
 
@@ -63,7 +64,7 @@ public class ConfigurationServlet extends Controleur {
 
 			code = Code.OK;
 			success = true;
-		} catch (Param.NoCheckException ex) {
+		} catch (NoCheckException ex) {
 			code = Code.E_CONFIGURATION_UPDATE;
 		} catch (Exception ex) {
 			Logger.getLogger(ConfigurationServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -110,7 +111,7 @@ public class ConfigurationServlet extends Controleur {
 
 			code = Code.OK;
 			success = true;
-		} catch (Param.NoCheckException ex) {
+		} catch (NoCheckException ex) {
 			code = Code.E_CONFIGURATION_UPDATE;
 		} catch (Exception ex) {
 			Logger.getLogger(ConfigurationServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -120,13 +121,13 @@ public class ConfigurationServlet extends Controleur {
 		return new MainEntity(success, code);
 	}
 
-	private Object checkVal(String form_val, ValeurInfos infos) throws Param.NoCheckException {
+	private Object checkVal(String form_val, ValeurInfos infos) throws NoCheckException {
 
 		if (!infos.isProprieteModifiable()) {
-			throw new Param.NoCheckException("Propriété non modifiable");
+			throw new NoCheckException("Propriété non modifiable");
 		}
 
-		Const.CheckData cd = this.getCheckDataFromTypeProp(infos.getId_typeprop(), infos.getProprieteNom());
+		CheckData cd = this.getCheckDataFromTypeProp(infos.getId_typeprop(), infos.getProprieteNom());
 
 		return this.check(form_val, cd, infos.getProprieteTaillevalmin(), infos.getProprieteTaillevalmax());
 	}
@@ -148,7 +149,7 @@ public class ConfigurationServlet extends Controleur {
 
 			code = Code.OK;
 			success = true;
-		} catch (Param.NoCheckException ex) {
+		} catch (NoCheckException ex) {
 			code = Code.E_CONFIGURATION_REMOVESITE;
 		} catch (Exception ex) {
 			Logger.getLogger(ConfigurationServlet.class.getName()).log(Level.SEVERE, null, ex);

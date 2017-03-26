@@ -19,9 +19,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import modele.ProprieteModele;
+import servlet.enumerations.Page;
+import servlet.enumerations.Session;
 
 /**
- * Servlet appelé lors du premier accès à la page
+ * Servlet appelé lors du premier accès à la tostring
  *
  * @author Richard
  */
@@ -39,7 +41,7 @@ public class IndexServlet extends Controleur {
 
 		HttpSession session = request.getSession();
 
-		user = (UserEntity) session.getAttribute(Sess.USER.sess);
+		user = (UserEntity) session.getAttribute(Session.USER.tostring);
 		boolean isConnected;
 		try {
 			isConnected = user.isConnected();
@@ -60,7 +62,7 @@ public class IndexServlet extends Controleur {
 		}
 
 		request.setAttribute("donnees", this.entityToJSONString(donnees));
-		request.setAttribute("page", (isConnected ? Page.CONFIGURATION : Page.ACCUEIL).page);
+		request.setAttribute("page", (isConnected ? Page.CONFIGURATION : Page.ACCUEIL).tostring);
 
 		getServletContext().getRequestDispatcher(WEB_FILE).forward(request, response);
 	}

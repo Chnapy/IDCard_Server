@@ -5,8 +5,6 @@
  */
 package servlet;
 
-import bdd.Const;
-import entity.ContentEntity;
 import entity.MainEntity;
 import entity.MainEntity.MainEntityError;
 import entity.MainEntity.MainEntitySuccess;
@@ -16,6 +14,9 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import servlet.enumerations.Attribut;
+import servlet.enumerations.Code;
+import servlet.enumerations.Param;
 
 /**
  *
@@ -30,7 +31,7 @@ public class InscriptionServlet extends Controleur {
 		if (!me.isSuccess()) {
 			this.sendReturn(me, response);
 		} else {
-			request.setAttribute(Attr.IS_MAIL.attr, false);
+			request.setAttribute(Attribut.IS_MAIL.tostring, false);
 			request.getServletContext().getRequestDispatcher("/connexion").forward(request, response);
 		}
 	}
@@ -45,22 +46,22 @@ public class InscriptionServlet extends Controleur {
 			mail = this.checkParam(Param.MAIL, request);
 			mdp = this.checkParam(Param.MDP, request);
 
-		} catch (Param.NoCheckException ex) {
+		} catch (NoCheckException ex) {
 			//TODO Erreur
 			ex.printStackTrace();
-			return new MainEntityError(Const.Code.E_INSCRIPTION_CHECK);
+			return new MainEntityError(Code.E_INSCRIPTION_CHECK);
 		}
 
 		InscriptionModele modele = new InscriptionModele();
 
 		try {
 			if (modele.issetClient(pseudo, mail)) {
-				return new MainEntityError(Const.Code.E_INSCRIPTION_ISSET);
+				return new MainEntityError(Code.E_INSCRIPTION_ISSET);
 			}
 
 			modele.inscription(pseudo, mail, mdp);
 		} catch (Exception ex) {
-			return new MainEntityError(Const.Code.E_SERVEUR);
+			return new MainEntityError(Code.E_SERVEUR);
 		}
 		return new MainEntitySuccess();
 	}

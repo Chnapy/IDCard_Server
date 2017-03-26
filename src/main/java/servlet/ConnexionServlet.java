@@ -5,7 +5,6 @@
  */
 package servlet;
 
-import bdd.Const.Code;
 import entity.ContentEntity;
 import entity.MainEntity;
 import entity.ProprieteEntity;
@@ -19,6 +18,10 @@ import modele.ConnexionModele.MauvaisMdpException;
 import modele.ConnexionModele.NoIssetMailException;
 import modele.ConnexionModele.NoIssetPseudoException;
 import modele.ProprieteModele;
+import servlet.enumerations.Attribut;
+import servlet.enumerations.Code;
+import servlet.enumerations.Param;
+import servlet.enumerations.Session;
 
 /**
  *
@@ -38,8 +41,8 @@ public class ConnexionServlet extends Controleur {
 		List<ProprieteEntity> proprietes = null;
 
 		try {
-			boolean isMail = (boolean) (request.getAttribute(Attr.IS_MAIL.attr) != null
-					? request.getAttribute(Attr.IS_MAIL.attr)
+			boolean isMail = (boolean) (request.getAttribute(Attribut.IS_MAIL.tostring) != null
+					? request.getAttribute(Attribut.IS_MAIL.tostring)
 					: this.checkParam(Param.IS_MAIL, request));
 			String mdp = this.checkParam(Param.MDP, request);
 			if (isMail) {
@@ -57,9 +60,9 @@ public class ConnexionServlet extends Controleur {
 			success = true;
 			code = Code.OK;
 
-			request.getSession().setAttribute(Sess.USER.sess, user);
+			request.getSession().setAttribute(Session.USER.tostring, user);
 
-		} catch (Param.NoCheckException | NullPointerException | NoIssetPseudoException | NoIssetMailException | MauvaisMdpException ex) {
+		} catch (NoCheckException | NullPointerException | NoIssetPseudoException | NoIssetMailException | MauvaisMdpException ex) {
 			ex.printStackTrace();
 			code = Code.E_CONNEXION_CHECK;
 			success = false;
