@@ -21,6 +21,11 @@ export abstract class Page<P extends PageProps<any>> extends Vue<P, undefined> {
 		this._nom = nom;
 	}
 
+	public componentDidMount() {
+//		document.body.scrollTo(0, 0);
+//		$('body').scrollTop(0);
+	}
+
 	public abstract hasHeader(): boolean;
 
 	public abstract renderBandeau(): any;

@@ -131,7 +131,7 @@ export class StartForm extends Vue<VueProps<AccueilManager>, StartFormState> {
 					onchange={e => this.handlePseudo(e)}
 					minlength={Const.LENGTH.PSEUDO.min}
 					maxlength={Const.LENGTH.PSEUDO.max}
-					required={true} />
+					required readonly={this.state.load} />
 			</div>;
 		} else {
 			ret = <div className="form-group">
@@ -141,7 +141,7 @@ export class StartForm extends Vue<VueProps<AccueilManager>, StartFormState> {
 					onchange={e => this.handleMail(e)}
 					minlength={Const.LENGTH.MAIL.min}
 					maxlength={Const.LENGTH.MAIL.max}
-					required={true} />
+					required readonly={this.state.load} />
 			</div>;
 		}
 
@@ -171,7 +171,7 @@ export class StartForm extends Vue<VueProps<AccueilManager>, StartFormState> {
 						name="ip_pseudo" value={this.state.ip_pseudoOrMail} onchange={e => this.handlePseudoOrMail(e)}
 						minlength={this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min}
 						maxlength={this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max}
-						required={true} focus={true} />
+						required autofocus={!this.state.load} readonly={this.state.load} />
 				</div>
 				<div className="form-group">
 					<label htmlFor="ip_mdp">Mot de passe</label>
@@ -180,7 +180,7 @@ export class StartForm extends Vue<VueProps<AccueilManager>, StartFormState> {
 						onchange={e => this.handleMdp(e)}
 						minlength={Const.LENGTH.MDP.min}
 						maxlength={Const.LENGTH.MDP.max}
-						required />
+						required readonly={this.state.load} />
 				</div>
 
 				{inscription}

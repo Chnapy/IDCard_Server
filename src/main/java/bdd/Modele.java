@@ -42,7 +42,7 @@ public abstract class Modele {
 		return DB.act(bddC);
 	}
 
-	protected TypeValeurProp parseType(long id_typeprop) {
+	public TypeValeurProp parseType(long id_typeprop) {
 
 		Field valeur_val;
 		Field valeur_idtype;

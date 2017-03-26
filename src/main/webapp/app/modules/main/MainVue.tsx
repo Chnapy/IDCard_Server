@@ -71,7 +71,10 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 		this.setState({display: false});
 
 		let controleur = this.getControleurFromPage(page)
-		setTimeout(() => this.setState({controleur: controleur, page: page, display: true}), Const.TRANSITION_DURATION);
+		setTimeout(() => {
+			this.setState({controleur: controleur, page: page, display: true});
+			window.scrollTo(0, 0);
+		}, Const.TRANSITION_DURATION);
 	}
 
 	public mainAlert(level: AlertLevel, title: string, content: string, code: number) {
@@ -126,9 +129,9 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 				<footer className="footer">
 
 				</footer>
-				
+
 				{this.state.confirmBox ? <ConfirmBox {...this.state.confirmBox} onHide={() => this.setState({confirmBox: undefined})} /> : ''}
-				
+
 			</div>
 		);
 	}

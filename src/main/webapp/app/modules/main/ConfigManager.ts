@@ -15,10 +15,15 @@ export class ConfigManager extends Controleur<ConfigModele, Configuration> {
 
 	public updateValeur(key: number, val: string, onsuccess: () => void) {
 		this.modele.updateValeur(key, val, new AjaxCallback(this, 'Mise à jour de valeur', {
-			success: (data: Data) => {
-				onsuccess();
-			}
+			success: (data: Data) => onsuccess()
 		}));
+	}
+
+	public addValeur(keyProp: number, val: string, onsuccess: () => void) {
+		this.modele.addValeur(keyProp, val, new AjaxCallback(this, 'Ajout de valeur', {
+			success: (data: Data) => onsuccess()
+		}));
+		console.log(keyProp + ' ' + val);
 	}
 
 	public removeSite(key_prop: number, key_val: number, key_site: number, ligne: LigneValeur, element: HTMLElement) {
@@ -39,8 +44,8 @@ export class ConfigManager extends Controleur<ConfigModele, Configuration> {
 				}
 			}));
 		}
-		
-		this.askConfirm('Suppression d\'un site', 'Voulez-vous vraiment supprimer ce site ?', () => remover(this), element, true);
+
+		this.askConfirm('Suppression d\'un site', 'Voulez-vous vraiment supprimer ce site ?', () => remover(this), element);
 	}
 
 }

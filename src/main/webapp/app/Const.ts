@@ -21,6 +21,8 @@ class Const {
 	};
 
 	public static readonly TRANSITION_DURATION: number = 500;
+	
+	public static readonly CONFIRMBOX_WIDTH: number = 300;
 
 	public static readonly CODES: {
 		[key: number]: {

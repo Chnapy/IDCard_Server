@@ -1,4 +1,11 @@
 
+/* Fichier principal */
+/* Requiert Bootstrap (testé avec la 3.3.7) */
+
+@import 'variables';
+@import 'fonctions';
+@import 'animations';
+
 * {
 	border-radius: 0 !important;
 	outline: 0;
@@ -19,7 +26,7 @@ body {
 	margin: 0;
 	color: $color_main;
 	font-family: Open Sans, "Open Sans", calibri, sans-serif;
-	background: #FAFAFA;
+	background: $bg_color;
 }
 
 h1, h2, h3 {
@@ -61,7 +68,7 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 }
 
 .but, .mini-but, .nav-item, .confirm {
-	user-select: none;
+	@include wout-prefix(user-select, none);
 }
 
 .bandeau {
@@ -69,7 +76,6 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 }
 
 .bloc {
-	/*display: inline-block;*/
 	padding: 15px;
 	border: 1px solid #DDD;
 	border-bottom: 2px solid #E8E8E8;
@@ -84,6 +90,7 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 	position: relative;
 	height: 26px;
 	background: darken($bg_color, 3%);
+	z-index: 0;
 	/*transition: color $transition_dur;*/
 
 	&>input {
@@ -135,7 +142,7 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 		content: '\e014';
 	}
 
-	&>input[readonly]+.field-feedback>.glyphicon::before {
+	&>input[readonly]+.field-feedback>.glyphicon::before, &>input[disabled]+.field-feedback>.glyphicon::before {
 		content: '\e033';
 	}
 }
@@ -144,6 +151,8 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 	display: block;
 	width: 100%;
 }
+
+$icon_width: 16px;
 
 .tag {
 	position: relative;
@@ -154,6 +163,17 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
     padding: 3px;
 	overflow: hidden;
     text-overflow: ellipsis;
+	/*transition: $transition_dur;*/
+
+	&>.icon {
+		position: relative;
+		top: -1px;
+		left: -2px;
+		width: $icon_width;
+		height: $icon_width;
+		margin-left: 4px;
+		margin-right: 2px;
+	}
 
 	&>.delete {
 		position: absolute;
@@ -171,11 +191,34 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 		cursor: pointer;
 	}
 
-	&:not(.onhover).deletable, &.onhover.deletable:hover {
-		padding-right: 26px;
-
-		&>.delete {
+	&.reduce {
+		&>.tag-text {
 			display: inline-block;
+			width: 0;
+			height: 0;
+			overflow: hidden;
+		}
+	}
+
+	&.reduce.extendhover:hover {
+		&>.tag-text {
+			display: initial;
+			width: initial;
+			height: initial;
+			overflow: auto;
+		}
+	}
+
+	&:not(.reduce).deletable, &.reduce.extendhover.deletable, &.deletable {
+		transition: .5s;
+		&:not(.onhover), &.onhover:hover {
+			padding-right: 26px;
+
+			&>.delete {
+				display: inline-block;
+				@include wout-prefix(animation-name, opa);
+				@include wout-prefix(animation-duration, $transition_dur);
+			}
 		}
 	}
 }
@@ -185,7 +228,7 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 
 	@include wout-prefix(animation-name, opa);
 	@include wout-prefix(animation-duration, $transition_dur);
-	
+
 	&.ishide {
 		opacity: 0;
 		pointer-events: none;
@@ -309,10 +352,7 @@ $confirmpad: 3px;
 	display: inline-block;
 	position: relative;
 	padding: 4px;
-	/*border: 1px solid #9F9F9F;*/
 	border: 1px solid darken($bg_color, 38%);
-	/*background: linear-gradient(to right, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%);*/
-	/*	background: linear-gradient(to right, darken($bg_color, 6%) 0%, darken($bg_color, 3%) 50%, darken($bg_color, 6%) 100%);*/
 	background: darken($bg_color, 3%);
 
 	&.but {
@@ -403,7 +443,7 @@ $confirmpad: 3px;
 		}
 	}
 
-	&.but-delete, &.delete {
+	&.delete {
 		width: 20px;
 		height: 20px;
 		line-height: 100%;
@@ -415,7 +455,7 @@ $confirmpad: 3px;
 		}
 	}
 
-	&.but-add, &.add {
+	&.add {
 		line-height: 100%;
 
 
@@ -462,7 +502,6 @@ $header_min: 2px;
 	font-family: "Helvetica Neue", Helvetica, Open Sans, "Open Sans", sans-serif;
 	font-weight: 600;
 	background: $color_primary;
-	/*border-bottom: 2px solid $bg_dark_color;*/
 	min-height: $header_height;
 	transition: $transition_dur;
 
@@ -478,11 +517,6 @@ $header_min: 2px;
 			cursor: pointer;
 			transition: $transition_dur;
 
-			/*			&:hover {
-							color: darken($bg_dark_color, 5%);
-							background: rgba(0,0,0,0.02);
-						}*/
-
 			&.active {
 				color: $color_primary;
 				background: $bg_dark_color;
@@ -491,6 +525,7 @@ $header_min: 2px;
 			&.logo {
 				color: black;
 				font-size: 18px;
+				cursor: default;
 			}
 
 			&.compte {

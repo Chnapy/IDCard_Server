@@ -5,11 +5,10 @@
  */
 package entity;
 
-import bdd.Modele;
 import bdd.Modele.TypeValeurProp;
 import static bdd.generated.tables.Propriete.PROPRIETE;
 import static bdd.generated.tables.Typeprop.TYPEPROP;
-import static bdd.generated.tables.Valeur.VALEUR;
+import static bdd.generated.tables.User_1.USER_1;
 import org.jooq.Record;
 
 /**
@@ -18,46 +17,15 @@ import org.jooq.Record;
  */
 public class ValeurInfos {
 
-	private final long id_user;
-	private final String propriete_nom;
-	private final boolean modifiable;
-	private final int taillevalmin;
-	private final int taillevalmax;
-	private final long id_typeprop;
-	private Modele.TypeValeurProp tvp;
-	private Object valeur;
+	private final Record record;
+	private TypeValeurProp tvp;
 
-	public ValeurInfos(Record record_val_infos) throws IllegalArgumentException {
-		this.id_user = record_val_infos.get(VALEUR.ID_USER);
-		this.propriete_nom = record_val_infos.get(PROPRIETE.NOM);
-		this.modifiable = record_val_infos.get(PROPRIETE.MODIFIABLE);
-		this.taillevalmin = record_val_infos.get(PROPRIETE.TAILLEVALMIN);
-		this.taillevalmax = record_val_infos.get(PROPRIETE.TAILLEVALMAX);
-		this.id_typeprop = record_val_infos.get(TYPEPROP.ID_TYPEPROP);
+	public ValeurInfos(Record record) throws IllegalArgumentException {
+		this.record = record;
 	}
 
-	public long getId_user() {
-		return id_user;
-	}
-
-	public String getPropriete_nom() {
-		return propriete_nom;
-	}
-
-	public boolean isModifiable() {
-		return modifiable;
-	}
-
-	public int getTaillevalmin() {
-		return taillevalmin;
-	}
-
-	public int getTaillevalmax() {
-		return taillevalmax;
-	}
-
-	public long getId_typeprop() {
-		return id_typeprop;
+	public Record getRecord() {
+		return record;
 	}
 
 	public TypeValeurProp getTvp() {
@@ -68,11 +36,32 @@ public class ValeurInfos {
 		this.tvp = tvp;
 	}
 
-	public Object getValeur() {
-		return valeur;
+	public long getId_user() {
+		return (long) record.get(USER_1.ID_USER.getName());
 	}
 
-	public void setValeur(Object valeur) {
-		this.valeur = valeur;
+	public long getId_propriete() {
+		return (long) record.get(PROPRIETE.ID_PROPRIETE.getName());
 	}
+
+	public int getId_typeprop() {
+		return (int) record.get(TYPEPROP.ID_TYPEPROP.getName());
+	}
+
+	public String getProprieteNom() {
+		return record.get(PROPRIETE.NOM);
+	}
+
+	public boolean isProprieteModifiable() {
+		return record.get(PROPRIETE.MODIFIABLE);
+	}
+
+	public int getProprieteTaillevalmin() {
+		return record.get(PROPRIETE.TAILLEVALMIN);
+	}
+
+	public int getProprieteTaillevalmax() {
+		return record.get(PROPRIETE.TAILLEVALMAX);
+	}
+
 }

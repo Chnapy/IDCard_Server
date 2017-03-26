@@ -33,6 +33,7 @@ Const.LENGTH = {
     }
 };
 Const.TRANSITION_DURATION = 500;
+Const.CONFIRMBOX_WIDTH = 300;
 Const.CODES = {
     0: {
         titre: 'OK',
@@ -163,6 +164,8 @@ define("pages/Page", ["require", "exports", "struct/Vue"], function (require, ex
             enumerable: true,
             configurable: true
         });
+        Page.prototype.componentDidMount = function () {
+        };
         return Page;
     }(Vue_1.Vue));
     exports.Page = Page;
@@ -178,8 +181,7 @@ define("items/Bouton", ["require", "exports", "react", "classnames"], function (
         }
         Bouton.prototype.render = function () {
             var _this = this;
-            return React.createElement("button", { className: classNames({
-                    'but': true,
+            return React.createElement("button", { className: classNames('but', {
                     'primary': this.props.primary,
                     'add': this.props.add,
                     'delete': this.props.delete,
@@ -196,15 +198,26 @@ define("items/Bouton", ["require", "exports", "react", "classnames"], function (
     exports.Bouton = Bouton;
     var BoutonAdd = (function (_super) {
         __extends(BoutonAdd, _super);
-        function BoutonAdd(props, context) {
-            return _super.call(this, props, context) || this;
+        function BoutonAdd() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         BoutonAdd.prototype.render = function () {
-            return React.createElement(Bouton, __assign({ value: '', add: true, delete: false, className: 'but-add'.concat(this.props.className) }, this.props));
+            return React.createElement(Bouton, __assign({ value: '', add: true }, this.props));
         };
         return BoutonAdd;
     }(React.Component));
     exports.BoutonAdd = BoutonAdd;
+    var BoutonDelete = (function (_super) {
+        __extends(BoutonDelete, _super);
+        function BoutonDelete() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        BoutonDelete.prototype.render = function () {
+            return React.createElement(Bouton, __assign({ value: '', delete: true }, this.props));
+        };
+        return BoutonDelete;
+    }(React.Component));
+    exports.BoutonDelete = BoutonDelete;
 });
 define("items/inputs/Input", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
     "use strict";
@@ -254,7 +267,7 @@ define("items/inputs/Input", ["require", "exports", "react", "classnames"], func
                     if (e.key === 'Enter' && onenter) {
                         onenter(e, _this);
                     }
-                }, readOnly: this.props.readonly, minLength: this.props.minlength, maxLength: this.props.maxlength, required: this.props.required, placeholder: this.props.placeholder, disabled: this.props.disabled, autoFocus: this.props.focus });
+                }, readOnly: this.props.readonly, minLength: this.props.minlength, maxLength: this.props.maxlength, required: this.props.required, placeholder: this.props.placeholder, disabled: this.props.disabled, autoFocus: this.props.autofocus });
         };
         return Input;
     }(React.Component));
@@ -358,12 +371,12 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
             if (this.state.isMail) {
                 ret = React.createElement("div", { className: "form-group" },
                     React.createElement("label", { htmlFor: "ip_insc" }, "Pseudonyme"),
-                    React.createElement(Input_1.Input, { type: "text", id: "ip_insc", name: "ip_insc", value: this.state.ip_pseudo, onchange: function (e) { return _this.handlePseudo(e); }, minlength: Const.LENGTH.PSEUDO.min, maxlength: Const.LENGTH.PSEUDO.max, required: true }));
+                    React.createElement(Input_1.Input, { type: "text", id: "ip_insc", name: "ip_insc", value: this.state.ip_pseudo, onchange: function (e) { return _this.handlePseudo(e); }, minlength: Const.LENGTH.PSEUDO.min, maxlength: Const.LENGTH.PSEUDO.max, required: true, readonly: this.state.load }));
             }
             else {
                 ret = React.createElement("div", { className: "form-group" },
                     React.createElement("label", { htmlFor: "ip_insc" }, "Email"),
-                    React.createElement(Input_1.Input, { type: "email", id: "ip_insc", name: "ip_insc", value: this.state.ip_mail, onchange: function (e) { return _this.handleMail(e); }, minlength: Const.LENGTH.MAIL.min, maxlength: Const.LENGTH.MAIL.max, required: true }));
+                    React.createElement(Input_1.Input, { type: "email", id: "ip_insc", name: "ip_insc", value: this.state.ip_mail, onchange: function (e) { return _this.handleMail(e); }, minlength: Const.LENGTH.MAIL.min, maxlength: Const.LENGTH.MAIL.max, required: true, readonly: this.state.load }));
             }
             return ret;
         };
@@ -379,10 +392,10 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
                             React.createElement("span", { className: 'lbPseudo' }, "Pseudonyme"),
                             React.createElement("span", null, " ou "),
                             React.createElement("span", { className: 'lbMail' }, "email")),
-                        React.createElement(Input_1.Input, { type: this.state.isMail ? 'email' : 'text', id: "ip_pseudo", name: "ip_pseudo", value: this.state.ip_pseudoOrMail, onchange: function (e) { return _this.handlePseudoOrMail(e); }, minlength: this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min, maxlength: this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max, required: true, focus: true })),
+                        React.createElement(Input_1.Input, { type: this.state.isMail ? 'email' : 'text', id: "ip_pseudo", name: "ip_pseudo", value: this.state.ip_pseudoOrMail, onchange: function (e) { return _this.handlePseudoOrMail(e); }, minlength: this.state.isMail ? Const.LENGTH.MAIL.min : Const.LENGTH.PSEUDO.min, maxlength: this.state.isMail ? Const.LENGTH.MAIL.max : Const.LENGTH.PSEUDO.max, required: true, autofocus: !this.state.load, readonly: this.state.load })),
                     React.createElement("div", { className: "form-group" },
                         React.createElement("label", { htmlFor: "ip_mdp" }, "Mot de passe"),
-                        React.createElement(Input_1.Input, { type: "password", id: "ip_mdp", name: "ip_mdp", value: this.state.ip_mdp, onchange: function (e) { return _this.handleMdp(e); }, minlength: Const.LENGTH.MDP.min, maxlength: Const.LENGTH.MDP.max, required: true })),
+                        React.createElement(Input_1.Input, { type: "password", id: "ip_mdp", name: "ip_mdp", value: this.state.ip_mdp, onchange: function (e) { return _this.handleMdp(e); }, minlength: Const.LENGTH.MDP.min, maxlength: Const.LENGTH.MDP.max, required: true, readonly: this.state.load })),
                     inscription,
                     React.createElement("div", { className: "form-group" },
                         React.createElement(Bouton_1.Bouton, { value: "Inscrivez-vous", className: "d-block", primary: this.state.type === BoutonType.Inscription, submit: this.state.type === BoutonType.Inscription, onClick: function (e, bouton) { return _this.onClick(e, bouton, BoutonType.Inscription); }, disabled: this.state.load, load: this.state.load && this.state.type === BoutonType.Inscription })),
@@ -429,25 +442,32 @@ define("pages/Accueil", ["require", "exports", "react", "pages/Page", "items/Sta
     Accueil.NOM = 'Accueil';
     exports.Accueil = Accueil;
 });
-define("items/Tag", ["require", "exports", "react", "classnames"], function (require, exports, React, classNames) {
+define("items/Tag", ["require", "exports", "react", "react-dom", "classnames"], function (require, exports, React, ReactDOM, classNames) {
     "use strict";
     var Tag = (function (_super) {
         __extends(Tag, _super);
         function Tag(props) {
             return _super.call(this, props) || this;
         }
+        Tag.prototype.componentDidMount = function () {
+            var e = ReactDOM.findDOMNode(this);
+            $(e).tooltip();
+        };
         Tag.prototype.render = function () {
             var _this = this;
             return React.createElement("span", { className: classNames('tag', this.props.class, {
                     'clickable': this.props.clickable,
                     'deletable': this.props.deletable,
-                    'onhover': this.props.onhover
-                }), onClick: function (e) {
+                    'reduce': this.props.reduce,
+                    'onhover': this.props.onhover,
+                    'extendhover': this.props.extendhover
+                }), title: this.props.title, onClick: function (e) {
                     if (_this.props.onclick) {
                         _this.props.onclick(e, _this);
                     }
-                }, title: this.props.value },
-                this.props.value,
+                }, "data-toggle": this.props.tooltip ? 'tooltip' : '', "data-placement": this.props.tooltip_placement },
+                this.props.icon,
+                React.createElement("span", { className: 'tag-text' }, this.props.value),
                 React.createElement("span", { className: 'delete mini-but glyphicon glyphicon-remove', onClick: function (e) {
                         if (_this.props.ondelete) {
                             _this.props.ondelete(e, _this);
@@ -468,6 +488,9 @@ define("modules/main/ConfigModele", ["require", "exports", "struct/Modele"], fun
         ConfigModele.prototype.updateValeur = function (key, val, ajaxc) {
             this.ajaxPost('configuration', { m: 'update_val', id_val: key, val: val }, ajaxc);
         };
+        ConfigModele.prototype.addValeur = function (keyProp, val, ajaxc) {
+            this.ajaxPost('configuration', { m: 'add_val', id_prop: keyProp, val: val }, ajaxc);
+        };
         ConfigModele.prototype.removeSite = function (key_val, key_site, ajaxc) {
             this.ajaxPost('configuration', { m: 'remove_site', id_val: key_val, id_site: key_site }, ajaxc);
         };
@@ -484,10 +507,14 @@ define("modules/main/ConfigManager", ["require", "exports", "struct/Controleur",
         }
         ConfigManager.prototype.updateValeur = function (key, val, onsuccess) {
             this.modele.updateValeur(key, val, new AjaxCallback_1.AjaxCallback(this, 'Mise à jour de valeur', {
-                success: function (data) {
-                    onsuccess();
-                }
+                success: function (data) { return onsuccess(); }
             }));
+        };
+        ConfigManager.prototype.addValeur = function (keyProp, val, onsuccess) {
+            this.modele.addValeur(keyProp, val, new AjaxCallback_1.AjaxCallback(this, 'Ajout de valeur', {
+                success: function (data) { return onsuccess(); }
+            }));
+            console.log(keyProp + ' ' + val);
         };
         ConfigManager.prototype.removeSite = function (key_prop, key_val, key_site, ligne, element) {
             var _this = this;
@@ -507,19 +534,19 @@ define("modules/main/ConfigManager", ["require", "exports", "struct/Controleur",
                     }
                 }));
             }
-            this.askConfirm('Suppression d\'un site', 'Voulez-vous vraiment supprimer ce site ?', function () { return remover(_this); }, element, true);
+            this.askConfirm('Suppression d\'un site', 'Voulez-vous vraiment supprimer ce site ?', function () { return remover(_this); }, element);
         };
         return ConfigManager;
     }(Controleur_1.Controleur));
     exports.ConfigManager = ConfigManager;
 });
-define("items/LigneValeur", ["require", "exports", "react", "classnames", "struct/Vue", "items/inputs/Input", "items/Tag"], function (require, exports, React, classNames, Vue_3, Input_2, Tag_1) {
+define("items/LigneValeur", ["require", "exports", "react", "classnames", "struct/Vue", "items/inputs/Input", "items/Bouton", "items/Tag"], function (require, exports, React, classNames, Vue_3, Input_2, Bouton_2, Tag_1) {
     "use strict";
     var LigneValeur = (function (_super) {
         __extends(LigneValeur, _super);
         function LigneValeur(props) {
             var _this = _super.call(this, props) || this;
-            _this.state = { sites: props.sites };
+            _this.state = { sites: props.sites ? props.sites : [] };
             _this.onEnter = _this.onEnter.bind(_this);
             _this.onRemoveSite = _this.onRemoveSite.bind(_this);
             return _this;
@@ -535,22 +562,52 @@ define("items/LigneValeur", ["require", "exports", "react", "classnames", "struc
         LigneValeur.prototype.render = function () {
             var _this = this;
             return React.createElement("div", { className: classNames("box-line", "row", {
-                    "main": this.props.principal,
+                    "principal": this.props.principal,
                     "modifiable": this.props.modifiable,
                     "supprimable": this.props.supprimable,
                     "public": this.props.publique,
                     "prive": this.props.prive
                 }) },
                 React.createElement("div", { className: 'box-line-ip col-xs-6', onSubmit: function (e) { return e.preventDefault(); } },
-                    React.createElement(Input_2.Input, { ref: function (i) { return _this.input = i; }, type: this.props.type, value: this.props.valeur, readonly: !this.props.modifiable, onenter: this.onEnter, minlength: this.props.taillemin, maxlength: this.props.taillemax, required: true, checkvalidation: true })),
-                React.createElement("div", { className: "box-line-visib col-xs-6" }, this.state.sites.map(function (s) { return React.createElement(Tag_1.Tag, { key: s.key, id: s.key, value: s.site, deletable: true, onhover: true, ondelete: _this.onRemoveSite }); })),
-                this.props.supprimable ? React.createElement("button", { className: "but but-delete but-error but-fh" }) : '');
+                    React.createElement(Input_2.Input, { type: this.props.type, value: this.props.valeur, readonly: !this.props.modifiable, onenter: this.props.onenter ? this.props.onenter : this.onEnter, minlength: this.props.taillemin, maxlength: this.props.taillemax, required: true, checkvalidation: true, autofocus: this.props.autofocus })),
+                React.createElement("div", { className: "box-line-visib col-xs-6" }, this.state.sites.map(function (s) {
+                    return React.createElement(Tag_1.Tag, { key: s.key, id: s.key, value: s.site, title: s.site, reduce: true, tooltip: true, tooltip_placement: 'top', icon: React.createElement("img", { className: 'icon', src: 'http://www.google.com/s2/favicons?domain_url=' + s.site }), deletable: true, onhover: true, ondelete: _this.onRemoveSite });
+                })),
+                this.props.supprimable ? React.createElement(Bouton_2.BoutonDelete, { className: "but-fh", onClick: console.log }) : '');
         };
         return LigneValeur;
     }(Vue_3.Vue));
     exports.LigneValeur = LigneValeur;
+    var LigneAdd = (function (_super) {
+        __extends(LigneAdd, _super);
+        function LigneAdd() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        LigneAdd.prototype.render = function () {
+            return React.createElement("div", { className: "box-line row" },
+                React.createElement(Bouton_2.BoutonAdd, __assign({}, this.props)));
+        };
+        return LigneAdd;
+    }(React.Component));
+    exports.LigneAdd = LigneAdd;
+    var NewLigneValeur = (function (_super) {
+        __extends(NewLigneValeur, _super);
+        function NewLigneValeur(props) {
+            var _this = _super.call(this, props) || this;
+            _this.onEnter = _this.onEnter.bind(_this);
+            return _this;
+        }
+        NewLigneValeur.prototype.onEnter = function (e, input) {
+            this.props.controleur.addValeur(this.props.id_prop, input.state.value, console.log);
+        };
+        NewLigneValeur.prototype.render = function () {
+            return React.createElement(LigneValeur, __assign({ modifiable: true, autofocus: true, onenter: this.onEnter }, this.props));
+        };
+        return NewLigneValeur;
+    }(Vue_3.Vue));
+    exports.NewLigneValeur = NewLigneValeur;
 });
-define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "items/LigneValeur", "items/Bouton"], function (require, exports, React, Vue_4, LigneValeur_1, Bouton_2) {
+define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "items/LigneValeur"], function (require, exports, React, Vue_4, LigneValeur_1) {
     "use strict";
     var BlocPropriete = (function (_super) {
         __extends(BlocPropriete, _super);
@@ -561,6 +618,7 @@ define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "ite
         }
         BlocPropriete.prototype.render = function () {
             var _this = this;
+            var valeurs = this.state.valeurs;
             return React.createElement("div", { className: "box col-md-6" },
                 React.createElement("div", { className: "box-content bloc col-md-12" },
                     React.createElement("div", { className: "container-fluid" },
@@ -570,11 +628,19 @@ define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "ite
                                 React.createElement("span", { className: "tag typeStr" }, this.props.typeStr))),
                         React.createElement("div", { className: "box-body row" },
                             React.createElement("div", { className: "container-fluid" },
-                                this.state.valeurs.map(function (v) {
-                                    return React.createElement(LigneValeur_1.LigneValeur, { key: v.key, id: v.key, id_prop: _this.props.id, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && _this.state.valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax });
+                                valeurs.map(function (v) {
+                                    return React.createElement(LigneValeur_1.LigneValeur, { key: v.key, id: v.key, id_prop: _this.props.id, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax });
                                 }),
-                                this.state.valeurs.length < this.props.nbrmax ? React.createElement("div", { className: "box-line row" },
-                                    React.createElement(Bouton_2.BoutonAdd, { className: "but-fh", onClick: console.log })) : '')))));
+                                this.renderFoot(valeurs))))));
+        };
+        BlocPropriete.prototype.renderFoot = function (valeurs) {
+            var _this = this;
+            if (valeurs.length >= this.props.nbrmax) {
+                return undefined;
+            }
+            return this.state.newval
+                ? React.createElement(LigneValeur_1.NewLigneValeur, { controleur: this.props.controleur, id_prop: this.props.id, type: this.props.type, taillemin: this.props.taillemin, taillemax: this.props.taillemax })
+                : React.createElement(LigneValeur_1.LigneAdd, { className: "but-fh", onClick: function (e, b) { return _this.setState({ newval: true }); } });
         };
         return BlocPropriete;
     }(Vue_4.Vue));
@@ -756,7 +822,14 @@ define("items/ConfirmBox", ["require", "exports", "react", "react-dom", "classna
             var _this = _super.call(this, props, context) || this;
             var pos = $(_this.props.srcElement).offset();
             var eWidth = $(_this.props.srcElement).outerWidth();
-            _this.state = { hide: false, top: pos.top, left: pos.left + eWidth };
+            var top = pos.top - (_this.props.fixed ? $(window).scrollTop() : 0);
+            var left = pos.left + eWidth;
+            var right = 'auto';
+            if (left + Const.CONFIRMBOX_WIDTH > window.innerWidth) {
+                left = 'auto';
+                right = 0;
+            }
+            _this.state = { hide: false, top: top, left: left, right: right };
             _this.hide = _this.hide.bind(_this, _this.state.hide);
             return _this;
         }
@@ -778,7 +851,7 @@ define("items/ConfirmBox", ["require", "exports", "react", "react-dom", "classna
             }
         };
         ConfirmBox.prototype.hide = function () {
-            this.setState({ hide: true, top: this.state.top, left: this.state.left });
+            this.setState({ hide: true, top: this.state.top, left: this.state.left, right: this.state.right });
             setTimeout(this.props.onHide, Const.TRANSITION_DURATION);
         };
         ConfirmBox.prototype.render = function () {
@@ -788,7 +861,8 @@ define("items/ConfirmBox", ["require", "exports", "react", "react-dom", "classna
                     'ishide': this.state.hide
                 }), style: {
                     top: this.state.top,
-                    left: this.state.left
+                    left: this.state.left,
+                    right: this.state.right
                 } },
                 React.createElement("div", { className: 'confirm-head' }, this.props.titre),
                 React.createElement("div", { className: 'confirm-body' }, this.props.content),
@@ -901,7 +975,10 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
             console.log(arguments.length);
             this.setState({ display: false });
             var controleur = this.getControleurFromPage(page);
-            setTimeout(function () { return _this.setState({ controleur: controleur, page: page, display: true }); }, Const.TRANSITION_DURATION);
+            setTimeout(function () {
+                _this.setState({ controleur: controleur, page: page, display: true });
+                window.scrollTo(0, 0);
+            }, Const.TRANSITION_DURATION);
         };
         MainVue.prototype.mainAlert = function (level, title, content, code) {
             var curDate = new Date();

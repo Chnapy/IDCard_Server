@@ -30,11 +30,11 @@ import servlet.IndexServlet;
 @WebFilter(filterName = "ConnectionFilter")
 public class ConnectionFilter implements Filter {
 
-	private static final List<String> URL_NOCONNECT = Arrays.asList(new String[]{
+	private static final List<String> URL_NOCONNECT = Arrays.asList(
 		"/index.html",
 		"/connexion",
 		"/inscription"
-	});
+	);
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {

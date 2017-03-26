@@ -10,6 +10,7 @@ import static bdd.generated.tables.Propriete.PROPRIETE;
 import static bdd.generated.tables.Typeprop.TYPEPROP;
 import static bdd.generated.tables.Valeur.VALEUR;
 import static bdd.generated.tables.Visibilite.VISIBILITE;
+import bdd.generated.tables.records.ProprieteRecord;
 import entity.ValeurInfos;
 import entity.VisibiliteInfos;
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ public class ConfigurationModele extends Modele {
 	 */
 	public ValeurInfos getValeurInfos(final long id_val) throws NoIssetValeurException, Exception {
 
-		return (ValeurInfos) bdd((create) -> {
+		return bdd((create) -> {
 
 			Optional<? extends Record> result_val_infos = create.select(VALEUR.ID_USER,
 					PROPRIETE.NOM, PROPRIETE.MODIFIABLE, PROPRIETE.TAILLEVALMIN, PROPRIETE.TAILLEVALMAX,
@@ -52,7 +53,6 @@ public class ConfigurationModele extends Modele {
 			ValeurInfos val_infos = new ValeurInfos(record_val_infos);
 
 			TypeValeurProp tvp = this.parseType(val_infos.getId_typeprop());
-
 			val_infos.setTvp(tvp);
 
 			Optional<? extends Record> result_val = create.select(tvp.getValeur_val())
@@ -62,19 +62,17 @@ public class ConfigurationModele extends Modele {
 
 			Record record_val = result_val.orElseThrow(NoIssetValeurException::new);
 
-			val_infos.setValeur(record_val.get(tvp.getValeur_val()));
-
 			return val_infos;
 		});
 
 	}
 
-	public void updateValeur(long id_val, Table valeur_table, Field valeur_attr, Field valeur_idtype, Object val_final) throws Exception {
+	public void updateValeur(long id_val, Table valeur_table, Field valeur_field, Field valeur_idtype, Object val_final) throws Exception {
 
 		bdd((create) -> {
 
 			int nbrRows = create.update(valeur_table)
-					.set(valeur_attr, val_final)
+					.set(valeur_field, val_final)
 					.from(VALEUR)
 					.where(VALEUR.ID_VALEUR.eq(id_val).and(VALEUR.ID_VALEURTYPEE.eq(valeur_idtype)))
 					.execute();
@@ -104,6 +102,27 @@ public class ConfigurationModele extends Modele {
 			return visi_infos;
 		});
 
+	}
+	
+	public ValeurInfos getProprieteRecord(long id_prop) throws Exception {
+		return bdd((create) -> {
+			
+			Optional<ProprieteRecord> pr = create.selectFrom(PROPRIETE)
+					.where(PROPRIETE.ID_PROPRIETE.eq(id_prop))
+					.fetchOptional();
+			
+			ValeurInfos infos = new ValeurInfos(pr.orElseThrow(IllegalArgumentException::new));
+			
+			TypeValeurProp tvp = this.parseType(infos.getId_typeprop());
+			
+			infos.setTvp(tvp);
+			
+			return infos;
+		});
+	}
+	
+	public void addValeur(long id_prop, long id_user, Object valeur, Table valeur_table, Field valeur_field) {
+		
 	}
 
 	public void removeSite(long id_val, long id_site) throws Exception {

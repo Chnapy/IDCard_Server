@@ -24,6 +24,8 @@ class BDD {
 
 	private static Jdbc3PoolingDataSource SOURCE;
 
+	private Exception ex;
+
 	public BDD() {
 	}
 
@@ -34,11 +36,19 @@ class BDD {
 
 		try (Connection conn = SOURCE.getConnection();
 				DSLContext create = DSL.using(conn, SQLDialect.POSTGRES)) {
-
-			return create.transactionResult(configuration -> {
-				DSLContext ctx = DSL.using(configuration);
-				return (T) bddC.act(ctx);
-			});
+			try {
+				return create.transactionResult(configuration -> {
+					try {
+						DSLContext ctx = DSL.using(configuration);
+						return (T) bddC.act(ctx);
+					} catch (Exception e) {
+						ex = e;
+						throw e;
+					}
+				});
+			} catch (Exception e) {
+				throw ex;
+			}
 		}
 	}
 

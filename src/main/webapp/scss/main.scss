@@ -4,14 +4,14 @@
 
 /*! Test SASS (ce commentaire sera inclu dans le css minifié) */
 
-@import 'variables';
+/*@import 'variables';
 @import 'fonctions';
-@import 'animations';
-@import 'style';
+@import 'animations';*/
+@import 'chnapflat/chnapflat';
 
 body {
 	/*color: $color_main;*/
-	background: $bg_color;
+	/*background: $bg_color;*/
 }
 
 .lighter {
@@ -102,19 +102,19 @@ body {
 					padding-right: 0;
 				}
 
-				&.main .field {
+				&.principal .field {
 					font-weight: bold;
 				}
 
 				.box-line-visib {
 					width: calc(50% - 20px);
 					min-height: 27px;
-					overflow: hidden;
+					/*overflow-x: hidden;*/
 					white-space: nowrap;
 
-					&:not(:hover) {
+					/*&:not(:hover) {*/
 						height: 27px;
-					}
+					/*}*/
 
 					.tag {
 						padding-top: 0;
@@ -130,16 +130,23 @@ body {
 						}
 					}
 
-					&.open, &:hover {
+					&.open/*, &:hover*/ {
 						height: auto;
 
 						.tag {
 							display: block;
+							width: 100%;
 							margin-right: 0 !important;
+							
+							@extend .tag:not(.reduce).deletable;
 
 							&:not(:last-child) {
 								margin-bottom: 4px;
 							}
+							
+/*							&>* {
+								display: initial;
+							}*/
 						}
 					}
 				}

@@ -15,7 +15,7 @@
 
 		<link rel="stylesheet" href="libs/bootstraplib/css/bootstrap.min.css"/>
 
-		<link rel="stylesheet" href="css/test.css"/>
+		<link rel="stylesheet" href="css/main.css"/>
 
     </head>
     <body>

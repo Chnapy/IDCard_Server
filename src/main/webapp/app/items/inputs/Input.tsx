@@ -14,7 +14,7 @@ export interface InputProps {
 	minlength?: number,
 	maxlength?: number,
 	placeholder?: string,
-	focus?: boolean,
+	autofocus?: boolean,
 	onchange?: React.EventHandler<any>,
 	onenter?: (e: React.SyntheticEvent, input: Input) => void
 	checkvalidation?: boolean
@@ -79,7 +79,7 @@ export class Input extends React.Component<InputProps, InputState> {
 			}}
 			readOnly={this.props.readonly} minLength={this.props.minlength} maxLength={this.props.maxlength}
 			required={this.props.required} placeholder={this.props.placeholder} disabled={this.props.disabled}
-			autoFocus={this.props.focus} />
+			autoFocus={this.props.autofocus} />
 	}
 
 }

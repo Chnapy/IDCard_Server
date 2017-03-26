@@ -17,18 +17,27 @@ export interface ConfirmBoxProps {
 export interface ConfirmBoxState {
 	hide: boolean,
 	top: number,
-	left: number
+	left: any,
+	right: any
 }
 
 export class ConfirmBox extends React.Component<ConfirmBoxProps, ConfirmBoxState> {
 
 	public constructor(props?: ConfirmBoxProps, context?: ConfirmBoxState) {
 		super(props, context);
-		
+
 		let pos = $(this.props.srcElement).offset();
 		let eWidth = $(this.props.srcElement).outerWidth();
 
-		this.state = {hide: false, top: pos.top, left: pos.left + eWidth};
+		let top = pos.top - (this.props.fixed ? $(window).scrollTop() : 0);
+		let left: any = pos.left + eWidth;
+		let right: any = 'auto';
+		if (left + Const.CONFIRMBOX_WIDTH > window.innerWidth) {
+			left = 'auto';
+			right = 0;
+		}
+
+		this.state = {hide: false, top: top, left: left, right: right};
 		this.hide = this.hide.bind(this, this.state.hide);
 	}
 
@@ -52,7 +61,7 @@ export class ConfirmBox extends React.Component<ConfirmBoxProps, ConfirmBoxState
 	}
 
 	private hide(): void {
-		this.setState({hide: true, top: this.state.top, left: this.state.left});
+		this.setState({hide: true, top: this.state.top, left: this.state.left, right: this.state.right});
 		setTimeout(this.props.onHide as () => void, Const.TRANSITION_DURATION);
 	}
 
@@ -64,7 +73,8 @@ export class ConfirmBox extends React.Component<ConfirmBoxProps, ConfirmBoxState
 			'ishide': this.state.hide
 		})} style={{
 			top: this.state.top,
-			left: this.state.left
+			left: this.state.left,
+			right: this.state.right
 		}}>
 			<div className='confirm-head'>{this.props.titre}</div>
 			<div className='confirm-body'>{this.props.content}</div>

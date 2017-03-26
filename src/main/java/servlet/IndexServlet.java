@@ -35,10 +35,11 @@ public class IndexServlet extends Controleur {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		System.out.println("INDEX");
 
 		HttpSession session = request.getSession();
 
-		UserEntity user = (UserEntity) session.getAttribute(Sess.USER.sess);
+		user = (UserEntity) session.getAttribute(Sess.USER.sess);
 		boolean isConnected;
 		try {
 			isConnected = user.isConnected();
@@ -47,17 +48,17 @@ public class IndexServlet extends Controleur {
 		}
 
 		ContentEntity donnees = new ContentEntity(user, null);
-		List<ProprieteEntity> proprietes;
+		List<ProprieteEntity> proprietes = null;
 		if (isConnected) {
 			ProprieteModele modele = new ProprieteModele();
 			try {
 				proprietes = modele.getAllProprietes(user.getId_user());
-				donnees.setProprietes(proprietes);
 			} catch (Exception ex) {
 				Logger.getLogger(IndexServlet.class.getName()).log(Level.SEVERE, null, ex);
 			}
+			donnees.setProprietes(proprietes);
 		}
-//
+
 		request.setAttribute("donnees", this.entityToJSONString(donnees));
 		request.setAttribute("page", (isConnected ? Page.CONFIGURATION : Page.ACCUEIL).page);
 

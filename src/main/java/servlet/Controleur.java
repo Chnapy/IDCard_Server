@@ -32,6 +32,7 @@ import servlet.Controleur.Param.NoCheckException;
  */
 public abstract class Controleur extends HttpServlet {
 
+	protected static final String PARAM_MODULE = "m";
 	private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 	
 	protected UserEntity user;
@@ -119,11 +120,40 @@ public abstract class Controleur extends HttpServlet {
 		return param.getCastValue(value);
 	}
 
-	public <T> T check(String value, Const.CheckData cd) throws NoCheckException {
+	public <T> T check(String value, Const.CheckData cd, int tailleMin, int tailleMax) throws NoCheckException {
 		if (!Param.check(cd, value)) {
 			throw new NoCheckException(cd, value);
 		}
-		return Param.getCastValue(cd, value);
+		T val_final = Param.getCastValue(cd, value);
+		
+		if (val_final instanceof String) {
+			String s = (String) val_final;
+			if (s.length() >= tailleMin && s.length() <= tailleMax) {
+				return val_final;
+			}
+		}
+		if (val_final instanceof Boolean) {
+			return val_final;
+		}
+		if (val_final instanceof Number) {
+			Number n = (Number) val_final;
+			if ((val_final instanceof Integer || val_final instanceof Long)
+					&& (n.longValue() >= tailleMin && n.longValue() <= tailleMax)) {
+				return val_final;
+			}
+			if (val_final instanceof Double
+					&& (n.doubleValue() >= tailleMin && n.doubleValue() <= tailleMax)) {
+				return val_final;
+			}
+		}
+		if (val_final instanceof Date) {
+			Date d = (Date) val_final;
+			if (d.getTime() >= tailleMin && d.getTime() <= tailleMax) {
+				return val_final;
+			}
+		}
+		
+		throw new Param.NoCheckException(cd, value);
 	}
 
 	public static enum Page {
@@ -169,6 +199,7 @@ public abstract class Controleur extends HttpServlet {
 		MDP("mdp", Const.CD_MDP),
 		IS_MAIL("isMail", Const.CD_BOOLEAN),
 		ID_VAL("id_val", Const.CD_LONG),
+		ID_PROP("id_prop", Const.CD_LONG),
 		ID_SITE("id_site", Const.CD_LONG),
 		VAL("val", Const.CD_VALSTRING);
 

@@ -7,11 +7,12 @@ package servlet;
 
 import bdd.Const;
 import bdd.Const.Code;
+import bdd.Modele.TypeValeurProp;
 import entity.MainEntity;
 import entity.MainEntity.MainEntityError;
 import entity.ValeurInfos;
 import entity.VisibiliteInfos;
-import java.sql.Date;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
@@ -29,12 +30,11 @@ public class ConfigurationServlet extends Controleur {
 	@Override
 	protected MainEntity onPost(HttpServletRequest request, HttpServletResponse response) {
 
-		String module = request.getParameter("m");
-		if (module == null) {
-			module = "";
-		}
+		String module = Optional.ofNullable(request.getParameter(PARAM_MODULE)).orElse("");
 
 		switch (module) {
+			case "add_val":
+				return addVal(request, response);
 			case "update_val":
 				return updateVal(request, response);
 			case "remove_site":
@@ -42,7 +42,35 @@ public class ConfigurationServlet extends Controleur {
 			default:
 				return new MainEntityError(Const.Code.E_SERVEUR);
 		}
+	}
 
+	private MainEntity addVal(HttpServletRequest request, HttpServletResponse response) {
+		boolean success = false;
+		Code code;
+		try {
+			long id_prop = this.checkParam(Param.ID_PROP, request);
+			String form_val = this.checkParam(Param.VAL, request);
+
+			ConfigurationModele modele = new ConfigurationModele();
+
+			ValeurInfos infos = modele.getProprieteRecord(id_prop);
+
+			TypeValeurProp tvp = infos.getTvp();
+
+			Object val_final = this.checkVal(form_val, infos);
+
+			modele.addValeur(id_prop, user.getId_user(), val_final, tvp.getVal_(), tvp.getValeur_val());
+
+			code = Code.OK;
+			success = true;
+		} catch (Param.NoCheckException ex) {
+			code = Code.E_CONFIGURATION_UPDATE;
+		} catch (Exception ex) {
+			Logger.getLogger(ConfigurationServlet.class.getName()).log(Level.SEVERE, null, ex);
+			code = Code.E_SERVEUR;
+		}
+
+		return new MainEntity(success, code);
 	}
 
 	/**
@@ -72,9 +100,13 @@ public class ConfigurationServlet extends Controleur {
 
 			ValeurInfos infos = modele.getValeurInfos(id_val);
 
+			TypeValeurProp tvp = infos.getTvp();
+
+			this.checkIdUser(infos.getId_user());
+
 			Object val_final = this.checkVal(form_val, infos);
 
-			modele.updateValeur(id_val, infos.getTvp().getVal_(), infos.getTvp().getValeur_val(), infos.getTvp().getValeur_idtype(), val_final);
+			modele.updateValeur(id_val, tvp.getVal_(), tvp.getValeur_val(), tvp.getValeur_idtype(), val_final);
 
 			code = Code.OK;
 			success = true;
@@ -90,44 +122,13 @@ public class ConfigurationServlet extends Controleur {
 
 	private Object checkVal(String form_val, ValeurInfos infos) throws Param.NoCheckException {
 
-		if (!infos.isModifiable()) {
+		if (!infos.isProprieteModifiable()) {
 			throw new Param.NoCheckException("Propriété non modifiable");
 		}
 
-		this.checkIdUser(infos.getId_user());
+		Const.CheckData cd = this.getCheckDataFromTypeProp(infos.getId_typeprop(), infos.getProprieteNom());
 
-		Const.CheckData cd = this.getCheckDataFromTypeProp(infos.getId_typeprop(), infos.getPropriete_nom());
-
-		Object val_final = this.check(form_val, cd);
-
-		if (val_final instanceof String) {
-			String s = (String) val_final;
-			if (s.length() >= infos.getTaillevalmin() && s.length() <= infos.getTaillevalmax()) {
-				return val_final;
-			}
-		}
-		if (val_final instanceof Boolean) {
-			return val_final;
-		}
-		if (val_final instanceof Number) {
-			Number n = (Number) val_final;
-			if ((val_final instanceof Integer || val_final instanceof Long)
-					&& (n.longValue() >= infos.getTaillevalmin() && n.longValue() <= infos.getTaillevalmax())) {
-				return val_final;
-			}
-			if (val_final instanceof Double
-					&& (n.doubleValue() >= infos.getTaillevalmin() && n.doubleValue() <= infos.getTaillevalmax())) {
-				return val_final;
-			}
-		}
-		if (val_final instanceof Date) {
-			Date d = (Date) val_final;
-			if (d.getTime() >= infos.getTaillevalmin() && d.getTime() <= infos.getTaillevalmax()) {
-				return val_final;
-			}
-		}
-
-		throw new Param.NoCheckException(cd, form_val);
+		return this.check(form_val, cd, infos.getProprieteTaillevalmin(), infos.getProprieteTaillevalmax());
 	}
 
 	private MainEntity removeSite(HttpServletRequest request, HttpServletResponse response) {

@@ -2,7 +2,7 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
 
-interface BoutonProps {
+export interface BoutonProps {
 	value: string,
 	add?: boolean,
 	delete?: boolean,
@@ -29,8 +29,7 @@ export class Bouton extends React.Component<BoutonProps, BoutonState> {
 
 	public render() {
 
-		return <button className={classNames({
-			'but': true,
+		return <button className={classNames('but', {
 			'primary': this.props.primary,
 			'add': this.props.add,
 			'delete': this.props.delete,
@@ -47,7 +46,7 @@ export class Bouton extends React.Component<BoutonProps, BoutonState> {
 
 }
 
-interface BoutonAddProps {
+export interface BoutonAddProps {
 	primary?: boolean;
 	className?: string;
 	submit?: boolean;
@@ -58,12 +57,24 @@ interface BoutonAddProps {
 
 export class BoutonAdd extends React.Component<BoutonAddProps, BoutonState> {
 
-	public constructor(props?: BoutonAddProps, context?: BoutonState) {
-		super(props, context);
-	}
+//	public constructor(props?: BoutonAddProps, context?: BoutonState) {
+//		super(props, context);
+//	}
 
 	public render() {
-		return <Bouton value='' add={true} delete={false} className={'but-add'.concat(this.props.className as string)} {...this.props} />
+		return <Bouton value='' add {...this.props} />
+	}
+
+}
+
+export class BoutonDelete extends React.Component<BoutonAddProps, BoutonState> {
+
+//	public constructor(props?: BoutonAddProps, context?: BoutonState) {
+//		super(props, context);
+//	}
+
+	public render() {
+		return <Bouton value='' delete {...this.props} />
 	}
 
 }
