@@ -652,8 +652,8 @@ body {
           .box > .box-content .box-body .box-line .box-line-visib .tag:not(:last-child) {
             margin-right: 4px; }
           .box > .box-content .box-body .box-line .box-line-visib .tag:first-child:last-child {
-            display: block;
-            margin-right: 0 !important; }
+            /*							display: block;
+            							margin-right: 0 !important;*/ }
         .box > .box-content .box-body .box-line .box-line-visib.open {
           height: auto; }
           .box > .box-content .box-body .box-line .box-line-visib.open .tag {

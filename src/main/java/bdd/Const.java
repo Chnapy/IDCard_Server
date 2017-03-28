@@ -24,7 +24,7 @@ public class Const {
 	/**
 	 * Défini le mode debug
 	 */
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 	/**
 	 * CheckData pour les pseudo utilisateur

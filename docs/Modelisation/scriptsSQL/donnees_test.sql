@@ -7,7 +7,8 @@ INSERT INTO user_1(id_user, dateinscription, datederniereconnexion, nbrconnexion
 
 INSERT INTO valeurstring(id_valeurtypee, valeur) VALUES
 (1, 'chnapy'),
-(2, 'mail@mail.com')
+(2, 'mail@mail.com'),
+(4, 'supprimable@mail.com')
 ;
 
 --123456
@@ -19,6 +20,7 @@ INSERT INTO valeur(id_valeur, id_propriete, principale, id_user, id_valeurtypee)
 (1, 1, true, 1, 1),
 (2, 3, true, 1, 2),
 (3, 2, true, 1, 3)
+(4, 3, false, 1, 4),
 ;
 
 -- Créé des domaines
