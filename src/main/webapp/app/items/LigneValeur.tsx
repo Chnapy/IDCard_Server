@@ -6,7 +6,7 @@ import {Input} from 'items/inputs/Input';
 import {BoutonAdd, BoutonDelete, BoutonAddProps} from 'items/Bouton';
 import {Tag} from 'items/Tag';
 import {ConfigManager} from 'modules/main/ConfigManager';
-import {SiteProp} from 'BlocPropriete';
+import {BlocPropriete, SiteProp} from 'BlocPropriete';
 
 interface LigneValeurProps extends VueProps<ConfigManager> {
 	key?: number,
@@ -23,7 +23,8 @@ interface LigneValeurProps extends VueProps<ConfigManager> {
 	taillemin: number,
 	taillemax: number,
 	autofocus?: boolean,
-	onenter?: (e: React.SyntheticEvent, input: Input) => void
+	onenter?: (e: React.SyntheticEvent, input: Input) => void,
+	blocProp: BlocPropriete
 }
 
 interface LigneValeurState {
@@ -47,7 +48,7 @@ export class LigneValeur extends Vue<LigneValeurProps, LigneValeurState> {
 	}
 
 	private onRemoveSite(e: React.MouseEvent, tag: Tag) {
-		this.props.controleur.removeSite(this.props.id_prop, this.props.id as number, tag.props.id as number, this, e.target as HTMLElement);
+		this.props.controleur.removeSite(this.props.id_prop, this.props.id as number, tag.props.id as number, this, e.target);
 
 	}
 
@@ -75,7 +76,9 @@ export class LigneValeur extends Vue<LigneValeurProps, LigneValeurState> {
 						deletable onhover ondelete={this.onRemoveSite} />
 				)}
 			</div>
-			{this.props.supprimable ? <BoutonDelete className="but-fh" onClick={console.log} /> : ''}
+			{this.props.supprimable ? <BoutonDelete className="but-fh" onClick={(e) =>
+				this.props.controleur.removeValeur(this.props.id_prop, this.props.id as number, this.props.blocProp, e.target)
+			} /> : ''}
 		</div>;
 
 	}
@@ -92,14 +95,14 @@ export class LigneAdd extends React.Component<BoutonAddProps, any> {
 }
 
 export class NewLigneValeur extends Vue<LigneValeurProps, undefined> {
-	
+
 	public constructor(props: LigneValeurProps) {
 		super(props);
 		this.onEnter = this.onEnter.bind(this);
 	}
 
 	private onEnter(e: React.SyntheticEvent, input: Input) {
-		this.props.controleur.addValeur(this.props.id_prop, input.state.value, console.log);
+		this.props.controleur.addValeur(this.props.id_prop, input.state.value, this.props.blocProp);
 	}
 
 	public render() {

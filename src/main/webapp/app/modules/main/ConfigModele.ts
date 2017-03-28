@@ -10,12 +10,16 @@ export class ConfigModele extends Modele {
 		super(donnees);
 	}
 
-	public updateValeur(key: number, val: string, ajaxc: AjaxCallback): void {
-		this.ajaxPost('configuration', {m: 'update_val', id_val: key, val: val}, ajaxc);
+	public updateValeur(key_val: number, val: string, ajaxc: AjaxCallback): void {
+		this.ajaxPost('configuration', {m: 'update_val', id_val: key_val, val: val}, ajaxc);
 	}
 
-	public addValeur(keyProp: number, val: string, ajaxc: AjaxCallback): void {
-		this.ajaxPost('configuration', {m: 'add_val', id_prop: keyProp, val: val}, ajaxc);
+	public addValeur(key_prop: number, val: string, ajaxc: AjaxCallback): void {
+		this.ajaxPost('configuration', {m: 'add_val', id_prop: key_prop, val: val}, ajaxc);
+	}
+
+	public removeValeur(key_val: number, ajaxc: AjaxCallback): void {
+		this.ajaxPost('configuration', {m: 'remove_val', id_val: key_val}, ajaxc);
 	}
 
 	public removeSite(key_val: number, key_site: number, ajaxc: AjaxCallback): void {

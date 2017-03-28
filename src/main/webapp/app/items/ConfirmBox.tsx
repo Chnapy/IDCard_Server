@@ -5,13 +5,14 @@ import * as classNames from 'classnames';
 import {Bouton} from 'items/Bouton';
 
 export interface ConfirmBoxProps {
-	display: boolean,
+	//	display: boolean,
 	titre: string,
 	content: string,
-	srcElement: HTMLElement,
+	srcElement: HTMLElement | EventTarget,
 	onConfirm: () => void,
 	onHide?: () => void,
-	fixed?: boolean
+	fixed?: boolean,
+	info?: boolean
 }
 
 export interface ConfirmBoxState {
@@ -66,11 +67,11 @@ export class ConfirmBox extends React.Component<ConfirmBoxProps, ConfirmBoxState
 	}
 
 	public render(): any {
-		//		var right = ($(window).width() - ($(this.props.srcElement).offset().left + $(this.props.srcElement).outerWidth()));
 
 		return <div className={classNames('bloc confirm hidable declic', {
 			'fixed': this.props.fixed,
-			'ishide': this.state.hide
+			'ishide': this.state.hide,
+			'info': this.props.info
 		})} style={{
 			top: this.state.top,
 			left: this.state.left,
@@ -78,11 +79,27 @@ export class ConfirmBox extends React.Component<ConfirmBoxProps, ConfirmBoxState
 		}}>
 			<div className='confirm-head'>{this.props.titre}</div>
 			<div className='confirm-body'>{this.props.content}</div>
-			<div className='confirm-foot'>
-				<Bouton value='Annuler' onClick={this.hide} />
-				<Bouton ok value='' onClick={e => {this.hide(); this.props.onConfirm()}} primary />
-			</div>
+			{this.props.info ? '' :
+				<div className='confirm-foot'>
+					<Bouton value='Annuler' onClick={this.hide} />
+					<Bouton ok value='' onClick={e => {this.hide(); this.props.onConfirm()}} primary />
+				</div>
+			}
 		</div>
 	}
 
+}
+
+export interface InfoBoxProps {
+	titre: string,
+	content: string,
+	srcElement: HTMLElement,
+	fixed?: boolean,
+}
+
+export class InfoBox extends React.Component<InfoBoxProps, undefined> {
+
+	public render(): any {
+		return <ConfirmBox info onConfirm={() => {}} {...this.props} />
+	}
 }

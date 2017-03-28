@@ -5,7 +5,8 @@
  */
 package entity;
 
-import servlet.enumerations.Code;
+import bdd.Const;
+import enumerations.Code;
 
 /**
  * MainEntity.java
@@ -15,15 +16,17 @@ public class MainEntity extends Entity {
 
 	private boolean success;
 	private int code;
+	private String debug;
 	private ContentEntity content;
 
-	public MainEntity(boolean success, Code code) {
-		this(success, code, null);
+	public MainEntity(boolean success, Code code, String debug) {
+		this(success, code, debug, null);
 	}
 
-	public MainEntity(boolean success, Code code, ContentEntity content) {
+	public MainEntity(boolean success, Code code, String debug, ContentEntity content) {
 		this.success = success;
 		this.code = code.code;
+		this.debug = Const.DEBUG ? debug : null;
 		this.content = content;
 	}
 
@@ -43,6 +46,14 @@ public class MainEntity extends Entity {
 		this.code = code;
 	}
 
+	public String getDebug() {
+		return debug;
+	}
+
+	public void setDebug(String debug) {
+		this.debug = debug;
+	}
+
 	public ContentEntity getContent() {
 		return content;
 	}
@@ -58,19 +69,7 @@ public class MainEntity extends Entity {
 		}
 
 		public MainEntitySuccess(ContentEntity content) {
-			super(true, Code.OK, content);
-		}
-
-	}
-
-	public static class MainEntityError extends MainEntity {
-
-		public MainEntityError(Code code) {
-			this(code, null);
-		}
-
-		public MainEntityError(Code code, ContentEntity content) {
-			super(false, code, content);
+			super(true, Code.OK, null, content);
 		}
 
 	}

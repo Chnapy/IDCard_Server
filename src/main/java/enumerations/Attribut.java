@@ -3,7 +3,7 @@
  * 
  * 
  */
-package servlet.enumerations;
+package enumerations;
 
 /**
  * Attribut.java
@@ -11,7 +11,9 @@ package servlet.enumerations;
  */
 public enum Attribut {
 
-		IS_MAIL("isMail");
+		IS_MAIL("isMail"),
+		DONNEES("donnees"),
+		PAGE("page");
 
 		public final String tostring;
 

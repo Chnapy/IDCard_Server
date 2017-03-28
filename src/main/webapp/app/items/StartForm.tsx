@@ -195,7 +195,10 @@ export class StartForm extends Vue<VueProps<AccueilManager>, StartFormState> {
 					<Bouton value="Connectez-vous" className={"d-block"} primary={this.state.type === BoutonType.Connexion}
 						submit={this.state.type === BoutonType.Connexion} onClick={(e: any, bouton: Bouton) => this.onClick(e, bouton, BoutonType.Connexion)}
 						disabled={this.state.load} load={this.state.load && this.state.type === BoutonType.Connexion} />
-					<div className="text-center"><a href="">Vous avez oublié vos identifiants ?</a></div>
+					<div className="text-center"><a href="#" onClick={e => {
+						e.preventDefault();
+						this.props.controleur.popNonImplemente(e.target);
+					}}>Vous avez oublié vos identifiants ?</a></div>
 				</div>
 			</form>
 

@@ -3,7 +3,7 @@
  * 
  * 
  */
-package servlet.enumerations;
+package enumerations;
 
 import bdd.CheckData;
 import bdd.Const;

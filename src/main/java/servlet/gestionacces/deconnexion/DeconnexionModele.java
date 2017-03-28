@@ -3,7 +3,7 @@
  * 
  * 
  */
-package modele;
+package servlet.gestionacces.deconnexion;
 
 import bdd.Modele;
 

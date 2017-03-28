@@ -77,13 +77,14 @@ export class MainVue extends Vue<MainVueProps, MainVueState> {
 		}, Const.TRANSITION_DURATION);
 	}
 
-	public mainAlert(level: AlertLevel, title: string, content: string, code: number) {
+	public mainAlert(level: AlertLevel, title: string, content: string, code: number, message_debug?: string) {
 		let curDate = new Date();
 		if (!code) {
 			code = 0;
 		}
 		var alert: AlertData = {
-			key: this.alertKey, level: level, title: title, content: content, code: code, time: curDate.toLocaleTimeString(), hide: false
+			key: this.alertKey, level: level, title: title, content: content, code: code, 
+			time: curDate.toLocaleTimeString(), hide: false, debug: message_debug
 		};
 		this.alertList.push(alert);
 		this.alertKey++;

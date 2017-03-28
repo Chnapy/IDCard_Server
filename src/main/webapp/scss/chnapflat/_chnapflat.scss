@@ -99,6 +99,7 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
 		height: 100%;
 		padding: 2px;
 		background: none;
+		box-shadow: none;
 		border: 1px solid darken($bg_color, 38%);
 		padding-right: 34px;
 
@@ -251,6 +252,11 @@ $confirmpad: 3px;
 	padding-bottom: $confirmfootheight + $confirmpad;
 	cursor: default !important;
 
+	&.info {
+		height: $confirmheight - $confirmfootheight;
+		padding-bottom: 0;
+	}
+
 	&.fixed {
 		position: fixed;
 	}
@@ -269,7 +275,7 @@ $confirmpad: 3px;
 		bottom: $confirmpad;
 		left: $confirmpad;
 		right: $confirmpad;
-		white-space: nowrap;
+		/*white-space: nowrap; bug sur firefox*/
 
 		&>*:last-child {
 			float: right;
@@ -304,8 +310,10 @@ $confirmpad: 3px;
 		&:focus {
 		}
 
-		&>input:not([readonly]):focus {
-			background: darken($bg_dark_color, 5%);
+		&>input {
+			&:not([readonly]):focus {
+				background: darken($bg_dark_color, 5%);
+			}
 		}
 	}
 }
@@ -375,7 +383,7 @@ $confirmpad: 3px;
 		transform: translateY(2px);
 	}
 
-	&.myalert::after, &.myalert::before {
+	&.myalert::after, &.myalert::before, &.myalert .myalert-debug::before {
 		color: darken($bg_color, 38%);
 		position: absolute;
 		top: 0;
@@ -520,6 +528,7 @@ $header_min: 2px;
 			&.active {
 				color: $color_primary;
 				background: $bg_dark_color;
+				cursor: default;
 			}
 
 			&.logo {
@@ -675,13 +684,31 @@ $header_min: 2px;
 
 		.myalert-title {
 			margin-bottom: 4px;
-			/*font-weight: bold;*/
 			font-size: 1.2em;
+		}
+
+		.myalert-title, .myalert-debug {
 			margin-left: -4px;
 			margin-right: -4px;
 			padding-left: 4px;
 			padding-right: 4px;
 			background: rgba(0,0,0,0.1);
+		}
+
+		.myalert-debug {
+			position: relative;
+			margin-top: 10px;
+			
+			&:not(::before) {
+				font-family: Source code pro;
+				font-size: 0.9em;
+			}
+
+			&::before {
+				content: 'Debug';
+				top: -10px;
+				color: darken($color_delete, 25%);
+			}
 		}
 
 		.myalert-content {

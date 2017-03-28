@@ -5,10 +5,11 @@
  */
 package entity;
 
-import bdd.Modele.TypeValeurProp;
 import static bdd.generated.tables.Propriete.PROPRIETE;
 import static bdd.generated.tables.Typeprop.TYPEPROP;
 import static bdd.generated.tables.User_1.USER_1;
+import static bdd.generated.tables.Valeur.VALEUR;
+import enumerations.TypeProp;
 import org.jooq.Record;
 
 /**
@@ -18,7 +19,7 @@ import org.jooq.Record;
 public class ValeurInfos {
 
 	private final Record record;
-	private TypeValeurProp tvp;
+	private TypeProp typeProp;
 
 	public ValeurInfos(Record record) throws IllegalArgumentException {
 		this.record = record;
@@ -28,16 +29,20 @@ public class ValeurInfos {
 		return record;
 	}
 
-	public TypeValeurProp getTvp() {
-		return tvp;
+	public TypeProp getTypeProp() {
+		return typeProp;
 	}
 
-	public void setTvp(TypeValeurProp tvp) {
-		this.tvp = tvp;
+	public void setTypeProp(TypeProp typeProp) {
+		this.typeProp = typeProp;
 	}
 
 	public long getId_user() {
 		return (long) record.get(USER_1.ID_USER.getName());
+	}
+	
+	public long getId_valeurTypee() {
+		return (long) record.get(VALEUR.ID_VALEURTYPEE.getName());
 	}
 
 	public long getId_propriete() {

@@ -3,7 +3,7 @@
  * 
  * 
  */
-package modele;
+package servlet.gestionacces.inscription;
 
 import bdd.Modele;
 import static bdd.generated.tables.Propriete.PROPRIETE;

@@ -1,7 +1,6 @@
 
 import * as ReactDOM from 'react-dom';
 import {Controleur} from 'struct/Controleur';
-import {Vue} from 'struct/Vue';
 import {MainModele} from 'MainModele';
 import {AccueilManager} from 'AccueilManager';
 import {ConfigManager} from 'ConfigManager';
@@ -39,7 +38,7 @@ export class MainManager extends Controleur<MainModele, MainVue> {
 		MainVue.applyVue(this);
 	}
 
-	public deconnexion(element: HTMLElement): void {
+	public deconnexion(element: HTMLElement | EventTarget): void {
 
 		function deconnecter(manager: MainManager) {
 			manager.modele.deconnexion(new AjaxCallback(manager, 'Déconnexion', {
@@ -51,16 +50,10 @@ export class MainManager extends Controleur<MainModele, MainVue> {
 		}
 
 
-		this.askConfirm('Deconnexion', 'Voulez-vous vraiment vous déconnecter ?', () => deconnecter(this), element, true);
-		//		this.modele.deconnexion(new AjaxCallback(this, 'Déconnexion', {
-		//			success: (data: Data) => {
-		//				this.modele.donnees = data.content;
-		//				this.vue.mainSwitchPage(Pages.Accueil);
-		//			}
-		//		}));
+		this.popConfirm('Deconnexion', 'Voulez-vous vraiment vous déconnecter ?', () => deconnecter(this), element, true);
 	}
 
-	public showAlertFromCode(code_num: number) {
+	public showAlertFromCode(code_num: number, message_debug?: string) {
 		var code = Const.CODES[code_num];
 		if (!code) {
 			code = Const.CODES[400];
@@ -71,7 +64,7 @@ export class MainManager extends Controleur<MainModele, MainVue> {
 			case 0: level = AlertLevel.Normal; break;
 			default: level = AlertLevel.Error; break;
 		}
-		this.vue.mainAlert(level, code.titre, code.message, code_num);
+		this.vue.mainAlert(level, code.titre, code.message, code_num, message_debug);
 	}
 
 }

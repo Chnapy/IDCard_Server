@@ -34,21 +34,29 @@ export abstract class Controleur<M extends Modele, V extends Vue<any, any>> {
 		this.modele = modele;
 		this.mainManager = mainManager as MainManager;
 	}
-	
+
 	public startAjax(nom: string) {
 		this.mainManager.vue.setState({nomAjax: nom, etatAjax: AjaxEnum.Load});
 	}
-	
+
 	public endAjax(etat: AjaxEnum) {
 		this.mainManager.vue.setState({etatAjax: etat});
 	}
-	
-	public askConfirm(titre: string, content: string, onConfirm: () => void, element: HTMLElement, fixed?: boolean) {
-		this.mainManager.vue.setState({confirmBox: {display: true, srcElement: element, titre: titre, content: content, onConfirm: onConfirm, fixed: fixed}})
+
+	public popConfirm(titre: string, content: string, onConfirm: () => void, element: HTMLElement | EventTarget, fixed?: boolean) {
+		this.mainManager.vue.setState({confirmBox: {info: false, srcElement: element, titre: titre, content: content, onConfirm: onConfirm, fixed: fixed}})
 	}
 
-	public showAlertFromCode(code_num: number) {
-		this.mainManager.showAlertFromCode(code_num);
+	public popInfo(titre: string, content: string, element: HTMLElement | EventTarget, fixed?: boolean) {
+		this.mainManager.vue.setState({confirmBox: {info: true, srcElement: element, titre: titre, content: content, onConfirm: () => {}, fixed: fixed}})
+	}
+
+	public popNonImplemente(element: HTMLElement | EventTarget, fixed?: boolean) {
+		this.popInfo('Fonction non implémentée', 'Patience est mère de vertu', element, fixed);
+	}
+
+	public showAlertFromCode(code_num: number, message_debug?: string) {
+		this.mainManager.showAlertFromCode(code_num, message_debug);
 	}
 
 }

@@ -20,7 +20,8 @@ export interface AlertData {
 	content: string,
 	code: number,
 	time: string,
-	hide: boolean
+	hide: boolean,
+	debug?: string
 }
 
 export class AlertList extends React.Component<AlertListProps, AlertListState> {
@@ -74,7 +75,6 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 		this.alerts.forEach(a => a.hide = true);
 		this.forceUpdate();
 		setTimeout(this.check, Const.TRANSITION_DURATION);
-//		this.check();
 	}
 
 	public onOver() {
@@ -86,7 +86,7 @@ export class AlertList extends React.Component<AlertListProps, AlertListState> {
 	public render(): any {
 
 		let alerts = this.alerts.map(a =>
-			<Alert key={a.key} hide={a.hide} level={a.level} title={a.title} content={a.content} code={a.code} time={a.time} onHide={() => {a.hide = true; this.check()}} />);
+			<Alert key={a.key} hide={a.hide} level={a.level} title={a.title} content={a.content} code={a.code} time={a.time} onHide={() => {a.hide = true; this.check()}} debug={a.debug} />);
 
 		return <div id='alertList' className={classNames('dark declic', {
 			'open': this.state.open,

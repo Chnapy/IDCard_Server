@@ -3,7 +3,7 @@
  * 
  * 
  */
-package modele;
+package servlet.gestionacces.connexion;
 
 import bdd.Modele;
 import static bdd.generated.tables.Propriete.PROPRIETE;
@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import java.util.Optional;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import enumerations.MdpCrypt;
+import exceptions.BadLogException;
 
 /**
  * ConnexionModele.java
@@ -28,7 +30,7 @@ public class ConnexionModele extends Modele {
 	
 	private long id_user;
 
-	public UserEntity connexionParPseudo(String form_pseudo, String form_mdp) throws SQLException, NoIssetPseudoException, NoIssetMailException, NoIssetMdpException, MauvaisMdpException, NoSuchAlgorithmException, Exception {
+	public UserEntity connexionParPseudo(String form_pseudo, String form_mdp) throws SQLException, BadLogException, NoSuchAlgorithmException, Exception {
 
 		return bdd((create) -> {
 			Optional<? extends Record> result_pseudo = create.select(USER_1.ID_USER, USER_1.DATEINSCRIPTION, USER_1.DATEDERNIERECONNEXION, USER_1.NBRCONNEXION,
@@ -37,7 +39,7 @@ public class ConnexionModele extends Modele {
 					.where(PROPRIETE.NOM.eq(PROP_LOGIN_NOM).and(VALEUR.PRINCIPALE.eq(true)).and(VALEURSTRING.VALEUR.lower().eq(form_pseudo.toLowerCase())))
 					.fetchOptional();
 
-			Record record_pseudo = result_pseudo.orElseThrow(NoIssetPseudoException::new);
+			Record record_pseudo = result_pseudo.orElseThrow(BadLogException::new);
 
 			id_user = record_pseudo.get(USER_1.ID_USER);
 			String pseudo = record_pseudo.get(VALEURSTRING.VALEUR);
@@ -50,7 +52,7 @@ public class ConnexionModele extends Modele {
 					.where(USER_1.ID_USER.eq(id_user).and(PROPRIETE.NOM.eq(PROP_MAIL_NOM)).and(VALEUR.PRINCIPALE.eq(true)))
 					.fetchOptional();
 
-			Record record_mail = result_mail.orElseThrow(NoIssetMailException::new);
+			Record record_mail = result_mail.orElseThrow(BadLogException::new);
 
 			String mail = record_mail.get(VALEURSTRING.VALEUR);
 
@@ -59,7 +61,7 @@ public class ConnexionModele extends Modele {
 
 	}
 
-	public UserEntity connexionParMail(String form_mail, String form_mdp) throws SQLException, NoIssetPseudoException, NoIssetMailException, NoIssetMdpException, MauvaisMdpException, NoSuchAlgorithmException, Exception {
+	public UserEntity connexionParMail(String form_mail, String form_mdp) throws SQLException, BadLogException, NoSuchAlgorithmException, Exception {
 
 		return bdd((create) -> {
 			Optional<? extends Record> result_mail = create.select(USER_1.ID_USER, USER_1.DATEINSCRIPTION, USER_1.DATEDERNIERECONNEXION, USER_1.NBRCONNEXION,
@@ -68,7 +70,7 @@ public class ConnexionModele extends Modele {
 					.where(PROPRIETE.NOM.eq(PROP_MAIL_NOM).and(VALEUR.PRINCIPALE.eq(true)).and(VALEURSTRING.VALEUR.lower().eq(form_mail.toLowerCase())))
 					.fetchOptional();
 
-			Record record_mail = result_mail.orElseThrow(NoIssetMailException::new);
+			Record record_mail = result_mail.orElseThrow(BadLogException::new);
 
 			id_user = record_mail.get(USER_1.ID_USER);
 			String mail = record_mail.get(VALEURSTRING.VALEUR);
@@ -81,7 +83,7 @@ public class ConnexionModele extends Modele {
 					.where(USER_1.ID_USER.eq(id_user).and(PROPRIETE.NOM.eq(PROP_LOGIN_NOM)).and(VALEUR.PRINCIPALE.eq(true)))
 					.fetchOptional();
 
-			Record record_pseudo = result_pseudo.orElseThrow(NoIssetPseudoException::new);
+			Record record_pseudo = result_pseudo.orElseThrow(BadLogException::new);
 
 			String pseudo = record_pseudo.get(VALEURSTRING.VALEUR);
 
@@ -89,14 +91,14 @@ public class ConnexionModele extends Modele {
 		});
 	}
 
-	private UserEntity generalConnexion(DSLContext create, long id_user, String pseudo, String mail, String form_mdp, Date dateinscription, Date datederniereconnexion, long nbrconnexion) throws NoIssetMdpException, MauvaisMdpException, NoSuchAlgorithmException {
+	private UserEntity generalConnexion(DSLContext create, long id_user, String pseudo, String mail, String form_mdp, Date dateinscription, Date datederniereconnexion, long nbrconnexion) throws BadLogException, NoSuchAlgorithmException {
 
 		Optional<? extends Record> result_mdp = create.select(VALEURMDP.VALEUR, VALEURMDP.SALT, TYPECHIFFRAGE.TYPECHIFFRAGE_)
 				.from(VALEUR).naturalJoin(PROPRIETE).naturalJoin(VALEURMDP).naturalJoin(TYPECHIFFRAGE)
 				.where(PROPRIETE.NOM.eq(PROP_MDP_NOM).and(VALEUR.PRINCIPALE.eq(true)).and(VALEUR.ID_USER.eq(id_user)))
 				.fetchOptional();
 
-		Record record_mdp = result_mdp.orElseThrow(NoIssetMdpException::new);
+		Record record_mdp = result_mdp.orElseThrow(BadLogException::new);
 
 		String mdpCrypt = record_mdp.get(VALEURMDP.VALEUR);
 		String saltStr = record_mdp.get(VALEURMDP.SALT);
@@ -109,7 +111,7 @@ public class ConnexionModele extends Modele {
 
 		boolean bonMdp = mdpCrypt.equals(mdpFormCrypt);
 		if (!bonMdp) {
-			throw new MauvaisMdpException();
+			throw new BadLogException();
 		}
 
 		nbrconnexion++;
@@ -129,22 +131,6 @@ public class ConnexionModele extends Modele {
 
 	public long getId_user() {
 		return id_user;
-	}
-
-	public static class NoIssetPseudoException extends Exception {
-
-	}
-
-	public static class NoIssetMailException extends Exception {
-
-	}
-
-	public static class NoIssetMdpException extends Exception {
-
-	}
-
-	public static class MauvaisMdpException extends Exception {
-
 	}
 
 }

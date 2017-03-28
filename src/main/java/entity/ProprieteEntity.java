@@ -17,6 +17,7 @@ public class ProprieteEntity extends Entity {
 	private String nom;
 	private String typeStr;
 	private String type;
+	private boolean principal;
 	private boolean modifiable;
 	private boolean supprimable;
 	private int taillemin;
@@ -25,11 +26,12 @@ public class ProprieteEntity extends Entity {
 	private int nbrmax;
 	private List<ValeurEntity> valeurs;
 
-	public ProprieteEntity(long key, String nom, String typeStr, String type, boolean modifiable, boolean supprimable, int taillemin, int taillemax, int nbrmin, int nbrmax, List<ValeurEntity> valeurs) {
+	public ProprieteEntity(long key, String nom, String typeStr, String type, boolean principal, boolean modifiable, boolean supprimable, int taillemin, int taillemax, int nbrmin, int nbrmax, List<ValeurEntity> valeurs) {
 		this.key = key;
 		this.nom = nom;
 		this.typeStr = typeStr;
 		this.type = type;
+		this.principal = principal;
 		this.modifiable = modifiable;
 		this.supprimable = supprimable;
 		this.taillemin = taillemin;
@@ -69,6 +71,14 @@ public class ProprieteEntity extends Entity {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public boolean isPrincipal() {
+		return principal;
+	}
+
+	public void setPrincipal(boolean principal) {
+		this.principal = principal;
 	}
 
 	public boolean isModifiable() {

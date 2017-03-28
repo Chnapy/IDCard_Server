@@ -16,15 +16,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.Entity;
 import entity.MainEntity;
+import entity.MainEntity.MainEntitySuccess;
 import entity.UserEntity;
+import enumerations.Code;
+import exceptions.NoCheckException;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletRequest;
-import modele.ProprieteModele;
-import servlet.enumerations.Param;
-import servlet.enumerations.Session;
+import enumerations.Param;
+import enumerations.Session;
+import enumerations.TypeProp;
+import exceptions.ClientException;
+import exceptions.ExceptionGeree;
+import java.io.StringWriter;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.reflections.Reflections;
 
 /**
  * Controleur.java
@@ -32,18 +42,64 @@ import servlet.enumerations.Session;
  */
 public abstract class Controleur extends HttpServlet {
 
+	private static final String REFLECTION_PACKAGE = "servlet";
 	protected static final String PARAM_MODULE = "m";
 	private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
-	
-	protected UserEntity user;
 
-	protected abstract MainEntity onPost(HttpServletRequest request, HttpServletResponse response);
+	protected UserEntity user;
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		this.user = (UserEntity) request.getSession().getAttribute(Session.USER.tostring);
+
 		MainEntity me = this.onPost(request, response);
+
 		this.sendReturn(me, response);
+	}
+
+	protected MainEntity onPost(HttpServletRequest request, HttpServletResponse response) {
+
+		//Récupération du module s'il existe, sinon sa valeur par défaut ("")
+		String module = Optional.ofNullable(request.getParameter(PARAM_MODULE)).orElse("");
+		System.out.println("Module: '" + module + "'");
+
+		try {
+			//Par introspection on récupère les ControleurAction avec annotation
+			Reflections reflections = new Reflections(REFLECTION_PACKAGE);
+			Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(ModuleAction.class);
+
+			Class<ControleurAction> ca;
+			try {
+				ca = annotated.stream().filter(c -> {
+					ModuleAction ma = c.getAnnotation(ModuleAction.class);
+
+					return this.getClass().equals(ma.servlet()) && module.equals(ma.module());
+				}).map(c -> (Class<ControleurAction>) c).collect(Collectors.toList()).get(0);
+			} catch (IndexOutOfBoundsException e) {
+				throw new ClientException("Tentative d'accès à un module inexistant: " + module);
+			}
+
+			ControleurAction action = ca.newInstance();
+
+			return new MainEntitySuccess(action.act(this, user, request, response));
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+			Code code;
+			if (e instanceof ExceptionGeree) {
+				code = ((ExceptionGeree) e).getCodeErreur();
+			} else {
+				code = Code.E_SERVEUR;
+			}
+			String message_debug = null;
+			try (StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw, true)) {
+				e.printStackTrace(pw);
+				message_debug = sw.getBuffer().toString();
+			} catch (IOException ex) {
+				Logger.getLogger(Controleur.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			return new MainEntity(false, code, message_debug);
+		}
 	}
 
 	protected void sendReturn(MainEntity e, HttpServletResponse response) {
@@ -56,8 +112,8 @@ public abstract class Controleur extends HttpServlet {
 			Logger.getLogger(Controleur.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
-	protected void checkIdUser(long id) throws NoCheckException {
+
+	public void checkIdUser(long id) throws NoCheckException {
 		if (this.user.getId_user() != id) {
 			throw new NoCheckException("Id_user différents: " + this.user.getId_user() + " != " + id);
 		}
@@ -67,49 +123,16 @@ public abstract class Controleur extends HttpServlet {
 		return JSON_MAPPER.writeValueAsString(e);
 	}
 
-	protected CheckData getCheckDataFromTypeProp(long id_typeprop, String nomProp) {
-
-		CheckData cd;
+	protected CheckData getCheckDataFromTypeProp(int id_typeprop, String nomProp) {
 
 		switch (nomProp) {
 			case "login":
-				cd = Const.CD_PSEUDO;
-				break;
+				return Const.CD_PSEUDO;
 			case "mdp":
-				cd = Const.CD_MDP;
-				break;
+				return Const.CD_MDP;
 			default:
-				switch ((int) id_typeprop) {
-					case 1:
-						cd = Const.CD_VALSTRING;
-						break;
-					case 2:
-						cd = Const.CD_INTEGER;
-						break;
-					case 3:
-						cd = Const.CD_BOOLEAN;
-						break;
-					case 4:
-						cd = Const.CD_DATE;
-						break;
-					case 5:
-						cd = Const.CD_VALSTRING;
-						break;
-					case 6:
-						cd = Const.CD_MAIL;
-						break;
-					case 7:
-						cd = Const.CD_LONG;
-						break;
-					case 8:
-						cd = Const.CD_DOUBLE;
-						break;
-					default:
-						throw new ProprieteModele.TypePropNonGereError();
-				}
+				return TypeProp.getTypeProp(id_typeprop).getCd();
 		}
-
-		return cd;
 	}
 
 	public <T> T checkParam(Param param, ServletRequest req) throws NoCheckException {
@@ -125,7 +148,7 @@ public abstract class Controleur extends HttpServlet {
 			throw new NoCheckException(cd, value);
 		}
 		T val_final = Param.getCastValue(cd, value);
-		
+
 		if (val_final instanceof String) {
 			String s = (String) val_final;
 			if (s.length() >= tailleMin && s.length() <= tailleMax) {
@@ -152,23 +175,8 @@ public abstract class Controleur extends HttpServlet {
 				return val_final;
 			}
 		}
-		
+
 		throw new NoCheckException(cd, value);
-	}
-
-	public static class NoCheckException extends Exception {
-
-		public NoCheckException(String value) {
-			super("Check échoué: [" + value + "]");
-		}
-
-		public NoCheckException(CheckData cd, String value) {
-			super("Check échoué: " + cd + " [" + value + "]");
-		}
-
-		public NoCheckException(Param param, String value) {
-			super("Check échoué: " + param.tostring + " [" + value + "]");
-		}
 	}
 
 }

@@ -24,13 +24,14 @@ export interface User {
 
 export interface Donnees {
 	user: User,
-	proprietes: BlocProprieteProps[]
+	proprietes: BlocProprieteProps[],
+	id_val?: number
 }
 
 export interface Data {
 	success: boolean,
 	code: number,
-	message: string,
+	debug: string,
 	content: Donnees
 }
 
@@ -63,7 +64,7 @@ export class AjaxCallback {
 			}
 		} else {
 			this.manager.endAjax(AjaxEnum.Error);
-			this.manager.showAlertFromCode(data.code)
+			this.manager.showAlertFromCode(data.code, data.debug);
 			if (this.cb.error) {
 				this.cb.error(data);
 			}
@@ -72,7 +73,7 @@ export class AjaxCallback {
 
 	public onFail(): void {
 		this.manager.endAjax(AjaxEnum.Error);
-		this.manager.showAlertFromCode(100)
+		this.manager.showAlertFromCode(100);
 		if (this.cb.fail) {
 			this.cb.fail();
 		}

@@ -21,7 +21,7 @@ class Const {
 	};
 
 	public static readonly TRANSITION_DURATION: number = 500;
-	
+
 	public static readonly CONFIRMBOX_WIDTH: number = 300;
 
 	public static readonly CODES: {
@@ -52,10 +52,16 @@ class Const {
 			crit: 0
 		},
 
-		//1xx = erreur réseau client
+		//1xx = erreur client
 		100: {
 			titre: 'Erreur réseau',
 			message: 'Le site n\'arrive pas à communiquer avec le serveur. Êtes-vous connecté à internet ?',
+			crit: 2
+		},
+		101: {
+			titre: 'Erreur client',
+			message: 'Le client envoie de mauvaises informations au serveur. Merci d\'en informer l\'administrateur. \n\
+						(ou alors vous bricolez avec de l\'Ajax :o)',
 			crit: 2
 		},
 
@@ -82,6 +88,11 @@ class Const {
 
 
 		//6xx = erreur classiques
+		600: {
+			titre: 'Erreur entrée formulaire',
+			message: 'Vérifiez vos entrées et réessayez',
+			crit: 2
+		},
 
 		//61x = connexion
 		610: {
@@ -108,7 +119,7 @@ class Const {
 			message: 'Votre entrée ne correspond pas au format demandé',
 			crit: 2
 		},
-		
+
 		631: {
 			titre: 'Échec de la suppression du site',
 			message: '',

@@ -3,7 +3,7 @@
  * 
  * 
  */
-package servlet.enumerations;
+package enumerations;
 
 /**
  * Page.java

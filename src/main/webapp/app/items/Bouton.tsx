@@ -32,7 +32,7 @@ export class Bouton extends React.Component<BoutonProps, BoutonState> {
 		return <button className={classNames('but', {
 			'primary': this.props.primary,
 			'add': this.props.add,
-			'delete': this.props.delete,
+			'delete error': this.props.delete,
 			'load': this.props.load,
 			'disabled': this.state.disabled || this.props.disabled
 		}, this.props.className)
@@ -52,14 +52,10 @@ export interface BoutonAddProps {
 	submit?: boolean;
 	disabled?: boolean;
 	load?: boolean;
-	onClick: any;
+	onClick: (e: React.SyntheticEvent) => void;
 }
 
 export class BoutonAdd extends React.Component<BoutonAddProps, BoutonState> {
-
-//	public constructor(props?: BoutonAddProps, context?: BoutonState) {
-//		super(props, context);
-//	}
 
 	public render() {
 		return <Bouton value='' add {...this.props} />
@@ -68,10 +64,6 @@ export class BoutonAdd extends React.Component<BoutonAddProps, BoutonState> {
 }
 
 export class BoutonDelete extends React.Component<BoutonAddProps, BoutonState> {
-
-//	public constructor(props?: BoutonAddProps, context?: BoutonState) {
-//		super(props, context);
-//	}
 
 	public render() {
 		return <Bouton value='' delete {...this.props} />

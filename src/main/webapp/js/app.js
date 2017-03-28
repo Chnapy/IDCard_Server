@@ -55,6 +55,12 @@ Const.CODES = {
         message: 'Le site n\'arrive pas à communiquer avec le serveur. Êtes-vous connecté à internet ?',
         crit: 2
     },
+    101: {
+        titre: 'Erreur client',
+        message: 'Le client envoie de mauvaises informations au serveur. Merci d\'en informer l\'administrateur. \n\
+						(ou alors vous bricolez avec de l\'Ajax :o)',
+        crit: 2
+    },
     200: {
         titre: 'Erreur serveur',
         message: 'Une erreur serveur est intervenue. Merci d\'en informer l\'administrateur',
@@ -69,6 +75,11 @@ Const.CODES = {
         titre: 'Code erreur inconnu',
         message: 'Une requête au serveur a renvoyé un code erreur inconnu. Merci d\'en informer l\'administrateur',
         crit: 3
+    },
+    600: {
+        titre: 'Erreur entrée formulaire',
+        message: 'Vérifiez vos entrées et réessayez',
+        crit: 2
     },
     610: {
         titre: 'Échec de la connexion',
@@ -184,7 +195,7 @@ define("items/Bouton", ["require", "exports", "react", "classnames"], function (
             return React.createElement("button", { className: classNames('but', {
                     'primary': this.props.primary,
                     'add': this.props.add,
-                    'delete': this.props.delete,
+                    'delete error': this.props.delete,
                     'load': this.props.load,
                     'disabled': this.state.disabled || this.props.disabled
                 }, this.props.className), type: this.props.submit ? 'submit' : 'button', onClick: function (e) {
@@ -402,7 +413,10 @@ define("items/StartForm", ["require", "exports", "react", "struct/Vue", "items/B
                     React.createElement("div", { className: "form-group" },
                         React.createElement(Bouton_1.Bouton, { value: "Connectez-vous", className: "d-block", primary: this.state.type === BoutonType.Connexion, submit: this.state.type === BoutonType.Connexion, onClick: function (e, bouton) { return _this.onClick(e, bouton, BoutonType.Connexion); }, disabled: this.state.load, load: this.state.load && this.state.type === BoutonType.Connexion }),
                         React.createElement("div", { className: "text-center" },
-                            React.createElement("a", { href: "" }, "Vous avez oubli\u00E9 vos identifiants ?")))));
+                            React.createElement("a", { href: "#", onClick: function (e) {
+                                    e.preventDefault();
+                                    _this.props.controleur.popNonImplemente(e.target);
+                                } }, "Vous avez oubli\u00E9 vos identifiants ?")))));
         };
         return StartForm;
     }(Vue_2.Vue));
@@ -485,11 +499,14 @@ define("modules/main/ConfigModele", ["require", "exports", "struct/Modele"], fun
         function ConfigModele(donnees) {
             return _super.call(this, donnees) || this;
         }
-        ConfigModele.prototype.updateValeur = function (key, val, ajaxc) {
-            this.ajaxPost('configuration', { m: 'update_val', id_val: key, val: val }, ajaxc);
+        ConfigModele.prototype.updateValeur = function (key_val, val, ajaxc) {
+            this.ajaxPost('configuration', { m: 'update_val', id_val: key_val, val: val }, ajaxc);
         };
-        ConfigModele.prototype.addValeur = function (keyProp, val, ajaxc) {
-            this.ajaxPost('configuration', { m: 'add_val', id_prop: keyProp, val: val }, ajaxc);
+        ConfigModele.prototype.addValeur = function (key_prop, val, ajaxc) {
+            this.ajaxPost('configuration', { m: 'add_val', id_prop: key_prop, val: val }, ajaxc);
+        };
+        ConfigModele.prototype.removeValeur = function (key_val, ajaxc) {
+            this.ajaxPost('configuration', { m: 'remove_val', id_val: key_val }, ajaxc);
         };
         ConfigModele.prototype.removeSite = function (key_val, key_site, ajaxc) {
             this.ajaxPost('configuration', { m: 'remove_site', id_val: key_val, id_site: key_site }, ajaxc);
@@ -505,16 +522,35 @@ define("modules/main/ConfigManager", ["require", "exports", "struct/Controleur",
         function ConfigManager(donnees, mainManager) {
             return _super.call(this, new ConfigModele_1.ConfigModele(donnees), mainManager) || this;
         }
-        ConfigManager.prototype.updateValeur = function (key, val, onsuccess) {
-            this.modele.updateValeur(key, val, new AjaxCallback_1.AjaxCallback(this, 'Mise à jour de valeur', {
+        ConfigManager.prototype.updateValeur = function (key_val, val, onsuccess) {
+            this.modele.updateValeur(key_val, val, new AjaxCallback_1.AjaxCallback(this, 'Mise à jour de valeur', {
                 success: function (data) { return onsuccess(); }
             }));
         };
-        ConfigManager.prototype.addValeur = function (keyProp, val, onsuccess) {
-            this.modele.addValeur(keyProp, val, new AjaxCallback_1.AjaxCallback(this, 'Ajout de valeur', {
-                success: function (data) { return onsuccess(); }
+        ConfigManager.prototype.addValeur = function (key_prop, val, blocProp) {
+            var _this = this;
+            this.modele.addValeur(key_prop, val, new AjaxCallback_1.AjaxCallback(this, 'Ajout de valeur', {
+                success: function (data) {
+                    var vp = {
+                        key: data.content.id_val, valeur: val, sites: [], principal: false, prive: false, publique: false
+                    };
+                    _this.modele.donnees.proprietes.filter(function (p) { return p.key == key_prop; })[0].valeurs.push(vp);
+                    blocProp.setState({ newval: false });
+                }
             }));
-            console.log(keyProp + ' ' + val);
+        };
+        ConfigManager.prototype.removeValeur = function (key_prop, key_val, blocProp, element) {
+            var _this = this;
+            function remover(manager) {
+                manager.modele.removeValeur(key_val, new AjaxCallback_1.AjaxCallback(manager, 'Suppression de valeur', {
+                    success: function (data) {
+                        var valeurs_filtered = manager.modele.donnees.proprietes.filter(function (p) { return p.key == key_prop; })[0].valeurs.filter(function (v) { return v.key !== key_val; });
+                        manager.modele.donnees.proprietes.filter(function (p) { return p.key == key_prop; })[0].valeurs = valeurs_filtered;
+                        blocProp.setState({ valeurs: valeurs_filtered });
+                    }
+                }));
+            }
+            this.popConfirm('Suppression d\'une valeur', 'Voulez-vous vraiment supprimer cette valeur ?', function () { return remover(_this); }, element);
         };
         ConfigManager.prototype.removeSite = function (key_prop, key_val, key_site, ligne, element) {
             var _this = this;
@@ -534,7 +570,7 @@ define("modules/main/ConfigManager", ["require", "exports", "struct/Controleur",
                     }
                 }));
             }
-            this.askConfirm('Suppression d\'un site', 'Voulez-vous vraiment supprimer ce site ?', function () { return remover(_this); }, element);
+            this.popConfirm('Suppression d\'un site', 'Voulez-vous vraiment supprimer ce site ?', function () { return remover(_this); }, element);
         };
         return ConfigManager;
     }(Controleur_1.Controleur));
@@ -573,7 +609,9 @@ define("items/LigneValeur", ["require", "exports", "react", "classnames", "struc
                 React.createElement("div", { className: "box-line-visib col-xs-6" }, this.state.sites.map(function (s) {
                     return React.createElement(Tag_1.Tag, { key: s.key, id: s.key, value: s.site, title: s.site, reduce: true, tooltip: true, tooltip_placement: 'top', icon: React.createElement("img", { className: 'icon', src: 'http://www.google.com/s2/favicons?domain_url=' + s.site }), deletable: true, onhover: true, ondelete: _this.onRemoveSite });
                 })),
-                this.props.supprimable ? React.createElement(Bouton_2.BoutonDelete, { className: "but-fh", onClick: console.log }) : '');
+                this.props.supprimable ? React.createElement(Bouton_2.BoutonDelete, { className: "but-fh", onClick: function (e) {
+                        return _this.props.controleur.removeValeur(_this.props.id_prop, _this.props.id, _this.props.blocProp, e.target);
+                    } }) : '');
         };
         return LigneValeur;
     }(Vue_3.Vue));
@@ -598,7 +636,7 @@ define("items/LigneValeur", ["require", "exports", "react", "classnames", "struc
             return _this;
         }
         NewLigneValeur.prototype.onEnter = function (e, input) {
-            this.props.controleur.addValeur(this.props.id_prop, input.state.value, console.log);
+            this.props.controleur.addValeur(this.props.id_prop, input.state.value, this.props.blocProp);
         };
         NewLigneValeur.prototype.render = function () {
             return React.createElement(LigneValeur, __assign({ modifiable: true, autofocus: true, onenter: this.onEnter }, this.props));
@@ -629,7 +667,7 @@ define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "ite
                         React.createElement("div", { className: "box-body row" },
                             React.createElement("div", { className: "container-fluid" },
                                 valeurs.map(function (v) {
-                                    return React.createElement(LigneValeur_1.LigneValeur, { key: v.key, id: v.key, id_prop: _this.props.id, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax });
+                                    return React.createElement(LigneValeur_1.LigneValeur, { key: v.key, id: v.key, id_prop: _this.props.id, controleur: _this.props.controleur, valeur: v.valeur, type: _this.props.type, principal: v.principal, publique: v.publique, prive: v.prive, sites: v.sites, modifiable: _this.props.modifiable, supprimable: _this.props.supprimable && !v.principal && valeurs.length > _this.props.nbrmin, taillemin: _this.props.taillemin, taillemax: _this.props.taillemax, blocProp: _this });
                                 }),
                                 this.renderFoot(valeurs))))));
         };
@@ -639,8 +677,8 @@ define("items/BlocPropriete", ["require", "exports", "react", "struct/Vue", "ite
                 return undefined;
             }
             return this.state.newval
-                ? React.createElement(LigneValeur_1.NewLigneValeur, { controleur: this.props.controleur, id_prop: this.props.id, type: this.props.type, taillemin: this.props.taillemin, taillemax: this.props.taillemax })
-                : React.createElement(LigneValeur_1.LigneAdd, { className: "but-fh", onClick: function (e, b) { return _this.setState({ newval: true }); } });
+                ? React.createElement(LigneValeur_1.NewLigneValeur, { controleur: this.props.controleur, id_prop: this.props.id, type: this.props.type, taillemin: this.props.taillemin, taillemax: this.props.taillemax, blocProp: this })
+                : React.createElement(LigneValeur_1.LigneAdd, { className: "but-fh", onClick: function () { return _this.setState({ newval: true }); } });
         };
         return BlocPropriete;
     }(Vue_4.Vue));
@@ -667,7 +705,7 @@ define("pages/Configuration", ["require", "exports", "react", "pages/Page", "ite
             var _this = this;
             return React.createElement("div", { id: "list-box", className: "page-content container" },
                 React.createElement("div", { className: "row" }, this.props.donnees.proprietes.map(function (p) {
-                    return React.createElement(BlocPropriete_1.BlocPropriete, { key: p.key, id: p.key, controleur: _this.props.controleur, nom: p.nom, typeStr: p.typeStr, type: p.type, modifiable: p.modifiable, supprimable: p.supprimable, nbrmin: p.nbrmin, nbrmax: p.nbrmax, taillemin: p.taillemin, taillemax: p.taillemax, valeurs: p.valeurs });
+                    return React.createElement(BlocPropriete_1.BlocPropriete, __assign({ id: p.key, controleur: _this.props.controleur }, p));
                 })));
         };
         return Configuration;
@@ -753,11 +791,12 @@ define("items/Header", ["require", "exports", "react", "classnames", "pages/Page
                 React.createElement("span", { className: "nav-ajax nav-item" },
                     React.createElement(AjaxNotif_1.AjaxNotif, { value: this.props.nomAjax, etat: this.props.etatAjax })),
                 React.createElement("span", { className: "compte nav-item" },
-                    React.createElement("span", { className: "compte-pseudo" }, this.props.donnees.user.pseudo),
+                    React.createElement("span", { className: "compte-pseudo", onClick: function (e) { return _this.props.mainManager.popNonImplemente(e.target, true); } }, this.props.donnees.user.pseudo),
                     React.createElement("span", { className: "deco mini-but", onClick: function (e) { return _this.props.mainManager.deconnexion(e.target); } },
                         React.createElement("span", { className: 'glyphicon glyphicon-off' }))));
         };
         Header.prototype.renderNav = function () {
+            var _this = this;
             return React.createElement("nav", { className: "header-content container" },
                 React.createElement("span", { className: "logo nav-item" }, Const.TITRE_MAIN),
                 React.createElement("span", { className: classNames("nav-item", {
@@ -765,7 +804,7 @@ define("items/Header", ["require", "exports", "react", "classnames", "pages/Page
                     }) }, Pages_2.Pages.Configuration.NOM),
                 React.createElement("span", { className: classNames("nav-item", {
                         'active': this.props.page === 'sessions'
-                    }) }, "Sessions"),
+                    }), onClick: function (e) { return _this.props.mainManager.popNonImplemente(e.target, true); } }, "Sessions"),
                 this.renderRight());
         };
         Header.prototype.render = function () {
@@ -808,7 +847,8 @@ define("items/Alert", ["require", "exports", "react", "classnames"], function (r
                 }), "data-time": this.props.time, "data-code": this.props.code },
                 React.createElement("span", { className: 'myalert-close', onClick: this.hide }),
                 React.createElement("div", { className: 'myalert-title' }, this.props.title),
-                React.createElement("div", { className: 'myalert-content' }, this.props.content));
+                React.createElement("div", { className: 'myalert-content' }, this.props.content),
+                this.props.debug ? React.createElement("div", { className: 'myalert-debug' }, this.props.debug) : '');
         };
         return Alert;
     }(React.Component));
@@ -858,7 +898,8 @@ define("items/ConfirmBox", ["require", "exports", "react", "react-dom", "classna
             var _this = this;
             return React.createElement("div", { className: classNames('bloc confirm hidable declic', {
                     'fixed': this.props.fixed,
-                    'ishide': this.state.hide
+                    'ishide': this.state.hide,
+                    'info': this.props.info
                 }), style: {
                     top: this.state.top,
                     left: this.state.left,
@@ -866,13 +907,25 @@ define("items/ConfirmBox", ["require", "exports", "react", "react-dom", "classna
                 } },
                 React.createElement("div", { className: 'confirm-head' }, this.props.titre),
                 React.createElement("div", { className: 'confirm-body' }, this.props.content),
-                React.createElement("div", { className: 'confirm-foot' },
-                    React.createElement(Bouton_3.Bouton, { value: 'Annuler', onClick: this.hide }),
-                    React.createElement(Bouton_3.Bouton, { ok: true, value: '', onClick: function (e) { _this.hide(); _this.props.onConfirm(); }, primary: true })));
+                this.props.info ? '' :
+                    React.createElement("div", { className: 'confirm-foot' },
+                        React.createElement(Bouton_3.Bouton, { value: 'Annuler', onClick: this.hide }),
+                        React.createElement(Bouton_3.Bouton, { ok: true, value: '', onClick: function (e) { _this.hide(); _this.props.onConfirm(); }, primary: true })));
         };
         return ConfirmBox;
     }(React.Component));
     exports.ConfirmBox = ConfirmBox;
+    var InfoBox = (function (_super) {
+        __extends(InfoBox, _super);
+        function InfoBox() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        InfoBox.prototype.render = function () {
+            return React.createElement(ConfirmBox, __assign({ info: true, onConfirm: function () { } }, this.props));
+        };
+        return InfoBox;
+    }(React.Component));
+    exports.InfoBox = InfoBox;
 });
 define("items/AlertList", ["require", "exports", "react", "react-dom", "classnames", "items/Alert"], function (require, exports, React, ReactDOM, classNames, Alert_1) {
     "use strict";
@@ -928,7 +981,7 @@ define("items/AlertList", ["require", "exports", "react", "react-dom", "classnam
         AlertList.prototype.render = function () {
             var _this = this;
             var alerts = this.alerts.map(function (a) {
-                return React.createElement(Alert_1.Alert, { key: a.key, hide: a.hide, level: a.level, title: a.title, content: a.content, code: a.code, time: a.time, onHide: function () { a.hide = true; _this.check(); } });
+                return React.createElement(Alert_1.Alert, { key: a.key, hide: a.hide, level: a.level, title: a.title, content: a.content, code: a.code, time: a.time, onHide: function () { a.hide = true; _this.check(); }, debug: a.debug });
             });
             return React.createElement("div", { id: 'alertList', className: classNames('dark declic', {
                     'open': this.state.open,
@@ -980,13 +1033,14 @@ define("modules/main/MainVue", ["require", "exports", "react", "react-dom", "cla
                 window.scrollTo(0, 0);
             }, Const.TRANSITION_DURATION);
         };
-        MainVue.prototype.mainAlert = function (level, title, content, code) {
+        MainVue.prototype.mainAlert = function (level, title, content, code, message_debug) {
             var curDate = new Date();
             if (!code) {
                 code = 0;
             }
             var alert = {
-                key: this.alertKey, level: level, title: title, content: content, code: code, time: curDate.toLocaleTimeString(), hide: false
+                key: this.alertKey, level: level, title: title, content: content, code: code,
+                time: curDate.toLocaleTimeString(), hide: false, debug: message_debug
             };
             this.alertList.push(alert);
             this.alertKey++;
@@ -1064,9 +1118,9 @@ define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "
                     }
                 }));
             }
-            this.askConfirm('Deconnexion', 'Voulez-vous vraiment vous déconnecter ?', function () { return deconnecter(_this); }, element, true);
+            this.popConfirm('Deconnexion', 'Voulez-vous vraiment vous déconnecter ?', function () { return deconnecter(_this); }, element, true);
         };
-        MainManager.prototype.showAlertFromCode = function (code_num) {
+        MainManager.prototype.showAlertFromCode = function (code_num, message_debug) {
             var code = Const.CODES[code_num];
             if (!code) {
                 code = Const.CODES[400];
@@ -1080,7 +1134,7 @@ define("modules/main/MainManager", ["require", "exports", "struct/Controleur", "
                     level = Alert_2.AlertLevel.Error;
                     break;
             }
-            this.vue.mainAlert(level, code.titre, code.message, code_num);
+            this.vue.mainAlert(level, code.titre, code.message, code_num, message_debug);
         };
         return MainManager;
     }(Controleur_3.Controleur));
@@ -1129,11 +1183,17 @@ define("struct/Controleur", ["require", "exports", "struct/AjaxCallback"], funct
         Controleur.prototype.endAjax = function (etat) {
             this.mainManager.vue.setState({ etatAjax: etat });
         };
-        Controleur.prototype.askConfirm = function (titre, content, onConfirm, element, fixed) {
-            this.mainManager.vue.setState({ confirmBox: { display: true, srcElement: element, titre: titre, content: content, onConfirm: onConfirm, fixed: fixed } });
+        Controleur.prototype.popConfirm = function (titre, content, onConfirm, element, fixed) {
+            this.mainManager.vue.setState({ confirmBox: { info: false, srcElement: element, titre: titre, content: content, onConfirm: onConfirm, fixed: fixed } });
         };
-        Controleur.prototype.showAlertFromCode = function (code_num) {
-            this.mainManager.showAlertFromCode(code_num);
+        Controleur.prototype.popInfo = function (titre, content, element, fixed) {
+            this.mainManager.vue.setState({ confirmBox: { info: true, srcElement: element, titre: titre, content: content, onConfirm: function () { }, fixed: fixed } });
+        };
+        Controleur.prototype.popNonImplemente = function (element, fixed) {
+            this.popInfo('Fonction non implémentée', 'Patience est mère de vertu', element, fixed);
+        };
+        Controleur.prototype.showAlertFromCode = function (code_num, message_debug) {
+            this.mainManager.showAlertFromCode(code_num, message_debug);
         };
         return Controleur;
     }());
@@ -1166,7 +1226,7 @@ define("struct/AjaxCallback", ["require", "exports"], function (require, exports
             }
             else {
                 this.manager.endAjax(AjaxEnum.Error);
-                this.manager.showAlertFromCode(data.code);
+                this.manager.showAlertFromCode(data.code, data.debug);
                 if (this.cb.error) {
                     this.cb.error(data);
                 }

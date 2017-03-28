@@ -5,14 +5,22 @@
  */
 package bdd;
 
-import bdd.Modele.MdpCrypt;
 import java.sql.Date;
+import enumerations.MdpCrypt;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Classe regroupant les constantes globales
  *
  */
 public class Const {
+
+	static {
+		Logger.getLogger("org.jooq.Constants").setLevel(Level.WARNING);
+	}
+	
+	public static final boolean DEBUG = true;
 
 	public static final CheckData CD_PSEUDO = new CheckData(String.class, 3, 32, null, "/\\s/g"),
 			CD_MAIL = new CheckData(String.class, 6, 64, "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])", null),

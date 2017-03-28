@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import servlet.IndexServlet;
-import servlet.enumerations.Session;
+import enumerations.Session;
 
 /**
  * Filtre limittant l'acces selon si l'user est connecté ou non

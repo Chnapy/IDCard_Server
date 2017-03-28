@@ -5,7 +5,6 @@
  */
 package entity;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,14 +15,7 @@ public class ContentEntity extends Entity {
 
 	private UserEntity user;
 	private List<ProprieteEntity> proprietes;
-
-//	public ContentEntity() {
-//		this(null);
-//	}
-//
-//	public ContentEntity(UserEntity user) {
-//		this(user, null);
-//	}
+	private long id_val;
 
 	public ContentEntity(UserEntity user, List<ProprieteEntity> proprietes) {
 		this.user = user;
@@ -44,6 +36,14 @@ public class ContentEntity extends Entity {
 
 	public void setUser(UserEntity user) {
 		this.user = user;
+	}
+
+	public long getId_val() {
+		return id_val;
+	}
+
+	public void setId_val(long id_val) {
+		this.id_val = id_val;
 	}
 
 }

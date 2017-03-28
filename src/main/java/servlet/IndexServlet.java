@@ -9,6 +9,7 @@ import entity.ContentEntity;
 import entity.MainEntity;
 import entity.ProprieteEntity;
 import entity.UserEntity;
+import enumerations.Attribut;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,9 +19,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import modele.ProprieteModele;
-import servlet.enumerations.Page;
-import servlet.enumerations.Session;
+import servlet.gestionacces.connexion.ProprieteModele;
+import enumerations.Page;
+import enumerations.Session;
 
 /**
  * Servlet appelé lors du premier accès à la tostring
@@ -39,9 +40,8 @@ public class IndexServlet extends Controleur {
 			throws ServletException, IOException {
 		System.out.println("INDEX");
 
-		HttpSession session = request.getSession();
-
-		user = (UserEntity) session.getAttribute(Session.USER.tostring);
+		user = (UserEntity) request.getSession().getAttribute(Session.USER.tostring);
+		
 		boolean isConnected;
 		try {
 			isConnected = user.isConnected();
@@ -49,7 +49,6 @@ public class IndexServlet extends Controleur {
 			isConnected = false;
 		}
 
-		ContentEntity donnees = new ContentEntity(user, null);
 		List<ProprieteEntity> proprietes = null;
 		if (isConnected) {
 			ProprieteModele modele = new ProprieteModele();
@@ -58,11 +57,12 @@ public class IndexServlet extends Controleur {
 			} catch (Exception ex) {
 				Logger.getLogger(IndexServlet.class.getName()).log(Level.SEVERE, null, ex);
 			}
-			donnees.setProprietes(proprietes);
 		}
+		
+		ContentEntity donnees = new ContentEntity(user, proprietes);
 
-		request.setAttribute("donnees", this.entityToJSONString(donnees));
-		request.setAttribute("page", (isConnected ? Page.CONFIGURATION : Page.ACCUEIL).tostring);
+		request.setAttribute(Attribut.DONNEES.tostring, this.entityToJSONString(donnees));
+		request.setAttribute(Attribut.PAGE.tostring, (isConnected ? Page.CONFIGURATION : Page.ACCUEIL).tostring);
 
 		getServletContext().getRequestDispatcher(WEB_FILE).forward(request, response);
 	}
@@ -71,11 +71,6 @@ public class IndexServlet extends Controleur {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doGet(request, response);
-	}
-
-	@Override
-	protected MainEntity onPost(HttpServletRequest request, HttpServletResponse response) {
-		return null;
 	}
 
 }

@@ -39,10 +39,7 @@ export class Configuration extends Page<ConfigurationProps> {
 
 				{this.props.donnees.proprietes.map(p => {
 					return <BlocPropriete
-						key={p.key} id={p.key} controleur={this.props.controleur} nom={p.nom} typeStr={p.typeStr}
-						type={p.type} modifiable={p.modifiable} supprimable={p.supprimable}
-						nbrmin={p.nbrmin} nbrmax={p.nbrmax} taillemin={p.taillemin} taillemax={p.taillemax}
-						valeurs={p.valeurs}
+						id={p.key} controleur={this.props.controleur} {...p}
 					/>;
 				})}
 

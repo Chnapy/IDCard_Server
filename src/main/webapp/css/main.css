@@ -120,6 +120,7 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
     height: 100%;
     padding: 2px;
     background: none;
+    box-shadow: none;
     border: 1px solid #999999;
     padding-right: 34px; }
     .field > input:not(:focus):invalid {
@@ -235,6 +236,9 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
   padding: 3px;
   padding-bottom: 35px;
   cursor: default !important; }
+  .confirm.info {
+    height: 48px;
+    padding-bottom: 0; }
   .confirm.fixed {
     position: fixed; }
   .confirm > .confirm-head {
@@ -247,7 +251,7 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
     bottom: 3px;
     left: 3px;
     right: 3px;
-    white-space: nowrap; }
+    /*white-space: nowrap; bug sur firefox*/ }
     .confirm > .confirm-foot > *:last-child {
       float: right; }
 
@@ -326,7 +330,7 @@ a, .a, a:hover, .a:hover, a:visited, .a:visited {
   .but.but:active, .but.disabled, .myalert.disabled, .myalert.but:active, .myalert.disabled {
     box-shadow: none !important;
     transform: translateY(2px); }
-  .but.myalert::after, .but.myalert::before, .myalert.myalert::after, .myalert.myalert::before {
+  .but.myalert::after, .but.myalert::before, .but.myalert .myalert-debug::before, .myalert.myalert::after, .myalert.myalert::before, .myalert.myalert .myalert-debug::before {
     color: #999999;
     position: absolute;
     top: 0;
@@ -414,7 +418,8 @@ a.but {
       transition: 0.5s; }
       .header .header-content .nav-item.active {
         color: #BB79D6;
-        background: #323330; }
+        background: #323330;
+        cursor: default; }
       .header .header-content .nav-item.logo {
         color: black;
         font-size: 18px;
@@ -527,13 +532,23 @@ a.but {
       opacity: 0; }
     #alertList .myalert .myalert-title {
       margin-bottom: 4px;
-      /*font-weight: bold;*/
-      font-size: 1.2em;
+      font-size: 1.2em; }
+    #alertList .myalert .myalert-title, #alertList .myalert .myalert-debug {
       margin-left: -4px;
       margin-right: -4px;
       padding-left: 4px;
       padding-right: 4px;
       background: rgba(0, 0, 0, 0.1); }
+    #alertList .myalert .myalert-debug {
+      position: relative;
+      margin-top: 10px; }
+      #alertList .myalert .myalert-debug:not(::before) {
+        font-family: Source code pro;
+        font-size: 0.9em; }
+      #alertList .myalert .myalert-debug::before {
+        content: 'Debug';
+        top: -10px;
+        color: #921e12; }
     #alertList .myalert .myalert-close {
       display: none; }
       #alertList .myalert .myalert-close::after {

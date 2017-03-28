@@ -2,7 +2,6 @@
 import * as React from 'react';
 import {Vue, VueProps} from 'struct/Vue';
 import {LigneValeur, LigneAdd, NewLigneValeur} from 'LigneValeur';
-import {BoutonAdd} from 'items/Bouton';
 import {ConfigManager} from 'modules/main/ConfigManager';
 
 export interface SiteProp {
@@ -26,6 +25,7 @@ export interface BlocProprieteProps extends VueProps<ConfigManager> {
 	valeurs: ValeurProp[]
 	typeStr: string,
 	type: string,
+	principal: boolean,
 	modifiable: boolean,
 	supprimable: boolean,
 	taillemin: number,
@@ -65,8 +65,8 @@ export class BlocPropriete extends Vue<BlocProprieteProps, BlocProprieteState> {
 								return <LigneValeur key={v.key} id={v.key} id_prop={this.props.id} controleur={this.props.controleur} valeur={v.valeur}
 									type={this.props.type} principal={v.principal} publique={v.publique} prive={v.prive}
 									sites={v.sites} modifiable={this.props.modifiable}
-									supprimable={this.props.supprimable && valeurs.length > this.props.nbrmin}
-									taillemin={this.props.taillemin} taillemax={this.props.taillemax} />
+									supprimable={this.props.supprimable && !v.principal && valeurs.length > this.props.nbrmin}
+									taillemin={this.props.taillemin} taillemax={this.props.taillemax} blocProp={this} />
 							})}
 							{this.renderFoot(valeurs)}
 						</div>
@@ -86,9 +86,9 @@ export class BlocPropriete extends Vue<BlocProprieteProps, BlocProprieteState> {
 			? <NewLigneValeur controleur={this.props.controleur}
 				id_prop={this.props.id} type={this.props.type}
 				taillemin={this.props.taillemin}
-				taillemax={this.props.taillemax} />
-			: <LigneAdd className="but-fh" onClick={(e: any, b: any) => this.setState({newval: true})}
-			 />
+				taillemax={this.props.taillemax} blocProp={this} />
+			: <LigneAdd className="but-fh" onClick={() => this.setState({newval: true})}
+			/>
 
 	}
 

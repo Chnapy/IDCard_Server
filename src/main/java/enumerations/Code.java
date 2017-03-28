@@ -3,7 +3,7 @@
  * 
  * 
  */
-package servlet.enumerations;
+package enumerations;
 
 /**
  * Code.java
@@ -13,17 +13,22 @@ public enum Code {
 
 	//0xx = messages informatifs
 	OK(000),
-	//1xx = erreur réseau client
-	//--
+	
+	//1xx = erreur client
+	//100 = erreur reseau client (non déclenchable par le serveur)
+	E_CLIENT(101),
 
 	//2xx = erreur serveur
 	E_SERVEUR(200),
+	
 	//3xx = erreur serveur critique
 	E_CRITIQUE(300),
+	
 	//4xx = erreur inconnue (code inconnu)
 	//--
 
 	//6xx = erreur classiques
+	E_CHECK(600),
 
 	//61x = connexion
 	E_CONNEXION_CHECK(610),

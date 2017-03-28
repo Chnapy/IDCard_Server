@@ -24,8 +24,8 @@ export class Header extends React.Component<HeaderProps, undefined> {
 				<AjaxNotif value={this.props.nomAjax} etat={this.props.etatAjax} />
 			</span>
 			<span className="compte nav-item">
-				<span className="compte-pseudo">{this.props.donnees.user.pseudo}</span>
-				<span className="deco mini-but" onClick={e => this.props.mainManager.deconnexion(e.target as HTMLElement)}>
+				<span className="compte-pseudo" onClick={e => this.props.mainManager.popNonImplemente(e.target, true)}>{this.props.donnees.user.pseudo}</span>
+				<span className="deco mini-but" onClick={e => this.props.mainManager.deconnexion(e.target)}>
 					<span className='glyphicon glyphicon-off'></span>
 				</span>
 			</span>
@@ -35,12 +35,15 @@ export class Header extends React.Component<HeaderProps, undefined> {
 	private renderNav() {
 		return <nav className="header-content container">
 			<span className="logo nav-item">{Const.TITRE_MAIN}</span>
+			
 			<span className={classNames("nav-item", {
 				'active': this.props.page === Pages.Configuration.NOM
 			})}>{Pages.Configuration.NOM}</span>
+			
 			<span className={classNames("nav-item", {
 				'active': this.props.page === 'sessions'
-			})}>Sessions</span>
+			})} onClick={e => this.props.mainManager.popNonImplemente(e.target, true)}>Sessions</span>
+			
 			{this.renderRight()}
 		</nav>;
 	}

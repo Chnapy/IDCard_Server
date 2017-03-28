@@ -15,7 +15,8 @@ interface AlertProps {
 	content: string,
 	code: number,
 	time: string,
-	onHide: any
+	onHide: () => void,
+	debug?: string
 }
 
 export interface AlertState {
@@ -31,7 +32,7 @@ export class Alert extends React.Component<AlertProps, AlertState> {
 	}
 
 	public componentDidMount() {
-		if(this.props.hide || this.state.hide) {
+		if (this.props.hide || this.state.hide) {
 			this.hide();
 		}
 	}
@@ -51,6 +52,7 @@ export class Alert extends React.Component<AlertProps, AlertState> {
 			<span className='myalert-close' onClick={this.hide}></span>
 			<div className='myalert-title'>{this.props.title}</div>
 			<div className='myalert-content'>{this.props.content}</div>
+			{this.props.debug ? <div className='myalert-debug'>{this.props.debug}</div> : ''}
 		</div>
 	}
 
