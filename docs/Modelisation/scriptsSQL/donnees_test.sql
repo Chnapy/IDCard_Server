@@ -29,7 +29,7 @@ INSERT INTO domaine(id_domaine, ip) VALUES
 (3, 'http://twitter.com'),
 (4, 'http://richardhaddad.fr'),
 (5, 'http://urlsuperlonguehistoiredetesterlesdebordementsdeconte.nu'),
-(6, 'http://u.rl')
+(6, 'https://github.com')
 ;
 
 -- Lie les domaines aux valeurs
