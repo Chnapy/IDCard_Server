@@ -15,10 +15,18 @@ import servlet.ModuleAction;
 /**
  * ConnexionAction.java
  *
+ * Action appelée lors de l'inscription.
  */
 @ModuleAction(servlet = InscriptionServlet.class)
 public class InscriptionAction extends ControleurAction<InscriptionServlet> {
 
+	/**
+	 * On inscrit l'utilisateur avec les données fournies.
+	 * On vérifie si un client avec les mêmes données n'existe pas déjà.
+	 *
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	protected ContentEntity doAct() throws Exception {
 

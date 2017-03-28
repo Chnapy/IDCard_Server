@@ -17,11 +17,22 @@ import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
 /**
  * BDD.java
  *
+ * Représente l'accès à la base de donnée.
+ * Pour le moment limité à PostgreSQL.
+ *
+ * S'utilise via {@link #act(bdd.BDDContent)}
+ *
  */
 class BDD {
 
+	/**
+	 * Défini si le pool de connexion a été initialisé (static)
+	 */
 	private static boolean INITIALISED = false;
 
+	/**
+	 * Pool de connexion
+	 */
 	private static Jdbc3PoolingDataSource SOURCE;
 
 	private Exception ex;
@@ -29,6 +40,22 @@ class BDD {
 	public BDD() {
 	}
 
+	/**
+	 * Fonction gérant les requêtes à la BDD.
+	 *
+	 * Initialise la BDD si nécessaire.
+	 * Récupère une connexion depuis le pool de connexion.
+	 * Puis lance une transaction avec les actions passées en paramètre.
+	 *
+	 * En cas d'exception, on la throw à l'extérieur de la fonction.
+	 *
+	 * @param <T>  Utilisé afin que la fonction puisse retourner n'importe quel
+	 *             type d'objet sans avoir à faire un cast
+	 * @param bddC Représente le contenu de la transaction
+	 * @return L'objet retourné par bddC
+	 * @throws SQLException Lancé lors d'erreurs liées au SQL
+	 * @throws Exception    Lancé manuellement (ou inattendu)
+	 */
 	public <T> T act(BDDContent bddC) throws SQLException, Exception {
 		if (!INITIALISED) {
 			init();
@@ -52,7 +79,11 @@ class BDD {
 		}
 	}
 
-	public static void init() {
+	/**
+	 * Initialise la base de donnée pour PostgreSQL via les infos de
+	 * {@link BDDInfos}
+	 */
+	private static void init() {
 		if (INITIALISED) {
 			throw new UnsupportedOperationException("BDD déjà initialisée");
 		}
@@ -75,20 +106,6 @@ class BDD {
 		INITIALISED = true;
 
 		System.out.println("BDD Max Connexions: " + SOURCE.getMaxConnections());
-	}
-
-	public static enum TypeProp {
-
-		STRING(1),
-		INTEGER(2),
-		BOOLEAN(3),
-		DATE(4);
-
-		public final int id;
-
-		private TypeProp(int id) {
-			this.id = id;
-		}
 	}
 
 }

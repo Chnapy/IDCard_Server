@@ -20,6 +20,15 @@ import org.jooq.Record;
  */
 public class RemoveSiteModele extends Modele {
 
+	/**
+	 * Récupère les infos liées à la visibilité (et valeur).
+	 *
+	 * @param id_val
+	 * @param id_site
+	 * @return
+	 * @throws ClientException
+	 * @throws Exception
+	 */
 	public VisibiliteInfos getVisibiliteInfos(long id_val, long id_site) throws ClientException, Exception {
 
 		return (VisibiliteInfos) bdd((create) -> {
@@ -39,6 +48,13 @@ public class RemoveSiteModele extends Modele {
 
 	}
 
+	/**
+	 *
+	 * @param id_val
+	 * @param id_site
+	 * @throws BddException
+	 * @throws Exception
+	 */
 	public void removeSite(long id_val, long id_site) throws BddException, Exception {
 
 		bdd((create) -> {

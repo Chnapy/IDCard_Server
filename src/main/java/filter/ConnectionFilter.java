@@ -24,6 +24,7 @@ import enumerations.Session;
 
 /**
  * Filtre limittant l'acces selon si l'user est connecté ou non
+ * On empêche l'user d'accèder à des servlet non autorisés.
  *
  * @author Richard
  */
@@ -31,15 +32,28 @@ import enumerations.Session;
 public class ConnectionFilter implements Filter {
 
 	private static final List<String> URL_NOCONNECT = Arrays.asList(
-		"/index.html",
-		"/connexion",
-		"/inscription"
+			"/index.html",
+			"/connexion",
+			"/inscription"
 	);
 
+	/**
+	 *
+	 * @param filterConfig
+	 * @throws ServletException
+	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
 
+	/**
+	 *
+	 * @param request
+	 * @param response
+	 * @param chain
+	 * @throws IOException
+	 * @throws ServletException
+	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		System.out.println("connectionFilter");
@@ -52,9 +66,9 @@ public class ConnectionFilter implements Filter {
 		boolean isConnected = this.isConnected(session);
 
 		String url = req.getServletPath();
-		
+
 		System.out.println("SERVLET: " + url);
-		
+
 		boolean isUrlNoconnect = URL_NOCONNECT.contains(url);
 
 		System.err.println("User connecté : " + isConnected);
@@ -88,6 +102,9 @@ public class ConnectionFilter implements Filter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void destroy() {
 	}

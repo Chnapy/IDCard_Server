@@ -19,13 +19,23 @@ import servlet.ModuleAction;
 /**
  * ConnexionAction.java
  *
+ * Action appelée lors de la connexion.
  */
 @ModuleAction(servlet = ConnexionServlet.class)
 public class ConnexionAction extends ControleurAction<ConnexionServlet> {
 
+	/**
+	 * Selon si l'utilisateur se connecte avec son pseudo ou son mail, on
+	 * procède à la connexion (Exception si échec).
+	 * Après quoi on récupère l'ensemble des propriétés possédées.
+	 * On attribue à la session les données utilisateur.
+	 *
+	 * @return Les données utilisateur et ses propriétés.
+	 * @throws Exception
+	 */
 	@Override
 	protected ContentEntity doAct() throws Exception {
-		
+
 		ConnexionModele con_modele = new ConnexionModele();
 
 		boolean isMail = (boolean) (getRequest().getAttribute(Attribut.IS_MAIL.tostring) != null

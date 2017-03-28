@@ -20,7 +20,16 @@ import java.util.Optional;
  */
 public class AddValeurModele extends Modele {
 
-	public ValeurInfos getProprieteRecord(long id_prop) throws ClientException, Exception {
+	/**
+	 * Retourne les infos sur la propriété et sur le type de propriété dans un
+	 * {@link ValeurInfos}.
+	 *
+	 * @param id_prop
+	 * @return
+	 * @throws ClientException
+	 * @throws Exception
+	 */
+	public ValeurInfos getProprieteInfos(long id_prop) throws ClientException, Exception {
 		return bdd((create) -> {
 
 			Optional<ProprieteRecord> pr = create.selectFrom(PROPRIETE)
@@ -37,6 +46,16 @@ public class AddValeurModele extends Modele {
 		});
 	}
 
+	/**
+	 * Ajoute la valeur à la base de donnée.
+	 *
+	 * @param id_prop
+	 * @param id_user
+	 * @param valeur
+	 * @param tp
+	 * @return
+	 * @throws Exception
+	 */
 	public long addValeur(long id_prop, long id_user, Object valeur, TypeProp tp) throws Exception {
 
 		return bdd((create) -> {

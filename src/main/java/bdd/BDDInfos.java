@@ -8,6 +8,9 @@ package bdd;
 /**
  * BDDInfos.java
  *
+ * Contient les infos de connexion à la base de données.
+ * A terme utiliser un fichier à part (XML/JSON).
+ *
  */
 class BDDInfos {
 

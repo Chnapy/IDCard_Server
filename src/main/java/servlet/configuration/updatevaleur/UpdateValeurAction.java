@@ -16,24 +16,32 @@ import servlet.ControleurAction;
 /**
  * UpdateValeurAction.java
  *
- * Récupérer et checker les paramètres:
- * -id_val
- * -val
- *
- * Récupérer les infos de la valeur:
- * -Valeur[id_user]
- * -Propriete[modifiable, taillevalmin, taillevalmax]
- * -TypeProp[id_typeprop]
- * -ValeurTypee[valeur]
- *
- * Vérifier la possibilité de update, check de la nouvelle valeur
- *
- * Update de la valeur
- *
+ * Action appelée lors de la mise à jour d'une valeur.
  */
 @ModuleAction(servlet = ConfigurationServlet.class, module = "update_val")
 public class UpdateValeurAction extends ControleurAction<ConfigurationServlet> {
 
+	/**
+	 *
+	 * Récupère et check les paramètres:
+	 * -id_val;
+	 * -form_val;
+	 *
+	 * Récupère les infos BDD de la valeur:
+	 * -Valeur[id_user];
+	 * -Propriete[modifiable, taillevalmin, taillevalmax];
+	 * -TypeProp[id_typeprop];
+	 * -ValeurTypee[valeur];
+	 *
+	 * Check de l'id user.
+	 *
+	 * Check de la valeur.
+	 *
+	 * Update de la valeur.
+	 *
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	protected ContentEntity doAct() throws Exception {
 

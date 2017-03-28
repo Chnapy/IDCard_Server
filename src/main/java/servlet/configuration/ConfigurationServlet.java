@@ -13,12 +13,23 @@ import javax.servlet.annotation.WebServlet;
 import servlet.Controleur;
 
 /**
+ * Servlet appelé lors des actions de configuration.
  *
  * @author Richard
  */
 @WebServlet(name = "ConfigurationServlet", urlPatterns = {"/configuration"})
 public class ConfigurationServlet extends Controleur {
 
+	/**
+	 * Vérifie le format d'une valeur d'après son type et les données de sa
+	 * propriété. Renvoie la valeur castée.
+	 *
+	 * @param form_val
+	 * @param infos
+	 * @return La valeur castée dans le type du CheckData
+	 * @throws ClientException
+	 * @throws NoCheckException
+	 */
 	public Object checkVal(String form_val, ValeurInfos infos) throws ClientException, NoCheckException {
 
 		if (!infos.isProprieteModifiable()) {

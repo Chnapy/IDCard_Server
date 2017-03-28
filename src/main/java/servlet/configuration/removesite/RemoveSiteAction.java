@@ -15,13 +15,23 @@ import servlet.ControleurAction;
 /**
  * RemoveSiteAction.java
  *
+ * Action appelée lors de la suppression d'un site d'une valeur (visibilité).
  */
 @ModuleAction(servlet = ConfigurationServlet.class, module = "remove_site")
 public class RemoveSiteAction extends ControleurAction<ConfigurationServlet> {
 
+	/**
+	 * Récupère les paramètres.
+	 * Depuis la BDD récupère les informations sur la visibilité.
+	 * Check l'id user.
+	 * Puis supprime la visibilité de la base de donnée.
+	 *
+	 * @return null
+	 * @throws Exception
+	 */
 	@Override
 	protected ContentEntity doAct() throws Exception {
-		
+
 		long id_val = getParam(Param.ID_VAL);
 		long id_site = getParam(Param.ID_SITE);
 

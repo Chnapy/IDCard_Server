@@ -17,6 +17,17 @@ import org.jooq.Table;
  */
 class RemoveValeurModele extends Modele {
 
+	/**
+	 * Supprime la valeur de la base de donnée, d'après la {@link Table} et
+	 * {@link Field} fournis.
+	 *
+	 * @param id_val
+	 * @param id_val_typee
+	 * @param table_valeurtypee
+	 * @param field_valeurtypee_id
+	 * @return null
+	 * @throws Exception
+	 */
 	public ValeurInfos removeValeur(long id_val, long id_val_typee, Table table_valeurtypee, Field field_valeurtypee_id) throws Exception {
 
 		return bdd((create) -> {

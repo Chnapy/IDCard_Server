@@ -27,9 +27,20 @@ import exceptions.BadLogException;
  *
  */
 public class ConnexionModele extends Modele {
-	
+
 	private long id_user;
 
+	/**
+	 * Gère la connexion par pseudo.
+	 *
+	 * @param form_pseudo
+	 * @param form_mdp
+	 * @return Données utilisateur récupérées depuis la BDD.
+	 * @throws SQLException
+	 * @throws BadLogException
+	 * @throws NoSuchAlgorithmException
+	 * @throws Exception
+	 */
 	public UserEntity connexionParPseudo(String form_pseudo, String form_mdp) throws SQLException, BadLogException, NoSuchAlgorithmException, Exception {
 
 		return bdd((create) -> {
@@ -61,6 +72,17 @@ public class ConnexionModele extends Modele {
 
 	}
 
+	/**
+	 * Gère la connexion par mail.
+	 *
+	 * @param form_mail
+	 * @param form_mdp
+	 * @return Données utilisateur récupérées depuis la BDD.
+	 * @throws SQLException
+	 * @throws BadLogException
+	 * @throws NoSuchAlgorithmException
+	 * @throws Exception
+	 */
 	public UserEntity connexionParMail(String form_mail, String form_mdp) throws SQLException, BadLogException, NoSuchAlgorithmException, Exception {
 
 		return bdd((create) -> {
@@ -91,6 +113,21 @@ public class ConnexionModele extends Modele {
 		});
 	}
 
+	/**
+	 * Procède à la vérification du mot de passe.
+	 *
+	 * @param create
+	 * @param id_user
+	 * @param pseudo
+	 * @param mail
+	 * @param form_mdp
+	 * @param dateinscription
+	 * @param datederniereconnexion
+	 * @param nbrconnexion
+	 * @return Données utilisateur récupérées depuis la BDD.
+	 * @throws BadLogException
+	 * @throws NoSuchAlgorithmException
+	 */
 	private UserEntity generalConnexion(DSLContext create, long id_user, String pseudo, String mail, String form_mdp, Date dateinscription, Date datederniereconnexion, long nbrconnexion) throws BadLogException, NoSuchAlgorithmException {
 
 		Optional<? extends Record> result_mdp = create.select(VALEURMDP.VALEUR, VALEURMDP.SALT, TYPECHIFFRAGE.TYPECHIFFRAGE_)
@@ -121,6 +158,14 @@ public class ConnexionModele extends Modele {
 		return new UserEntity(id_user, pseudo, mail, dateinscription, datederniereconnexion, nbrconnexion);
 	}
 
+	/**
+	 * Notifie la base de donnée de la nouvelle connexion.
+	 *
+	 * @param create
+	 * @param id_user
+	 * @param derniereco
+	 * @param nbrco
+	 */
 	private void newConnexion(DSLContext create, long id_user, Date derniereco, long nbrco) {
 		create.update(USER_1)
 				.set(USER_1.DATEDERNIERECONNEXION, derniereco)
@@ -129,6 +174,10 @@ public class ConnexionModele extends Modele {
 				.execute();
 	}
 
+	/**
+	 *
+	 * @return ID user de la base de donnée.
+	 */
 	public long getId_user() {
 		return id_user;
 	}

@@ -32,7 +32,7 @@ public class UpdateValeurModele extends Modele {
 	 * -ValeurTypee[valeur]
 	 *
 	 * @param id_val
-	 * @return
+	 * @return Les infos sur la valeur, propriété, et type de propriété
 	 * @throws exceptions.ClientException
 	 * @throws exceptions.BddException
 	 * @throws java.lang.Exception
@@ -67,6 +67,17 @@ public class UpdateValeurModele extends Modele {
 
 	}
 
+	/**
+	 * Procède à l'update de la valeur dans les tables correspondantes.
+	 *
+	 * @param id_val
+	 * @param valeur_table
+	 * @param valeur_field
+	 * @param valeur_idtype
+	 * @param val_final
+	 * @throws BddException
+	 * @throws Exception
+	 */
 	public void updateValeur(long id_val, Table valeur_table, Field valeur_field, Field valeur_idtype, Object val_final) throws BddException, Exception {
 
 		bdd((create) -> {

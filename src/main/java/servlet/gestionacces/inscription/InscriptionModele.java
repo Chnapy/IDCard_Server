@@ -26,6 +26,15 @@ import org.jooq.Result;
  */
 public class InscriptionModele extends Modele {
 
+	/**
+	 * Vérifie si un client avec ce pseudo ou ce mail n'existe pas déjà.
+	 *
+	 * @param pseudo
+	 * @param mail
+	 * @return
+	 * @throws SQLException
+	 * @throws Exception
+	 */
 	public boolean issetClient(String pseudo, String mail) throws SQLException, Exception {
 		return bdd((create) -> {
 
@@ -38,6 +47,17 @@ public class InscriptionModele extends Modele {
 		});
 	}
 
+	/**
+	 * Chiffre le mot de passe, puis insert dans la base de données les données
+	 * requises.
+	 *
+	 * @param pseudo
+	 * @param mail
+	 * @param mdp
+	 * @throws SQLException
+	 * @throws NoSuchAlgorithmException
+	 * @throws Exception
+	 */
 	public void inscription(String pseudo, String mail, String mdp) throws SQLException, NoSuchAlgorithmException, Exception {
 
 		Pair<byte[], String> mdpCrypt = this.getCryptedPassword(mdp, Const.MDPMAIN_CRYPT);
@@ -93,7 +113,7 @@ public class InscriptionModele extends Modele {
 					.set(VALEURMDP.ID_TYPECHIFFRAGE,
 							create.select(TYPECHIFFRAGE.ID_TYPECHIFFRAGE)
 									.from(TYPECHIFFRAGE)
-									.where(TYPECHIFFRAGE.TYPECHIFFRAGE_.eq(Const.MDPMAIN_CRYPT.str))
+									.where(TYPECHIFFRAGE.TYPECHIFFRAGE_.eq(Const.MDPMAIN_CRYPT.tostring))
 									.fetchOne().getValue(TYPECHIFFRAGE.ID_TYPECHIFFRAGE)
 					)
 					.returning(VALEURMDP.ID_VALEURTYPEE)

@@ -15,12 +15,23 @@ import servlet.Controleur;
 import enumerations.Attribut;
 
 /**
+ * Servlet appelé lors de l'inscription.
  *
  * @author Richard
  */
 @WebServlet(name = "InscriptionServlet", urlPatterns = {"/inscription"})
 public class InscriptionServlet extends Controleur {
 
+	/**
+	 * On surcharge la fonction pour que, lorsque l'inscription réussi, on
+	 * redirige directement l'utilisateur vers le servlet de connexion.
+	 * Ainsi il est immédiatement connecté.
+	 *
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		MainEntity me = this.onPost(request, response);

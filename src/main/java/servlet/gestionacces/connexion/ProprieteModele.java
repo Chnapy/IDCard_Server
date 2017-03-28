@@ -29,6 +29,13 @@ import org.jooq.Result;
  */
 public class ProprieteModele extends Modele {
 
+	/**
+	 * Retourne le {@link ProprieteRecord} (contenu) de la propriété recherchée.
+	 *
+	 * @param id_propriete ID de la propriété recherchée
+	 * @return Contenu de la propriété recherchée.
+	 * @throws Exception
+	 */
 	public ProprieteRecord getPropriete(long id_propriete) throws Exception {
 
 		return bdd((create) -> {
@@ -37,9 +44,15 @@ public class ProprieteModele extends Modele {
 					.where(PROPRIETE.ID_PROPRIETE.eq(id_propriete))
 					.fetchAny();
 		});
-
 	}
 
+	/**
+	 * Retourne le {@link ValeurRecord} (contenu) de la valeur recherchée.
+	 *
+	 * @param id_valeur
+	 * @return Contenu de la valeur recherchée.
+	 * @throws Exception
+	 */
 	public ValeurRecord getValeur(long id_valeur) throws Exception {
 
 		return bdd((create) -> {
@@ -48,21 +61,35 @@ public class ProprieteModele extends Modele {
 					.where(VALEUR.ID_VALEUR.eq(id_valeur))
 					.fetchAny();
 		});
-
 	}
-	
+
+	/**
+	 * Retourne le nombre de valeurs possédées par la propriété spécifiée
+	 *
+	 * @param id_propriete ID de la propriété concernée
+	 * @return Nombre de valeurs
+	 * @throws Exception
+	 */
 	public int getNbrValFromProp(long id_propriete) throws Exception {
 
 		return bdd((create) -> {
 
-			 return create.selectCount()
+			return create.selectCount()
 					.from(VALEUR)
 					.where(VALEUR.ID_PROPRIETE.eq(id_propriete))
 					.fetchAny().value1();
 		});
-
 	}
 
+	/**
+	 * Retourne toutes les propriétés dont l'utilisateur spécifié possède au
+	 * moins une valeur. Ainsi que les valeurs liées, et leurs domaines.
+	 *
+	 * @param id_user ID utilisateur concerné
+	 * @return List des {@link ProprieteEntity} contenant les données des
+	 *         propriétés, ainsi que leurs valeurs
+	 * @throws Exception
+	 */
 	public List<ProprieteEntity> getAllProprietes(long id_user) throws Exception {
 
 		return bdd((create) -> {

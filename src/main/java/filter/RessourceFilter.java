@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Filtre permettant aux ressources (css, js, etc) de passer les autres filtres.
+ * On permet l'user d'accéder à des dossiers spécifiques (css, js, etc).
  *
  * @author Richard
  */
@@ -32,10 +33,23 @@ public class RessourceFilter implements Filter {
 			"img"
 	);
 
+	/**
+	 *
+	 * @param filterConfig
+	 * @throws ServletException
+	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
 
+	/**
+	 *
+	 * @param request
+	 * @param response
+	 * @param chain
+	 * @throws IOException
+	 * @throws ServletException
+	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		System.out.println("ressourceFilter");
@@ -60,6 +74,9 @@ public class RessourceFilter implements Filter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void destroy() {
 	}
